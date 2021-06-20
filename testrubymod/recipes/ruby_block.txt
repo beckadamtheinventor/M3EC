@@ -1,0 +1,10 @@
+@:         recipe
+recipe:    ShapedRecipe
+contentid: ruby_block
++pattern:   ###
++pattern:   ###
++pattern:   ###
++itemkeys:  #
++items:     testrubymod:ruby
+result:     testrubymod:ruby_block
+count:      1

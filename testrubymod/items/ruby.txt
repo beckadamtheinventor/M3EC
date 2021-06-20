@@ -1,0 +1,5 @@
+@:            item
+item:         SimpleItem
+contentid:    ruby
+title:        Ruby
+texture:      textures/ruby/ruby.png

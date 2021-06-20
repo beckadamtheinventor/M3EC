@@ -1,0 +1,12 @@
+{
+    "type": "minecraft:smithing",
+    "base": {
+        "item": "${ingredient}"
+    },
+    "addition": {
+        "item": "${ingredient2}"
+    },
+    "result": {
+        "item": "${result}"
+    }
+}

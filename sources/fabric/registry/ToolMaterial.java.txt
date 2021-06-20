@@ -1,0 +1,28 @@
+
+package ${mod.package}.registry;
+
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.recipe.Ingredient;
+
+public class ${contentid} implements ToolMaterial {
+	@Override
+	public int getDurability() {
+		return ${durability};
+	}
+	@Override
+	public int getMiningSpeedMultiplier() {
+		return ${miningspeed};
+	}
+	@Override
+	public int getAttackDamage() {
+		return ${attackdamage};
+	}
+	@Override
+	public int getEnchantability() {
+		return ${enchantability};
+	}
+	@Override
+	public int getRepairIngredient() {
+		return Ingredient.ofItems(${repairitem});
+	}
+}

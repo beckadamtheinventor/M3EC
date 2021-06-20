@@ -1,0 +1,15 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+---list pattern
+		"$%v"---end
+    ],
+    "key": {
+---list itemkeys
+		"$%v": {"item": "${items.list.$%i}"}---end
+    },
+    "result": {
+        "item": "${result}",
+        "count": ${count}
+    }
+}

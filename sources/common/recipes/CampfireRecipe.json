@@ -1,0 +1,9 @@
+{
+    "type": "minecraft:campfire_cooking",
+    "ingredient": {
+        "item": "${ingredient}"
+    },
+    "result": "${result}",
+    "experience": ${experience},
+    "cookingtime": ${time}
+}
