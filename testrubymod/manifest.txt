@@ -63,6 +63,7 @@ mod:
 #project license. Change this and add a license file for your own project
 .license: GPL3
 
-
-
-
++langs: fr_ca
++langs: fr_fr
+fr_ca: Tester Module Ruby
+fr_fr: Tester Module Ruby
