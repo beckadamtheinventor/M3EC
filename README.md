@@ -15,3 +15,14 @@ build for forge: (eventually)
 + python m3ec.py path_to_mod_dir forge
 
 Licensed under the GPL version 3.
+
+## Features
+- simple items
+- foods without custom effect attributes
+- simple single-texture blocks
+- fortune-able blocks (such as ores)
+- item dropping blocks (such as campfires)
+- recipes of all methods from 1.16
+- tools and tool materials
+- armor and armor materials
+- as many languages as supplied
