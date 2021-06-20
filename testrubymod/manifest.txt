@@ -61,5 +61,8 @@ mod:
 .iconItem: RUBY
 
 #project license. Change this and add a license file for your own project
-.license: Public Domain
+.license: GPL3
+
+
+
 

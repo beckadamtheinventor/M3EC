@@ -3,3 +3,8 @@ item:         SimpleItem
 contentid:    ruby
 title:        Ruby
 texture:      textures/ruby/ruby.png
+
++langs:  fr_ca
++langs:  fr_fr
+fr_ca:   Rubis
+fr_fr:   Rubis

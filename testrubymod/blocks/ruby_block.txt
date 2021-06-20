@@ -1,7 +1,7 @@
 @:               block
 block:           SimpleBlock
 contentid:         ruby_block
-title:             Ruby Block
+title:             Block of Ruby
 texture:           textures/ruby/ruby_block.png
 
 droptype:          Self
@@ -13,3 +13,9 @@ toolclass:         PICKAXES
 toollevel:         2
 requiresTool:      .requiresTool()
 sounds:            METAL
+
++langs:   fr_ca
++langs:   fr_fr
+fr_ca:   Bloc de Rubis
+fr_fr:   Bloc de Rubis
+
