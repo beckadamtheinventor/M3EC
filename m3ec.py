@@ -217,20 +217,14 @@ def build_resources(project_path, builddir, manifest_dict):
 
 			if content_type in ["item", "food", "armor", "tool", "fuel"]:
 				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".json"), manifest_dict))
-				tex = manifest_dict[f"mod.{content_type}.{cid}.texture"]
-				if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
-				elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
-				copy_file(os.path.join(project_path, tex), os.path.join(item_textures_assets_dir, tex2))
+				copy_textures(content_type, cid, manifest_dict, project_path, item_textures_assets_dir)
 			elif content_type == "block":
 				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
 				manifest_dict[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
 				create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".json"), manifest_dict))
 				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.json"), manifest_dict))
 				create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", "SimpleBlockState.json"), manifest_dict))
-				tex = manifest_dict[f"mod.{content_type}.{cid}.texture"]
-				if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
-				elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
-				copy_file(os.path.join(project_path, tex), os.path.join(block_textures_assets_dir, tex2))
+				copy_textures(content_type, cid, manifest_dict, project_path, block_textures_assets_dir)
 				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
 				if dtype.lower() != "none":
 					create_file(os.path.join(block_loot_table_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_loot_tables", dtype+".json"), manifest_dict))
@@ -260,6 +254,28 @@ def build_resources(project_path, builddir, manifest_dict):
 			json.dump(langdict[lang], f)
 
 	create_file(os.path.join(builddir, "src", "main", "resources", "fabric.mod.json"), readf_file(os.path.join(sourcesdir, "fabric.mod.json"), manifest_dict))
+
+def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
+	if f"mod.{content_type}.{cid}.texture" in manifest_dict.keys():
+		tex = manifest_dict[f"mod.{content_type}.{cid}.texture"]
+		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
+		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
+		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
+	if f"mod.{content_type}.{cid}.{cid}_top" in manifest_dict.keys():
+		tex = manifest_dict[f"mod.{content_type}.{cid}.{cid}_top"]
+		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
+		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
+		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
+	if f"mod.{content_type}.{cid}.{cid}_bottom" in manifest_dict.keys():
+		tex = manifest_dict[f"mod.{content_type}.{cid}.{cid}_bottom"]
+		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
+		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
+		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
+	if f"mod.{content_type}.{cid}.{cid}_side" in manifest_dict.keys():
+		tex = manifest_dict[f"mod.{content_type}.{cid}.{cid}_side"]
+		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
+		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
+		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
 
 def make_dir(path):
 	try:

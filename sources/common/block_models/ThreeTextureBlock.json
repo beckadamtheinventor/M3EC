@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "${mod.mcpath}:blocks/${contentid}_bottom",
+        "top": "${mod.mcpath}:blocks/${contentid}_top",
+        "side": "${mod.mcpath}:blocks/${contentid}_side"
+    }
+}

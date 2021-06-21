@@ -1,0 +1,22 @@
+@:               block
+block:           ColumnBlock
+contentid:         ruby_pillar
+title:             Ruby Pillar
+ruby_pillar_top:   textures/ruby/ruby_pillar_top.png
+ruby_pillar_side:  textures/ruby/ruby_pillar_side.png
+
+droptype:          Self
+
+hardness:          ${mc.diamond_block.hardness}
+resistance:        ${mc.diamond_block.resistance}
+material:          METAL
+toolclass:         PICKAXES
+toollevel:         2
+requiresTool:      .requiresTool()
+sounds:            METAL
+
++langs:   fr_ca
++langs:   fr_fr
+fr_ca:   Pilier Rubis
+fr_fr:   Pilier Rubis
+

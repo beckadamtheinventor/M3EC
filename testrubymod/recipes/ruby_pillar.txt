@@ -1,0 +1,7 @@
+@:            recipe
+recipe:       ShapelessRecipe
+contentid:    ruby_pillar
++ingredients: testrubymod:ruby_block
++ingredients: testrubymod:ruby_block
+result:       testrubymod:ruby_pillar
+count:        2

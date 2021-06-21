@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "axis=y":    { "model": "${contentid}" },
+        "axis=z":     { "model": "${contentidside}" },
+        "axis=x":     { "model": "${contentidside}", "y": 90 },
+        "axis=none":   { "model": "${contentidside}" }
+    }
+}
