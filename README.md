@@ -1,11 +1,13 @@
 # M3EC
 
 ## Minecraft Multi Mod Environment Compiler
-Version 0.1
+Version 0.2
 
 This compiler/script operates on the mentality of "as few files as possible" to create a mod.
 Check out the `testrubymod` folder for usage example.
 Currently it only supports fabric 1.16.5 and 1.17. Forge support will (probably) come soon after it releases for 1.17.
+
+This project is licensed under the GPL version 3.
 
 ## Usage
 

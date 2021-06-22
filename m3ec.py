@@ -508,8 +508,8 @@ def ospath(path):
 if __name__=='__main__':
 	if len(sys.argv)<2:
 		print("""
-Minecraft Multiple Mod Environment Compiler v0.1
-Very much unfinished, currently only supports fabric. (mc 1.17)
+Minecraft Multiple Mod Environment Compiler v0.2
+Very much unfinished, currently only supports fabric 1.16.5 and 1.17.
 Usage:
 	python m3ec.py path modenv""")
 		exit()
