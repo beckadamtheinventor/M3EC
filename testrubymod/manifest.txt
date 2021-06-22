@@ -46,13 +46,13 @@ mod:
 #web url to your mod's sources
 .sources:
 
-#paths to mod items, blocks, block items, recipes
+#paths to mod items, blocks, recipes, etc
 +.paths:	items
 +.paths:	blocks
 +.paths:	recipes
-+.paths:	materials
 +.paths:	armor
 +.paths:	tools
++.paths:	ores
 
 #path to mod textures directory.
 .textures: textures

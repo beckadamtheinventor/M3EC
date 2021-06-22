@@ -1,0 +1,24 @@
+@:               block
+block:           SimpleBlock
+contentid:         ruby_ore
+title:             Ruby Ore
+texture:           textures/ruby/ruby_ore.png
+
+droptype:          Fortunable
+drops:             testrubymod:ruby
+dropmin:           1
+dropmax:           1
+
+hardness:          ${mc.emerald_ore.hardness}
+resistance:        ${mc.emerald_ore.resistance}
+material:          STONE
+toolclass:         PICKAXES
+toollevel:         2
+requiresTool:      .requiresTool()
+sounds:            STONE
+
++langs:   fr_ca
++langs:   fr_fr
+fr_ca:   Minerai de Rubis
+fr_fr:   Minerai de Rubis
+

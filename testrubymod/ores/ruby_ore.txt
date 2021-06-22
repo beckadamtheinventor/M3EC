@@ -1,0 +1,12 @@
+@:          ore
+ore:
+contentid:  ruby_ore_ore
+name:       ruby_ore_ore
+title:      ruby_ore_ore
+foundin:    Overworld
+miny:      1
+maxy:      10
+vein:
+.block:     ModBlocks.RUBY_ORE
+.size:      2
+.perchunk:  10

@@ -1,0 +1,10 @@
+@:            tool
+tool:         ToolItem
+contentid:    ruby_pickaxe
+class:        RubyPickaxe
+tooltype:     PickaxeItem
+material:     RubyToolMaterial
+attackspeed:  3
+attackdamage: -2.4f
+title:        Ruby Pickaxe
+texture:      textures/ruby/ruby_pickaxe.png
