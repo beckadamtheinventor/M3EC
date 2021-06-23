@@ -13,6 +13,7 @@ def build(project_path, modenv):
 		manifest_file = os.path.join(project_path, "manifest.txt")
 	else:
 		manifest_file = project_path
+		project_path = os.path.dirname(project_path)
 	with open(manifest_file) as f:
 		manifest = f.read().splitlines()
 
@@ -263,7 +264,7 @@ def build_resources(project_path, builddir, manifest_dict):
 	modmcpath = manifest_dict["mod.mcpath"]
 	sourcesdir = os.path.join(source_path, builddir)
 	builddir = os.path.join(project_path, builddir+"_build")
-	build_java_dir = os.path.join(builddir, "src", "main", "java", manifest_dict["mod.prefix"], manifest_dict["mod.author"], manifest_dict["mod.mcpath"])
+	build_java_dir = os.path.join(builddir, "src", "main", "java", manifest_dict["mod.prefix"], manifest_dict["mod.author"], manifest_dict["mod.class"])
 	block_models_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "block")
 	block_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "blocks")
 	blockstates_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "blockstates")
@@ -439,9 +440,18 @@ def readf(data, d):
 	return data
 
 def walk(path):
+	found_names = []
+	for fname in _walk(path):
+		fname = os.path.abspath(fname)
+		if fname not in found_names:
+			found_names.append(fname)
+			yield fname
+
+def _walk(path):
 	for root,dirs,files in os.walk(path):
 		for dname in dirs:
-			yield walk(os.path.join(root, dname))
+			for fname in walk(os.path.join(root, dname)):
+				yield fname
 		for fname in files:
 			yield os.path.join(root, fname)
 
@@ -506,7 +516,7 @@ def ospath(path):
 
 
 if __name__=='__main__':
-	if len(sys.argv)<2:
+	if len(sys.argv) < 3:
 		print("""
 Minecraft Multiple Mod Environment Compiler v0.2
 Very much unfinished, currently only supports fabric 1.16.5 and 1.17.
