@@ -32,15 +32,6 @@
               "name": "${drops}",
               "functions": [
                 {
-                  "function": "minecraft:set_count",
-                  "count": {
-                    "type": "minecraft:uniform",
-                    "min": ${dropmin},
-                    "max": ${dropmax}
-                  },
-                  "add": false
-                },
-                {
                   "function": "minecraft:apply_bonus",
                   "enchantment": "minecraft:fortune",
                   "formula": "minecraft:ore_drops"

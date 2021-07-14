@@ -6,8 +6,6 @@ texture:           textures/ruby/ruby_ore.png
 
 droptype:          Fortunable
 drops:             testrubymod:ruby
-dropmin:           1
-dropmax:           1
 
 hardness:          ${mc.emerald_ore.hardness}
 resistance:        ${mc.emerald_ore.resistance}

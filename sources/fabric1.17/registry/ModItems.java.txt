@@ -36,14 +36,6 @@ public class ModItems {
 ---iter mod.registry.blockitem.names
 	public static final BlockItem ${mod.blockitem.$%v.uppercased} = new BlockItem(ModBlocks.${mod.blockitem.$%v.uppercased}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
-	//Armor materials
----iter mod.registry.armormaterial.names
-	public static final ArmorMaterial ${mod.armormaterial.$%v.uppercased} = new $%v();---end
-
-	//Tool materials
----iter mod.registry.toolmaterial.names
-	public static final ToolMaterial ${mod.toolmaterial.$%v.uppercased} = new $%v();---end
-
 	//Armor items
 ---iter mod.registry.armor.names
 	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material}, EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end

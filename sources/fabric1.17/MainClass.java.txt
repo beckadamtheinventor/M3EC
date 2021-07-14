@@ -49,7 +49,7 @@ public class ${mod.class} implements ModInitializer {
 ---iter mod.registry.ore.names
 		RegistryKey<ConfiguredFeature<?, ?>> ${mod.ore.$%v.uppercased}_GEN = RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY,
 				new Identifier("${mod.mcpath}", "$%v"));
-		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.ore.$%v.uppercased});
+		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, ${mod.ore.$%v.uppercased}_GEN.getValue(), ${mod.ore.$%v.uppercased});
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v.uppercased}_GEN);---end
 	}
 }
