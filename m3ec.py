@@ -297,9 +297,16 @@ def build_resources(project_path, builddir, manifest_dict):
 			if content_type == "block":
 				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
 				manifest_dict[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
-				create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".json"), manifest_dict))
+				statename = manifest_dict["blockstatetype"]
+				if tname.lower() == "custom":
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockmodel"]), manifest_dict))
+				else:
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".json"), manifest_dict))
 				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.json"), manifest_dict))
-				create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", "SimpleBlockState.json"), manifest_dict))
+				if statename.lower() == "custom":
+					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockstate"]), manifest_dict))
+				else:
+					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".json"), manifest_dict))
 				copy_textures(content_type, cid, manifest_dict, project_path, block_textures_assets_dir)
 				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
 				if dtype.lower() != "none":
