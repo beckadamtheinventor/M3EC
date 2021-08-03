@@ -1,9 +1,9 @@
 @:         recipe
 recipe:    ShapedRecipe
 contentid: ruby_block
-+pattern:   ###
-+pattern:   ###
-+pattern:   ###
++pattern:   "###"
++pattern:   "###"
++pattern:   "###"
 +itemkeys:  #
 +items:     testrubymod:ruby
 result:     testrubymod:ruby_block

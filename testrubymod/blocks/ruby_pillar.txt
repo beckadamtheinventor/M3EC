@@ -1,5 +1,6 @@
 @:               block
 block:           ColumnBlock
+blockstatetype:  Single
 contentid:         ruby_pillar
 title:             Ruby Pillar
 ruby_pillar_top:   textures/ruby/ruby_pillar_top.png

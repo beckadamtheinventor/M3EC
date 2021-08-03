@@ -2,7 +2,7 @@
     "type": "minecraft:crafting_shaped",
     "pattern": [
 ---list pattern
-		"$%v"---end
+		$%v---end
     ],
     "key": {
 ---list itemkeys

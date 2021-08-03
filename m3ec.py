@@ -84,49 +84,11 @@ def build(project_path, modenv):
 	# for key in manifest_dict.keys():
 		# print(f"{key}: {manifest_dict[key]}")
 
-	if "fabric1.17" in modenv:
+	source_path = os.path.join(os.path.dirname(__file__),"sources")
+	path = project_path
+
+	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
 		print("Building fabric 1.17 mod project")
-		path = project_path
-		make_dir(os.path.join(path, "fabric1.17_build"))
-
-		src = os.path.join(source_path, "fabric1.17", "gradle")
-		dest = os.path.join(path, "fabric1.17_build")
-		make_dir(os.path.join(dest, "gradle"))
-		make_dir(os.path.join(dest, "gradle", "wrapper"))
-		copy_file(os.path.join(src, "gradle", "wrapper", "gradle-wrapper.jar"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.jar"))
-		copy_file(os.path.join(src, "gradle", "wrapper", "gradle-wrapper.properties"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.properties"))
-		copy_file(os.path.join(src, "build.gradle"), os.path.join(dest, "build.gradle"))
-		copy_file(os.path.join(src, "gradlew"), os.path.join(dest, "gradlew"))
-		copy_file(os.path.join(src, "gradlew.bat"), os.path.join(dest, "gradlew.bat"))
-		copy_file(os.path.join(src, "settings.gradle"), os.path.join(dest, "settings.gradle"))
-		create_file(os.path.join(dest, "gradle.properties"), readf_file(os.path.join(src, "gradle.properties.txt"), manifest_dict))
-
-		make_dir(os.path.join(path, "fabric1.17_build", "src"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "blockstates"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "lang"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "models"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "models", "block"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "models", "item"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "textures"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "assets", modmcpath, "textures", "items"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data", modmcpath))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data", modmcpath, "loot_tables"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "chests"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "entities"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "gameplay"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "resources", "data", modmcpath, "recipes"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "java"))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "java", prefix))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "java", prefix, modauthor.lower()))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "java", modmcpathdir))
-		make_dir(os.path.join(path, "fabric1.17_build", "src", "main", "java", modmcpathdir, "registry"))
 
 		build_resources(project_path, "fabric1.17", manifest_dict)
 
@@ -148,122 +110,102 @@ def build(project_path, modenv):
 		else:
 			create_file(os.path.join(path, "fabric1.17_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 
-	if "fabric" in modenv:
-		print("Building fabric mod project")
-		path = project_path
-		make_dir(os.path.join(path, "fabric_build"))
+	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
+		print("Building fabric 1.17.1 mod project")
 
-		src = os.path.join(source_path, "fabric", "gradle")
-		dest = os.path.join(path, "fabric_build")
-		make_dir(os.path.join(dest, "gradle"))
-		make_dir(os.path.join(dest, "gradle", "wrapper"))
-		copy_file(os.path.join(src, "gradle", "wrapper", "gradle-wrapper.jar"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.jar"))
-		copy_file(os.path.join(src, "gradle", "wrapper", "gradle-wrapper.properties"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.properties"))
-		copy_file(os.path.join(src, "build.gradle"), os.path.join(dest, "build.gradle"))
-		copy_file(os.path.join(src, "gradlew"), os.path.join(dest, "gradlew"))
-		copy_file(os.path.join(src, "gradlew.bat"), os.path.join(dest, "gradlew.bat"))
-		copy_file(os.path.join(src, "settings.gradle"), os.path.join(dest, "settings.gradle"))
-		create_file(os.path.join(dest, "gradle.properties"), readf_file(os.path.join(src, "gradle.properties.txt"), manifest_dict))
+		build_resources(project_path, "fabric1.17.1", manifest_dict)
 
-		make_dir(os.path.join(path, "fabric_build", "src"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "blockstates"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "lang"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "models"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "models", "block"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "models", "item"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "textures"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "assets", modmcpath, "textures", "items"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data", modmcpath))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data", modmcpath, "loot_tables"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "chests"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "entities"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "gameplay"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "resources", "data", modmcpath, "recipes"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "java"))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "java", prefix))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "java", prefix, modauthor.lower()))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "java", modmcpathdir))
-		make_dir(os.path.join(path, "fabric_build", "src", "main", "java", modmcpathdir, "registry"))
-
-		build_resources(project_path, "fabric", manifest_dict)
-
-		data = readf_file(os.path.join(source_path, "fabric", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.17.1", "MainClass.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.17.1/MainClass.java.txt\"")
 		else:
-			create_file(os.path.join(path, "fabric_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric", "registry", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModBlocks.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric/registry/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.17.1/registry/ModBlocks.java.txt\"")
 		else:
-			create_file(os.path.join(path, "fabric_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
+			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric", "registry", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModItems.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric/registry/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.17.1/registry/ModItems.java.txt\"")
 		else:
-			create_file(os.path.join(path, "fabric_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 
-	if "forge" in modenv:
-		print("Building forge mod project")
-		make_dir(os.path.join(path, "forge_build"))
-		make_dir(os.path.join(path, "forge_build", "src"))
-		make_dir(os.path.join(path, "forge_build", "src", "main"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "blockstates"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "lang"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "models"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "models", "block"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "models", "item"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "textures"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "assets", modmcpath, "textures", "items"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data", modmcpath))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data", modmcpath, "loot_tables"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "chests"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "entities"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data", modmcpath, "loot_tables", "gameplay"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "resources", "data", modmcpath, "recipes"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "java"))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "java", prefix))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "java", prefix, modauthor.lower()))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "java", modmcpathdir))
-		make_dir(os.path.join(path, "forge_build", "src", "main", "java", modmcpathdir, "init"))
+	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
+		print("Building fabric 1.16.5 mod project")
 
-		build_resources(project_path, "forge", manifest_dict)
+		build_resources(project_path, "fabric1.16.5", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "forge", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.16.5", "MainClass.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"forge/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.16.5/MainClass.java.txt\"")
 		else:
-			create_file(os.path.join(path, "forge_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "forge", "init", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModBlocks.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"forge/init/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.16.5/registry/ModBlocks.java.txt\"")
 		else:
-			create_file(os.path.join(path, "forge_build", "src", "main", "java", modmcpathdir, "init", "ModBlocks.java"), data)
+			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "forge", "init", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModItems.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"forge/init/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.16.5/registry/ModItems.java.txt\"")
 		else:
-			create_file(os.path.join(path, "forge_build", "src", "main", "java", modmcpathdir, "init", "ModItems.java"), data)
+			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+
+	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
+		print("Building forge 1.16.5 mod project")
+
+		build_resources(project_path, "forge1.16.5", manifest_dict)
+
+		data = readf_file(os.path.join(source_path, "forge1.16.5", "MainClass.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"forge1.16.5/MainClass.java.txt\"")
+		else:
+			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+
+		data = readf_file(os.path.join(source_path, "forge1.16.5", "init", "ModBlocks.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"forge1.16.5/init/ModBlocks.java.txt\"")
+		else:
+			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "init", "ModBlocks.java"), data)
+
+		data = readf_file(os.path.join(source_path, "forge1.16.5", "init", "ModItems.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"forge1.16.5/init/ModItems.java.txt\"")
+		else:
+			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "init", "ModItems.java"), data)
+
+	if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
+		print("Building forge 1.12.2 mod project")
+
+		build_resources(project_path, "forge1.12.2", manifest_dict)
+
+		data = readf_file(os.path.join(source_path, "forge1.12.2", "MainClass.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"forge1.12.2/MainClass.java.txt\"")
+		else:
+			create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+
+		data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModBlocks.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"forge1.12.2/init/ModBlocks.java.txt\"")
+		else:
+			create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModBlocks.java"), data)
+
+		data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModItems.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"forge1.12.2/init/ModItems.java.txt\"")
+		else:
+			create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModItems.java"), data)
 
 def build_resources(project_path, builddir, manifest_dict):
 	source_path = os.path.join(os.path.dirname(__file__),"sources")
+	src = os.path.join(source_path, builddir, "gradle")
+	dest = os.path.join(project_path, builddir+"_build")
 	commons_path = os.path.join(source_path, "common")
 	modmcpath = manifest_dict["mod.mcpath"]
 	sourcesdir = os.path.join(source_path, builddir)
@@ -277,9 +219,55 @@ def build_resources(project_path, builddir, manifest_dict):
 	lang_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "lang")
 	block_loot_table_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks")
 	recipes_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes")
+
+	make_dir(dest)
+	make_dir(os.path.join(dest, "gradle"))
+	make_dir(os.path.join(dest, "gradle", "wrapper"))
+	copy_file(os.path.join(src, "gradle", "wrapper", "gradle-wrapper.jar"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.jar"))
+	copy_file(os.path.join(src, "gradle", "wrapper", "gradle-wrapper.properties"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.properties"))
+	copy_file(os.path.join(src, "build.gradle"), os.path.join(dest, "build.gradle"))
+	copy_file(os.path.join(src, "gradlew"), os.path.join(dest, "gradlew"))
+	copy_file(os.path.join(src, "gradlew.bat"), os.path.join(dest, "gradlew.bat"))
+	if os.path.exists(os.path.join(src, "settings.gradle")):
+		copy_file(os.path.join(src, "settings.gradle"), os.path.join(dest, "settings.gradle"))
+	create_file(os.path.join(dest, "gradle.properties"), readf_file(os.path.join(src, "gradle.properties"), manifest_dict))
+
+	make_dir(os.path.join(dest, "src"))
+	make_dir(os.path.join(dest, "src", "main"))
+	make_dir(os.path.join(dest, "src", "main", "resources"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "blockstates"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "lang"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "block"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "item"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "items"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "chests"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "entities"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "gameplay"))
+	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "recipes"))
+	make_dir(os.path.join(dest, "src", "main", "java"))
+	if "mod.icon" in manifest_dict.keys():
+		copy_file(os.path.join(project_path, manifest_dict["mod.icon"]), os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "icon.png"))
+
+	prefix = manifest_dict["mod.prefix"]
+	modauthor = manifest_dict["mod.author"]
+	modmcpathdir = os.path.join(prefix, modauthor.lower(), manifest_dict["mod.class"].lower())
+	make_dir(os.path.join(dest, "src", "main", "java", prefix))
+	make_dir(os.path.join(dest, "src", "main", "java", prefix, modauthor.lower()))
+	make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir))
+	make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir, "registry"))
 	langdict = {"en_us":{}}
 	manifest_dict[f"mod.registry.blockitem.names"].clear()
 
+	includedClasses = []
 	for content_type in manifest_dict["mod.content_types"]:
 		for cid in manifest_dict[f"mod.registry.{content_type}.names"]:
 			tname = manifest_dict[f"mod.{content_type}.{cid}.{content_type}"]
@@ -297,6 +285,14 @@ def build_resources(project_path, builddir, manifest_dict):
 			if content_type == "block":
 				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
 				manifest_dict[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
+				if "hasInventory" in manifest_dict.keys():
+					if manifest_dict["hasInventory"]:
+						if "inventoryType" in manifest_dict.keys():
+							c = "inventoryType"
+							if c not in includedClasses:
+								includedClasses.append(c)
+								copy_file(os.path.join(build_java_dir, "registry", manifest_dict["inventoryType"]+".java"), os.path.join(build_java_dir, "registry", manifest_dict["inventoryType"]+".java"))
+							create_file(os.path.join(build_java_dir, "registry", manifest_dict["class"]+".java"), readf_file(os.path.join(sourcesdir, "registry", "Inventory.java.txt")), manifest_dict)
 				statename = manifest_dict["blockstatetype"]
 				if tname.lower() == "custom":
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockmodel"]), manifest_dict))
@@ -345,6 +341,7 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 		tex = manifest_dict[f"mod.{content_type}.{cid}.texture"]
 		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
 		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
+		else: tex2 = ""
 		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
 	if f"mod.{content_type}.{cid}.{cid}_top" in manifest_dict.keys():
 		tex = manifest_dict[f"mod.{content_type}.{cid}.{cid}_top"]
@@ -438,6 +435,29 @@ def readf(data, d):
 			else:
 				print(f"Critical internal error! {key} not found in dictionary passed to readf!")
 				return None
+		data2.append(data[j:])
+		data = "".join(data2)
+
+	if "---if " in data:
+		data2 = []
+		j = 0
+		while "---if " in data[j:]:
+			i = data.find("---if ", j)
+			data2.append(data[j:i])
+			n = data.find("\n", i+6)
+			key = data[i+6:n]
+			j = data.find("---end",n)
+			if key in d.keys():
+				l = d[key]
+				block = data[n:j]
+				j += 6
+				if type(l) is list:
+					for i in range(len(l)):
+						data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
+				else:
+					data2.append(block.replace("$%v", l).replace("$%i", "0"))
+			else:
+				j += 6
 		data2.append(data[j:])
 		data = "".join(data2)
 

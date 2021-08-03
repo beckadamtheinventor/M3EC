@@ -1,5 +1,6 @@
 @:               block
 block:           SimpleBlock
+blockstatetype:  Single
 contentid:         ruby_block
 title:             Block of Ruby
 texture:           textures/ruby/ruby_block.png

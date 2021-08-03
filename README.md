@@ -10,6 +10,10 @@ Currently it only supports fabric 1.16.5 and 1.17. Forge support will (probably)
 M3EC is Licensed under the GPL version 3.
 
 
+## Documentation
+Documentation can be found in the `docs` folder of this repository.
+
+
 ## Usage
 
 To build a given project for a given modloader for a specified game version:
@@ -40,6 +44,7 @@ Running the following command should fix the issue:
 + `gradlew build jar -Dorg.gradle.java.home=[path to java 16 jdk directory]`
 On Windows this will be somewhere in `C:\\Program Files\\Java\\`.
 On Linux, it will be somewhere in `/usr/lib/jvm/`.
+
 
 ## Features
 - simple items

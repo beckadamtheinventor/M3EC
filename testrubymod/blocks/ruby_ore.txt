@@ -1,5 +1,6 @@
 @:               block
 block:           SimpleBlock
+blockstatetype:  Single
 contentid:         ruby_ore
 title:             Ruby Ore
 texture:           textures/ruby/ruby_ore.png
