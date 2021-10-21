@@ -1,3 +1,4 @@
-*/fabric_build
-*/forge_build
+*/*_build
+*/*_build
 */todo
+javapaths.json
