@@ -34,16 +34,15 @@ Valid `modenv`s:
 
 
 Once the mod project is built, you can use your choice of java IDEs (such as IntelliJ) to build the mod's jar file.
-Alernatively you can compile the mod from the terminal. Open a command window and navigate to the respective `modenv_build` folder within your peojct's source directory.
-Then run this command:
-+ `gradlew build jar`
-Your mod's jar file will be in the build/libs directory.
 
-If the build fails with an error such as `RELEASE_8 less than RELEASE_16` then you will need to tell gradle where the java version is that you need to use, because MC 1.17 uses Java 16 instead of versions prior which use Java 8.
-Running the following command should fix the issue:
-+ `gradlew build jar -Dorg.gradle.java.home=[path to java 16 jdk directory]`
-On Windows this will be somewhere in `C:\\Program Files\\Java\\`.
-On Linux, it will be somewhere in `/usr/lib/jvm/`.
+Alernatively you can compile and/or test the mod from the terminal by appending to the end of the project build command.
+- `build jar` build the mod jar file
+- `runClient` test the mod in an offline (non-authenticated) client
+- `runServer` test the mod in an offline (non-authenticated) server
+Your mod's jar file will be in the build/libs directory of the built project.
+When building, the program may prompt for a Java jdk path for a specific jdk version.
+On Windows you can find your java installations somewhere in `C:\\Program Files\\Java\\` or `C:\\Program Files (x86)\\Java\\`.
+On Linux, they will be somewhere in and around `/usr/lib/jvm/`.
 
 
 ## Features
@@ -55,6 +54,8 @@ On Linux, it will be somewhere in `/usr/lib/jvm/`.
 - fortune-able blocks (such as ores)
 - item dropping blocks (such as campfires)
 - recipes of all default vanilla types
+- as many languages as supplied
+
+## Currently Broken Features
 - armor and armor materials
 - tools and tool materials
-- as many languages as supplied
