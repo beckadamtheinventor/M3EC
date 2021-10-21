@@ -12,7 +12,7 @@ resistance:        ${mc.diamond_block.resistance}
 material:          METAL
 toolclass:         PICKAXES
 toollevel:         2
-requiresTool:      .requiresTool()
+requiresTool:
 sounds:            METAL
 
 +langs:   fr_ca
