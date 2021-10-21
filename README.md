@@ -1,7 +1,7 @@
 # M3EC
 
 ## Minecraft Multi Mod Environment Compiler
-Version 0.2
+Version 0.3
 
 This compiler/script operates on the mentality of "as few files as possible" to create a mod.
 Check out the `testrubymod` folder for usage example.
@@ -27,18 +27,18 @@ Valid `modenv`s:
 + forge1.17.1 (coming soon)
 + forge1.12.2 (coming soon)
 + all (builds all supported mod environments and game versions)
-+ 1.16.5 (builds for both forge and fabric)
-+ 1.17.1 (builds for both forge and fabric)
-+ 1.17 (builds for both forge and fabric)
-+ 1.12.2 (builds for both forge and fabric)
++ 1.16.5 (builds all supported 1.16.5 mod environments)
++ 1.17.1 (builds all supported 1.17.1 mod environments)
++ 1.17 (builds all supported 1.17.0 mod environments)
++ 1.12.2 (builds all supported 1.12.2 mod environments)
 
 
 Once the mod project is built, you can use your choice of java IDEs (such as IntelliJ) to build the mod's jar file.
 
 Alernatively you can compile and/or test the mod from the terminal by appending to the end of the project build command.
 - `buildjar` build the mod jar file
-- `runClient` test the mod in an offline (non-authenticated) client
-- `runServer` test the mod in an offline (non-authenticated) server
+- `runClient` launch an offline client with the mod installed
+- `runServer` launch an offline server with the mod installed
 Your mod's jar file will be in the build/libs directory of the built project.
 When building, the program may prompt for a Java jdk path for a specific jdk version.
 On Windows you can find your java installations somewhere in `C:\\Program Files\\Java\\` or `C:\\Program Files (x86)\\Java\\`.

@@ -671,10 +671,29 @@ def ospath(path):
 if __name__=='__main__':
 	if len(sys.argv) < 3:
 		print("""
-Minecraft Multiple Mod Environment Compiler v0.2
-Very much unfinished, currently only supports fabric 1.16.5 and 1.17.
+Minecraft Multiple Mod Environment Compiler v0.3
+Very much unfinished, currently only supports fabric (1.16.5, 1.17, 1.17.1) and forge 1.16.5.
 Usage:
-	python m3ec.py path modenv""")
+	python m3ec.py path modenv
+where modenv can be any combination of:
++ fabric1.16.5
++ fabric1.17.1
++ fabric1.17
++ forge1.16.5 (partial support)
++ forge1.17.1 (coming soon)
++ forge1.12.2 (coming soon)
++ all (builds all supported mod environments and game versions)
++ 1.16.5 (builds all supported 1.16.5 mod environments)
++ 1.17.1 (builds all supported 1.17.1 mod environments)
++ 1.17 (builds all supported 1.17.0 mod environments)
++ 1.12.2 (builds all supported 1.12.2 mod environments)
+
+Additionally, modenv may be appended with any combination of:
++ buildjar (builds mod jar file)
++ runClient (launches an offline client with the mod installed)
++ runClient (launches an offline server with the mod installed)
+
+""")
 		exit()
 	else:
 		build(sys.argv[1], " ".join(sys.argv[2:]))
