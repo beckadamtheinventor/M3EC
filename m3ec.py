@@ -691,7 +691,7 @@ where modenv can be any combination of:
 Additionally, modenv may be appended with any combination of:
 + buildjar (builds mod jar file)
 + runClient (launches an offline client with the mod installed)
-+ runClient (launches an offline server with the mod installed)
++ runServer (launches an offline server with the mod installed)
 
 """)
 		exit()
