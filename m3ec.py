@@ -1,5 +1,5 @@
 
-import os, sys, json, re
+import os, sys, json, subprocess
 
 def build(project_path, modenv):
 	if " " in modenv:
@@ -55,6 +55,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 ------------------------------------------------\n")
 		manifest_dict["mod.license"] = "All Rights Reserved"
 
+	if "mod.iconItem" not in manifest_dict.keys():
+		print("Warning: Icon item for custom creative tab unspecified. Defaulting to first item registered.")
 
 	# TODO: build stuff that needs to be in MainClass.java here
 
@@ -69,28 +71,27 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 	manifest_dict[f"mod.registry.blockitem.names"] = []
 
-
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(ospath(os.path.join(project_path, path))):
 			if fname.endswith(".txt"):
 				d = readDictFile(fname, {})
 				if "@" in d.keys():
 					content_type = d["@"]
-					if "contentid" in d.keys():
-						cid = d["contentid"]
-						if cid not in manifest_dict[f"mod.registry.{content_type}.names"]:
-							manifest_dict[f"mod.registry.{content_type}.names"].append(cid)
-							manifest_dict[f"mod.{content_type}.{cid}.keys"] = list(d.keys())
-							for key in d.keys():
-								manifest_dict[f"mod.{content_type}.{cid}.{key}"] = d[key]
-							manifest_dict[f"mod.{content_type}.{cid}.uppercased"] = cid.upper()
-							manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
-							manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
+					if content_type == "itemfactory":
+						for cid in d["items"]:
+							dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":os.path.join("textures", cid+".png")}
+							add_content(cid, "item", dictinst, manifest_dict)
+					elif content_type == "recipe":
+						if "contentid" in d.keys():
+							cid = d["contentid"]
 						else:
-							print(f"Found more than one instance of {content_type} \"{cid}\"! Aborting.")
-							exit()
+							cid = os.path.splitext(os.path.split(fname)[-1])[0]
 					else:
-						print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
+						if "contentid" in d.keys():
+							cid = d["contentid"]
+							add_content(cid, content_type, d, manifest_dict)
+						else:
+							print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
 				else:
 					print(f"Warning: Skipping file \"{fname}\" due to missing content type.")
 
@@ -123,6 +124,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			print("Warning: Failed to read source \"fabric1.17/registry/ModItems.java.txt\"")
 		else:
 			create_file(os.path.join(path, "fabric1.17_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+		
+		maybe_run_gradle(os.path.join(project_path, "fabric1.17_build"), modenv, "16.")
 
 	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
 		print("Building fabric 1.17.1 mod project")
@@ -148,6 +151,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		else:
 			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 
+		maybe_run_gradle(os.path.join(project_path, "fabric1.17.1_build"), modenv, "16.")
+
 	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
 		print("Building fabric 1.16.5 mod project")
 		manifest_dict["modloader"] = "fabric"
@@ -171,6 +176,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			print("Warning: Failed to read source \"fabric1.16.5/registry/ModItems.java.txt\"")
 		else:
 			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+
+		maybe_run_gradle(os.path.join(project_path, "fabric1.16.5_build"), modenv, "1.8.")
 
 	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
 		print("Building forge 1.16.5 mod project")
@@ -219,29 +226,34 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			else:
 				create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "blocks", manifest_dict[f"mod.block.{block}.class"]+".java"), data)
 
-	if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
-		print("Building forge 1.12.2 mod project")
-		manifest_dict["modloader"] = "forge"
+		maybe_run_gradle(os.path.join(project_path, "forge1.16.5_build"), modenv, "1.8.")
 
-		build_resources(project_path, "forge1.12.2", manifest_dict)
+	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
+		# print("Building forge 1.12.2 mod project")
+		# manifest_dict["modloader"] = "forge"
 
-		data = readf_file(os.path.join(source_path, "forge1.12.2", "MainClass.java.txt"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.12.2/MainClass.java.txt\"")
-		else:
-			create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+		# build_resources(project_path, "forge1.12.2", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModBlocks.java.txt"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.12.2/init/ModBlocks.java.txt\"")
-		else:
-			create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModBlocks.java"), data)
+		# data = readf_file(os.path.join(source_path, "forge1.12.2", "MainClass.java.txt"), manifest_dict)
+		# if data is None:
+			# print("Warning: Failed to read source \"forge1.12.2/MainClass.java.txt\"")
+		# else:
+			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModItems.java.txt"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.12.2/init/ModItems.java.txt\"")
-		else:
-			create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModItems.java"), data)
+		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModBlocks.java.txt"), manifest_dict)
+		# if data is None:
+			# print("Warning: Failed to read source \"forge1.12.2/init/ModBlocks.java.txt\"")
+		# else:
+			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModBlocks.java"), data)
+
+		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModItems.java.txt"), manifest_dict)
+		# if data is None:
+			# print("Warning: Failed to read source \"forge1.12.2/init/ModItems.java.txt\"")
+		# else:
+			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModItems.java"), data)
+
+		# maybe_run_gradle("forge1.12.2_build", modenv, "1.8.")
+
 
 def build_resources(project_path, builddir, manifest_dict):
 	source_path = os.path.join(os.path.dirname(__file__),"sources")
@@ -318,6 +330,7 @@ def build_resources(project_path, builddir, manifest_dict):
 				k = f"mod.{content_type}.{cid}.{key}"
 				if k in manifest_dict.keys():
 					manifest_dict[key] = manifest_dict[k]
+				manifest_dict["contentid"] = cid
 
 			if content_type in ["item", "food", "armor", "tool", "fuel"]:
 				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".json"), manifest_dict))
@@ -377,6 +390,66 @@ def build_resources(project_path, builddir, manifest_dict):
 
 	if "fabric" in manifest_dict["modloader"]:
 		create_file(os.path.join(builddir, "src", "main", "resources", "fabric.mod.json"), readf_file(os.path.join(sourcesdir, "fabric.mod.json"), manifest_dict))
+
+def add_content(cid, content_type, d, manifest_dict):
+	# print(f"registering {content_type} {cid}.")
+	if cid not in manifest_dict[f"mod.registry.{content_type}.names"]:
+		manifest_dict[f"mod.registry.{content_type}.names"].append(cid)
+		manifest_dict[f"mod.{content_type}.{cid}.keys"] = list(d.keys())
+		for key in d.keys():
+			# print(f"mod.{content_type}.{cid}.{key} = {d[key]}")
+			manifest_dict[f"mod.{content_type}.{cid}.{key}"] = d[key]
+		manifest_dict[f"mod.{content_type}.{cid}.uppercased"] = cid.upper()
+		manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
+		manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
+	else:
+		print(f"Found more than one instance of {content_type} \"{cid}\"! Aborting.")
+		exit()
+	if content_type == "item" and "mod.iconItem" not in manifest_dict.keys():
+		manifest_dict["mod.iconItem"] = manifest_dict[f"mod.{content_type}.{cid}.uppercased"]
+
+def maybe_run_gradle(path, modenv, javaver):
+	if "build jar" in modenv or "runClient" in modenv or "runServer" in modenv:
+		javapath = find_java_version(javaver)
+		if javapath != "":
+			javapath = "-Dorg.gradle.java.home="+javapath
+		if sys.platform.startswith("win32") or sys.platform.startswith("cygwin"):
+			fname = "gradlew.bat"
+		else:
+			fname = "gradlew"
+
+		path = os.path.abspath(path)
+		print(path)
+		subprocess.Popen([os.path.join(path, fname), "build", "jar", javapath], cwd=path).wait()
+	if "runClient" in modenv:
+		subprocess.Popen([os.path.join(path, fname), "runClient", javapath], cwd=path).wait()
+	if "runServer" in modenv:
+		subprocess.Popen([os.path.join(path, fname), "runServer", javapath], cwd=path).wait()
+
+
+def find_java_version(javaver):
+	if os.path.exists(os.path.join(os.path.dirname(__file__), "javapaths.json")):
+		with open(os.path.join(os.path.dirname(__file__), "javapaths.json")) as f:
+			cfg = json.load(f)
+		if javaver in cfg.keys():
+			return cfg[javaver]
+	else:
+		cfg = {}
+	javapath = "default"
+	try:
+		javapath = input(f"Input path to Java jdk {javaver} by pasting or typing it here and pressing enter.\n\
+Or type \"default\" to use system default java path.\n")
+	except:
+		pass
+
+	if javapath.lower() == "default":
+		print(f"Using default Java for Java jdk {javaver}")
+		cfg[javaver] = ""
+	else:
+		cfg[javaver] = os.path.normpath(javapath)
+	with open(os.path.join(os.path.dirname(__file__), "javapaths.json"),"w") as f:
+		json.dump(cfg, f)
+	return cfg[javaver]
 
 def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 	if f"mod.{content_type}.{cid}.texture" in manifest_dict.keys():
@@ -439,7 +512,6 @@ def readf_file(path, d):
 		return None
 
 def readf(data, d):
-	# r = re.compile("\\$\\{.*\\}")
 	if "$%f" in d.keys():
 		data = data.replace("$%f", d["$%f"])
 	data2 = []
