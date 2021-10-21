@@ -1,0 +1,7 @@
+@:            itemfactory
+type:         SimpleItem
++items:      jagged_ruby
++items:      cracked_ruby
++items:      mundane_ruby
++items:      perfect_ruby
++items:      peculiar_ruby

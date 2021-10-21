@@ -36,13 +36,13 @@ Valid `modenv`s:
 Once the mod project is built, you can use your choice of java IDEs (such as IntelliJ) to build the mod's jar file.
 
 Alernatively you can compile and/or test the mod from the terminal by appending to the end of the project build command.
-- `build jar` build the mod jar file
+- `buildjar` build the mod jar file
 - `runClient` test the mod in an offline (non-authenticated) client
 - `runServer` test the mod in an offline (non-authenticated) server
 Your mod's jar file will be in the build/libs directory of the built project.
 When building, the program may prompt for a Java jdk path for a specific jdk version.
 On Windows you can find your java installations somewhere in `C:\\Program Files\\Java\\` or `C:\\Program Files (x86)\\Java\\`.
-On Linux, they will be somewhere in and around `/usr/lib/jvm/`.
+On Linux, they will be somewhere in or around `/usr/lib/jvm/`.
 
 
 ## Features

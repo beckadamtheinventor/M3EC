@@ -86,6 +86,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 							cid = d["contentid"]
 						else:
 							cid = os.path.splitext(os.path.split(fname)[-1])[0]
+						add_content(cid, content_type, d, manifest_dict)
 					else:
 						if "contentid" in d.keys():
 							cid = d["contentid"]
@@ -409,7 +410,8 @@ def add_content(cid, content_type, d, manifest_dict):
 		manifest_dict["mod.iconItem"] = manifest_dict[f"mod.{content_type}.{cid}.uppercased"]
 
 def maybe_run_gradle(path, modenv, javaver):
-	if "build jar" in modenv or "runClient" in modenv or "runServer" in modenv:
+	path = os.path.abspath(path)
+	if "buildjar" in modenv or "runClient" in modenv or "runServer" in modenv:
 		javapath = find_java_version(javaver)
 		if javapath != "":
 			javapath = "-Dorg.gradle.java.home="+javapath
@@ -418,8 +420,7 @@ def maybe_run_gradle(path, modenv, javaver):
 		else:
 			fname = "gradlew"
 
-		path = os.path.abspath(path)
-		print(path)
+	if "buildjar" in modenv:
 		subprocess.Popen([os.path.join(path, fname), "build", "jar", javapath], cwd=path).wait()
 	if "runClient" in modenv:
 		subprocess.Popen([os.path.join(path, fname), "runClient", javapath], cwd=path).wait()
