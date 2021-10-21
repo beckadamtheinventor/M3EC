@@ -23,7 +23,7 @@ Valid `modenv`s:
 + fabric1.16.5
 + fabric1.17.1
 + fabric1.17
-+ forge1.16.5 (coming soon)
++ forge1.16.5 (partial support)
 + forge1.17.1 (coming soon)
 + forge1.12.2 (coming soon)
 + all (builds all supported mod environments and game versions)
