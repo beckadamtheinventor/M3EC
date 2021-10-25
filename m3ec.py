@@ -510,6 +510,7 @@ def readf_file(path, d):
 				quit()
 			return rv
 	except FileNotFoundError:
+		print(f"file \"{path}\" not found")
 		return None
 
 def readf(data, d):
