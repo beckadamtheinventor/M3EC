@@ -3,7 +3,7 @@ block:           SimpleBlock
 blockstatetype:  Single
 contentid:         ruby_ore
 title:             Ruby Ore
-texture:           textures/ruby/ruby_ore.png
+texture:           ruby_ore
 
 droptype:          Fortunable
 drops:             testrubymod:ruby

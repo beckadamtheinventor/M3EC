@@ -1,7 +1,7 @@
 {
     "parent": "block/cube_column",
     "textures": {
-        "end": "${mod.mcpath}:blocks/${contentid}_top",
-        "side": "${mod.mcpath}:blocks/${contentid}_side"
+        "end": "${mod.mcpath}:blocks/${texture_top}",
+        "side": "${mod.mcpath}:blocks/${texture_side}"
     }
 }

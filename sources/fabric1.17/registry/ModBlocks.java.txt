@@ -14,7 +14,8 @@ public class ModBlocks {
 	public static final Block ${mod.block.$%v.uppercased} = new Block(FabricBlockSettings
 		.of(Material.${mod.block.$%v.material})
 		.breakByTool(FabricToolTags.${mod.block.$%v.toolclass},${mod.block.$%v.toollevel})
-		${mod.block.$%v.requiresTool}
+		---if mod.block.$%v.requiresTool
+		.requiresTool()---fi
 		.strength(${mod.block.$%v.hardness}f,${mod.block.$%v.resistance}f)
 		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
 

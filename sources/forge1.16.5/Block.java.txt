@@ -11,8 +11,8 @@ public class ${mod.block.$%f.class} extends Block {
 				.sound(SoundType.${mod.block.$%f.sounds})
 				.harvestLevel(${mod.block.$%f.toollevel})
 				.harvestTool(ToolType.${mod.block.$%f.toolclass})
----if mod.block.$%f.requiresTool
-				.requiresCorrectToolForDrops()---end
+				---if mod.block.$%f.requiresTool
+				.requiresCorrectToolForDrops()---fi
 				);
 	}
 }

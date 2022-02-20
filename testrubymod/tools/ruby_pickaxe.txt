@@ -7,4 +7,4 @@ material:     RubyToolMaterial
 attackspeed:  3
 attackdamage: -2.4f
 title:        Ruby Pickaxe
-texture:      textures/ruby/ruby_pickaxe.png
+texture:      ruby_pickaxe

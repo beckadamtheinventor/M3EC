@@ -25,9 +25,8 @@ toolclass:         PICKAXES
 # breaks with iron level pickaxe or higher
 toollevel:         2
 # requires the correct tool to drop items
-requiresTool:      .requiresTool()
+requiresTool:
 # Sounds like stone
 sounds:            STONE
 ```
-
 

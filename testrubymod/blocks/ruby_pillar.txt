@@ -3,8 +3,8 @@ block:           ColumnBlock
 blockstatetype:  Single
 contentid:         ruby_pillar
 title:             Ruby Pillar
-ruby_pillar_top:   textures/ruby/ruby_pillar_top.png
-ruby_pillar_side:  textures/ruby/ruby_pillar_side.png
+texture_top:       ruby_pillar_top
+texture_side:      ruby_pillar_side
 
 droptype:          Self
 

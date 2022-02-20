@@ -79,7 +79,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 					content_type = d["@"]
 					if content_type == "itemfactory":
 						for cid in d["items"]:
-							dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":os.path.join("textures", cid+".png")}
+							dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":cid+".png"}
 							add_content(cid, "item", dictinst, manifest_dict)
 					elif content_type == "recipe":
 						if "contentid" in d.keys():
@@ -102,33 +102,33 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	source_path = os.path.join(os.path.dirname(__file__),"sources")
 	path = project_path
 
-	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
-		print("Building fabric 1.17 mod project")
+	if "fabric1.18.1" in modenv or modenv == "1.18.1" or modenv == "all" or modenv == "fabric":
+		print("Building fabric 1.18.1 mod project")
 		manifest_dict["modloader"] = "fabric"
 
-		build_resources(project_path, "fabric1.17", manifest_dict)
+		build_resources(project_path, "fabric1.18.1", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.1", "MainClass.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.17/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.1/MainClass.java.txt\"")
 		else:
-			create_file(os.path.join(path, "fabric1.17_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17", "registry", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModBlocks.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.17/registry/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.1/registry/ModBlocks.java.txt\"")
 		else:
-			create_file(os.path.join(path, "fabric1.17_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
+			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17", "registry", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModItems.java.txt"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.17/registry/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.1/registry/ModItems.java.txt\"")
 		else:
-			create_file(os.path.join(path, "fabric1.17_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 		
-		maybe_run_gradle(os.path.join(project_path, "fabric1.17_build"), modenv, "16.")
+		maybe_run_gradle(os.path.join(project_path, "fabric1.18.1_build"), modenv, "17.")
 
-	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
+	if "fabric1.17.1" in modenv or modenv == "1.17.1" or modenv == "all" or modenv == "fabric":
 		print("Building fabric 1.17.1 mod project")
 		manifest_dict["modloader"] = "fabric"
 
@@ -154,7 +154,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		maybe_run_gradle(os.path.join(project_path, "fabric1.17.1_build"), modenv, "16.")
 
-	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
+	if "fabric1.16.5" in modenv or modenv == "1.16.5" or modenv == "all" or modenv == "fabric":
 		print("Building fabric 1.16.5 mod project")
 		manifest_dict["modloader"] = "fabric"
 
@@ -180,7 +180,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		maybe_run_gradle(os.path.join(project_path, "fabric1.16.5_build"), modenv, "1.8.")
 
-	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
+	if "forge1.16.5" in modenv or modenv == "1.16.5" or modenv == "all" or modenv == "forge":
 		print("Building forge 1.16.5 mod project")
 		manifest_dict["modloader"] = "forge"
 
@@ -327,11 +327,15 @@ def build_resources(project_path, builddir, manifest_dict):
 			tname = manifest_dict[f"mod.{content_type}.{cid}.{content_type}"]
 			# print(cid, content_type, tname)
 			# print(manifest_dict[f"mod.{content_type}.{cid}.keys"])
+			manifest_dict["contentid"] = manifest_dict["cid"] = cid
 			for key in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
 				k = f"mod.{content_type}.{cid}.{key}"
 				if k in manifest_dict.keys():
 					manifest_dict[key] = manifest_dict[k]
-				manifest_dict["contentid"] = cid
+			
+			if "texture" in manifest_dict.keys():
+				if "." in manifest_dict["texture"]:
+					manifest_dict["texture"], ext = os.path.splitext(manifest_dict["texture"])
 
 			if content_type in ["item", "food", "armor", "tool", "fuel"]:
 				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".json"), manifest_dict))
@@ -453,33 +457,31 @@ Or type \"default\" to use system default java path.\n")
 	return cfg[javaver]
 
 def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
+	project_tex_path = os.path.join(project_path, manifest_dict["mod.textures"])
+	# print(project_tex_path)
 	if f"mod.{content_type}.{cid}.texture" in manifest_dict.keys():
-		tex = manifest_dict[f"mod.{content_type}.{cid}.texture"]
-		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
-		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
-		else: tex2 = ""
-		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
-	if f"mod.{content_type}.{cid}.{cid}_top" in manifest_dict.keys():
-		tex = manifest_dict[f"mod.{content_type}.{cid}.{cid}_top"]
-		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
-		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
-		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
-	if f"mod.{content_type}.{cid}.{cid}_bottom" in manifest_dict.keys():
-		tex = manifest_dict[f"mod.{content_type}.{cid}.{cid}_bottom"]
-		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
-		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
-		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
-	if f"mod.{content_type}.{cid}.{cid}_side" in manifest_dict.keys():
-		tex = manifest_dict[f"mod.{content_type}.{cid}.{cid}_side"]
-		if "/" in tex: tex2 = tex.rsplit("/",maxsplit=1)[1]
-		elif "\\" in tex: tex2 = tex.rsplit("\\",maxsplit=1)[1]
-		copy_file(os.path.join(project_path, tex), os.path.join(dest_dir, tex2))
+		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture"])
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+	if f"mod.{content_type}.{cid}.texture_top" in manifest_dict.keys():
+		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_top"])
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+	if f"mod.{content_type}.{cid}.texture_bottom" in manifest_dict.keys():
+		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_bottom"])
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+	if f"mod.{content_type}.{cid}.texture_side" in manifest_dict.keys():
+		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_side"])
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+
+def texture_pathify(tex):
+	tex, ext = os.path.splitext(os.path.basename(tex))
+	return tex
 
 def make_dir(path):
 	try:
 		os.mkdir(path)
 	except FileExistsError:
 		pass
+
 
 def copy_file(src, dest):
 	try:
@@ -516,25 +518,27 @@ def readf_file(path, d):
 def readf(data, d):
 	if "$%f" in d.keys():
 		data = data.replace("$%f", d["$%f"])
-	data2 = []
-	j = 0
-	while "---iter " in data[j:]:
-		i = data.find("---iter ", j)
-		data2.append(data[j:i])
-		n = data.find("\n", i+8)
-		key = data[i+8:n]
-		if key in d.keys():
-			l = d[key]
-			j = data.find("---end",n)
-			block = data[n:j]
-			j += 6
-			for i in range(len(l)):
-				data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
-		else:
-			print(f"Critical internal error! {key} not found in dictionary passed to readf!")
-			exit(1)
-	data2.append(data[j:])
-	data = "".join(data2)
+
+	if "---iter " in data:
+		data2 = []
+		j = 0
+		while "---iter " in data[j:]:
+			i = data.find("---iter ", j)
+			data2.append(data[j:i])
+			n = data.find("\n", i+8)
+			key = data[i+8:n]
+			if key in d.keys():
+				l = d[key]
+				j = data.find("---end",n)
+				block = data[n:j]
+				j += 6
+				for i in range(len(l)):
+					data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
+			else:
+				print(f"Critical internal error! {key} not found in dictionary passed to readf!")
+				exit(1)
+		data2.append(data[j:])
+		data = "".join(data2)
 
 	if "---list " in data:
 		data2 = []
@@ -567,16 +571,20 @@ def readf(data, d):
 			data2.append(data[j:i])
 			n = data.find("\n", i+6)
 			key = data[i+6:n]
-			# print(f"Checking if {key} is defined")
-			j = data.find("---end",n)
+			# print(f"Checking if {key} is defined. ",end="")
+			j = data.find("---fi",n)
 			if key in d.keys():
+				# print("key found.")
 				l = d[key]
 				data2.append(data[n:j])
-				j += 6
+				# print(data2[-1])
+				j += 5
 			else:
-				j += 6
+				# print("key not found.")
+				j += 5
 		data2.append(data[j:])
 		data = "".join(data2)
+
 
 	while any(["${"+key+"}" in data for key in d.keys()]):
 		for key in d.keys():
@@ -672,22 +680,23 @@ def ospath(path):
 if __name__=='__main__':
 	if len(sys.argv) < 3:
 		print("""
-Minecraft Multiple Mod Environment Compiler v0.3
-Very much unfinished, currently only supports fabric (1.16.5, 1.17, 1.17.1) and forge 1.16.5.
+Minecraft Multiple Mod Environment Compiler v0.4
+Very much unfinished, currently only supports a handful of minecraft/modloader versions.
 Usage:
 	python m3ec.py path modenv
 where modenv can be any combination of:
 + fabric1.16.5
 + fabric1.17.1
-+ fabric1.17
++ fabric1.18.1
++ forge1.12.2 (coming soon)
 + forge1.16.5 (partial support)
 + forge1.17.1 (coming soon)
-+ forge1.12.2 (coming soon)
++ forge1.18.1 (coming soon)
 + all (builds all supported mod environments and game versions)
++ 1.12.2 (builds all supported 1.12.2 mod environments)
 + 1.16.5 (builds all supported 1.16.5 mod environments)
 + 1.17.1 (builds all supported 1.17.1 mod environments)
-+ 1.17 (builds all supported 1.17.0 mod environments)
-+ 1.12.2 (builds all supported 1.12.2 mod environments)
++ 1.18.1 (builds all supported 1.18.1 mod environments)
 
 Additionally, modenv may be appended with any combination of:
 + buildjar (builds mod jar file)

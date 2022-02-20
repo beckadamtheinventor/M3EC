@@ -2,7 +2,7 @@
 item:         SimpleItem
 contentid:    ruby
 title:        Ruby
-texture:      textures/ruby/ruby.png
+texture:      ruby
 
 +langs:  fr_ca
 +langs:  fr_fr
