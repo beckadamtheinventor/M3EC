@@ -9,6 +9,75 @@
 		<h1>M3EC documentation</h1>
 	</header>
 	<main>
-		
+		<div class="fullwidth">
+			<p>
+				Welcome to the M3EC Documentation.
+			</p><br>
+			<h2>How to Read This Documentation</h2>
+			<p>
+				M3EC manifest files are formatted using a <b>key: value</b> system.<br>
+			</p>
+		</div><br>
+		<div class="quarterwidth"><h3>M3EC Manifest File Syntax</h3></div><br>
+		<div class="threequarterwidth">
+			<dl>
+				<dt>#comment</dt><dd>A comment. Not processed by the compiler.</dd>
+				<dt>key: value</dt><dd>Defines <i>key</i> as <i>value</i>. Think of it like a series of labeled boxes.</dd>
+				<dt>key:</dt><dd>Defines a dictionary. <i>key</i> is then prepended to the next <i>.key</i> lines until another key dictionary is defined.</dd>
+				<dt>.key: value</dt><dd>Defines a key within a previously defined dictionary. For example, say there was a prior line
+					<i>Apples:</i>. Then if we write the line <i>.amount: 1</i> the compiler would interpret it as <i>Apples.amount: 1</i>.
+				<dt>+key: value</dt><dd>Appends list <i>key</i> with <i>value</i></dd>
+				<dt>+.key: value</dt><dd>Appends list <i>.key</i> with <i>value</i> within the previously defined dictionary.</dd>
+			</dl>
+		</div><br>
+		<div class="quarterwidth"><h3>Content Types</h3></div>
+		<div class="threequarterwidth">
+			<dl>
+				<dt>item</dt><dd>A simple item. See item subtypes for more information.</dd>
+				<dt>block</dt><dd>A block. See block subtypes for more information.</dd>
+			</dl>
+		</div>
+		<br>
+		<div class="quarterwidth"><h3>Item Subtypes</h3></div>
+		<div class="threequarterwidth">
+			<dl>
+				<dt>armor</dt><dd>An armor item. Not yet implemented.</dd>
+				<dt>food</dt><dd>An edible food item.<br>
+					<dl>
+						<dt>@: food</dt><dd>Tells M3EC that this is a food item manifest.</dd>
+						<dt>food: SimpleItem</dt><dd>Tells M3EC that this food item is a simple textured item.</dd>
+						<dt>contentid</dt><dd>Content ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>hunger</dt><dd>Amount of hunger points this food item provides when eaten.</dd>
+						<dt>saturation</dt><dd>Amount of saturation this food item provides when eaten.</dd>
+						<dt>texture</dt><dd>File name (without extension) in mod textures folder to use for this item.</dd>
+						<dt>alwaysedible</dt><dd>If this is defined, this food item will always be edible regardless of hunger.</dd>
+					</dl>
+				</dd>
+				<dt>item</dt><dd>A simple textured item.<br>
+					<dl>
+						<dt>@: item</dt><dd>Tells M3EC that this is an item manifest.</dd>
+						<dt>item: SimpleItem</dt><dd>Tells M3EC that this is a simple textured item.</dd>
+						<dt>contentid</dt><dd>Content ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>texture</dt><dd>File name (without extension) in mod textures folder to use for this item.</dd>
+					</dl>
+				</dd>
+				<dt>tool</dt><dd>A tool item.<br>
+					<dl>
+						<dt>@: tool</dt><dd>Tells M3EC that this is a tool item manifest.</dd>
+						<dt>tool: toolitem</dt><dd>Tool type. Currently only <i>toolitem</i> is implemented.</dd>
+						<dt>contentid</dt><dd>Content ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>texture</dt><dd>File name (without extension) in mod textures folder to use for this item.</dd>
+					</dl>
+				</dd>
+			</dl>
+		</div>
+		<br>
+		<div class="quarterwidth"><h3>Example Projects</h3></div>
+		<div class="threequarterwidth">
+			<dl>
+				<dt>Test Ruby Mod</dt>
+					<dd>A simple M3EC test mod. <a href="https://github.com/beckadamtheinventor/M3EC/tree/master/testrubymod" target="_blank" rel="noreferrer noopener">GitHub link</a></dd>
+			</dl>
+		</div>
 	</main>
 </html>

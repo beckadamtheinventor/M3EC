@@ -1,0 +1,87 @@
+
+html {
+	text-align: center;
+}
+
+body {
+	width: 80%;
+	margin: auto;
+}
+
+header {
+	background-color: #CCC;
+	padding: 4px;
+	margin: 1px;
+	border: 8px 4px 8px 4px;
+	border-color: black;
+	border-style: solid;
+}
+
+main {
+	margin: auto;
+	background-color: #EEE;
+	padding: 4px;
+}
+
+.fullwidth {
+	width: 100%;
+}
+
+.halfwidth {
+	width: 50%;
+}
+
+.quarterwidth {
+	text-align: left;
+	padding-left: 10%;
+	width: 25%;
+}
+
+.threequarterwidth {
+	width: 75%;
+}
+
+.listtitle {
+	text-align: left;
+	padding-left: 20%;
+}
+
+dl {
+	text-align: left;
+	padding-left: 20%;
+}
+
+dt {
+	background-color: #DDD;
+	font-family: monospace;
+	font-size: 1.1em;
+}
+
+i {
+	background-color: #DDD;
+	font-family: monospace;
+	font-size: 1em;
+}
+
+.linkbutton {
+	color: white;
+	background-color: #777;
+	border: 4px solid black;
+	text-decoration: none;
+	padding: 6px 8px;
+}
+
+.linkbutton:hover {
+	animation-name: pressbutton;
+	animation-duration: 1s;
+	animation-direction: forward;
+	animation-fill-mode: forwards;
+}
+
+@keyframes pressbutton {
+	100% {
+		background-color: #999;
+	}
+}
+
+
