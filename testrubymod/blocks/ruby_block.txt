@@ -11,7 +11,7 @@ hardness:          ${mc.diamond_block.hardness}
 resistance:        ${mc.diamond_block.resistance}
 material:          METAL
 toolclass:         PICKAXES
-toollevel:         2
+toollevel:         1
 requiresTool:
 sounds:            METAL
 

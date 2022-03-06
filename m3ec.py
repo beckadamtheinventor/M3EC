@@ -1,5 +1,5 @@
 
-import os, sys, json, subprocess
+import os, sys, json, subprocess, shutil
 
 def build(project_path, modenv):
 	if " " in modenv:
@@ -127,6 +127,78 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 		
 		maybe_run_gradle(os.path.join(project_path, "fabric1.18.1_build"), modenv, "17.")
+
+	if "fabric1.18.2" in modenv or modenv == "1.18.2" or modenv == "all" or modenv == "fabric":
+		print("Building fabric 1.18.2 mod project")
+		manifest_dict["modloader"] = "fabric"
+
+		build_resources(project_path, "fabric1.18.2", manifest_dict)
+
+		data = readf_file(os.path.join(source_path, "fabric1.18.2", "MainClass.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"fabric1.18.2/MainClass.java.txt\"")
+		else:
+			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+
+		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModBlocks.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"fabric1.18.2/registry/ModBlocks.java.txt\"")
+		else:
+			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
+
+		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModItems.java.txt"), manifest_dict)
+		if data is None:
+			print("Warning: Failed to read source \"fabric1.18.2/registry/ModItems.java.txt\"")
+		else:
+			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+
+		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft"))
+		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags"))
+		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks"))
+		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable"))
+		
+		toolclasses = ["axe", "pickaxe", "shovel", "hoe"]
+		toollevels = ["stone", "iron", "diamond"]
+		for toolclass in toolclasses:
+			manifest_dict[f"mod.registry.requires_{toolclass}"] = []
+		for toollevel in toollevels:
+			manifest_dict[f"mod.registry.requires_{toollevel}"] = []
+		
+		for block in manifest_dict["mod.registry.block.names"]:
+			toollevel = toolclass = None
+			if f"mod.block.{block}.toolclass" in manifest_dict.keys():
+				toolclass = manifest_dict[f"mod.block.{block}.toolclass"]
+			if f"mod.block.{block}.toollevel" in manifest_dict.keys():
+				toollevel = manifest_dict[f"mod.block.{block}.toollevel"]
+			if toolclass is None or toollevel is None:
+				print(f"Error: Block {block} must contain toolclass and toollevel or neither of them.")
+				exit(1)
+			if toolclass is not None and toollevel is not None:
+				try:
+					toollevel = toollevels[int(toollevel)]
+				except:
+					pass
+				if toolclass == "PICKAXES":
+					toolclass = "pickaxe"
+				elif toolclass == "AXES":
+					toolclass = "axe"
+				elif toolclass == "SHOVELS":
+					toolclass = "shovel"
+				elif toolclass == "HOES":
+					toolclass = "hoe"
+				manifest_dict[f"mod.block.{block}.hastoolrequirements"] = "true"
+				manifest_dict[f"mod.registry.requires_{toolclass}"].append(block)
+				manifest_dict[f"mod.registry.requires_{toollevel}"].append(block)
+		for toolclass in toolclasses:
+			if len(manifest_dict[f"mod.registry.requires_{toolclass}"]):
+				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable", f"{toolclass}.json"),
+					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toolclass}.json"), manifest_dict))
+		for toollevel in toollevels:
+			if len(manifest_dict[f"mod.registry.requires_{toollevel}"]):
+				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.json"),
+					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toollevel}.json"), manifest_dict))
+
+		maybe_run_gradle(os.path.join(project_path, "fabric1.18.2_build"), modenv, "17.")
 
 	if "fabric1.17.1" in modenv or modenv == "1.17.1" or modenv == "all" or modenv == "fabric":
 		print("Building fabric 1.17.1 mod project")
@@ -273,6 +345,9 @@ def build_resources(project_path, builddir, manifest_dict):
 	lang_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "lang")
 	block_loot_table_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks")
 	recipes_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes")
+
+	# clean up old source files in case of deletions
+	shutil.rmtree(os.path.join(builddir, "src"))
 
 	make_dir(dest)
 	make_dir(os.path.join(dest, "gradle"))

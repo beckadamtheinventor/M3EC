@@ -1,0 +1,7 @@
+{
+	"replace": false,
+	"values": [
+---list mod.registry.requires_diamond
+		"${mod.mcpath}:$%v"---end
+	]
+}

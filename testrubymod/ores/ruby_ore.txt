@@ -3,10 +3,10 @@ ore:
 contentid:  ruby_ore_ore
 name:       ruby_ore_ore
 title:      ruby_ore_ore
-maxy:      10
+maxy:      8
 vein:
 .atbedrock:
 .block:     ModBlocks.RUBY_ORE
-.size:      10
-.perchunk:  20
+.size:      6
+.perchunk:  5
 OverworldOre:

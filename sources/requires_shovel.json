@@ -1,0 +1,7 @@
+{
+	"replace": false,
+	"values": [
+---list mod.registry.requires_shovel
+		"${mod.mcpath}:$%v"---end
+	]
+}
