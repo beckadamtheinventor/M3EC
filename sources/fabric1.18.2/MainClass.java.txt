@@ -57,10 +57,17 @@ public class ${mod.class} implements ModInitializer {
 	YOffset.fixed(${mod.ore.$%v.miny})---fi, YOffset.fixed(${mod.ore.$%v.maxy}))));
 ---end
 
-
 	public static final ItemGroup ITEM_GROUP = FabricItemGroupBuilder.build(
 			new Identifier(MOD_ID, "general"),
 			() -> new ItemStack(ModItems.${mod.iconItem}));
+
+---iter mod.registry.enchantment.names
+	private static Enchantment ${mod.enchantment.$%v.name^UPPER} = Registry.register(
+            Registry.ENCHANTMENT,
+            new Identifier("tutorial", "${mod.enchantment.$%v.name^UPPER}"),
+            new ${mod.enchantment.$%v.name^CAPITAL}Enchantment()
+    );
+---end
 
 	@Override
 	public void onInitialize() {

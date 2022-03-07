@@ -2,8 +2,8 @@
 toolmaterial:    ToolMaterial
 contentid:       RubyToolMaterial
 durability:      1561
-enchantability:  22
+enchantability:  20
 miningspeed:     9.0f
 mininglevel:     3
 repairitem:      ModItems.RUBY
-attackdamage:    2
+attackdamage:    4.0f

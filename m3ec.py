@@ -6,7 +6,7 @@ def build(project_path, modenv):
 		modenv = modenv.split(" ")
 	else:
 		modenv = [modenv]
-	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial"]
+	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment"]
 	source_path = os.path.join(os.path.dirname(__file__),"sources")
 
 	if os.path.isdir(project_path):
@@ -347,7 +347,8 @@ def build_resources(project_path, builddir, manifest_dict):
 	recipes_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes")
 
 	# clean up old source files in case of deletions
-	shutil.rmtree(os.path.join(builddir, "src"))
+	if os.path.exists(os.path.join(builddir, "src")):
+		shutil.rmtree(os.path.join(builddir, "src"))
 
 	make_dir(dest)
 	make_dir(os.path.join(dest, "gradle"))
@@ -515,21 +516,39 @@ def find_java_version(javaver):
 			return cfg[javaver]
 	else:
 		cfg = {}
-	javapath = "default"
-	try:
-		javapath = input(f"Input path to Java jdk {javaver} by pasting or typing it here and pressing enter.\n\
-Or type \"default\" to use system default java path.\n")
-	except:
-		pass
+	# javapath = "default"
+	javapath = None
+	if sys.platform.startswith("darwin") or sys.platform.startswith("linux"):
+		javapath = find_jdk("/usr/lib/jvm", javaver)
+	elif sys.platform.startswith("win32"):
+		javapath = find_jdk("C:\\Program Files\\Java", javaver)
+		if javapath is None:
+			javapath = find_jdk("C:\\Program Files (x86)\\Java", javaver)
 
-	if javapath.lower() == "default":
-		print(f"Using default Java for Java jdk {javaver}")
-		cfg[javaver] = ""
-	else:
-		cfg[javaver] = os.path.normpath(javapath)
+	if javapath is None:
+		try:
+			javapath = input(f"Input path to Java jdk {javaver} by pasting or typing it here and pressing enter.\n\
+	Or type \"default\" to use system default java path.\n")
+		except:
+			pass
+
+		if javapath.lower() == "default":
+			print(f"Using default Java for Java jdk {javaver}")
+			cfg[javaver] = ""
+		else:
+			cfg[javaver] = os.path.normpath(javapath)
+
 	with open(os.path.join(os.path.dirname(__file__), "javapaths.json"),"w") as f:
 		json.dump(cfg, f)
 	return cfg[javaver]
+
+def find_jdk(path, javaver):
+	if os.path.exists(path):
+		for root, dirs, files in os.walk(path):
+			for d in dirs:
+				if javaver in d and d.startswith("jdk"):
+					return os.path.join(root, d)
+	return None
 
 def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 	project_tex_path = os.path.join(project_path, manifest_dict["mod.textures"])
@@ -660,9 +679,11 @@ def readf(data, d):
 		data2.append(data[j:])
 		data = "".join(data2)
 
-
-	while any(["${"+key+"}" in data for key in d.keys()]):
+	while any(["${"+key+"}" in data or "${"+key+"}^CAPITAL" in data or "${"+key+"^UPPER}" in data or "${"+key+"^LOWER}" in data for key in d.keys()]):
 		for key in d.keys():
+			data = data.replace("${"+key+"^CAPITAL}", str(d[key]).capitalize())
+			data = data.replace("${"+key+"^UPPER}", str(d[key]).upper())
+			data = data.replace("${"+key+"^LOWER}", str(d[key]).lower())
 			data = data.replace("${"+key+"}", str(d[key]))
 	# data2 = []
 	# i = 0
@@ -720,10 +741,11 @@ def readDictString(data, d={}):
 								d[f"{k}.list.0"] = v
 								d[k] = [v]
 							elif type(d[k]) is list:
-								d[f"{k}.list.{len(d[k])}"] = v
+								n = len(d[k])
+								d[f"{k}.list.{n}"] = v
 								d[k].append(v)
 							else:
-								d[f"{k}.list.{len(d[k])}"] = v
+								d[f"{k}.list.{n}"] = v
 								d[k] += v
 						else:
 							d[ns].append(v)
@@ -733,10 +755,12 @@ def readDictString(data, d={}):
 							d[f"{k}.list.0"] = v
 							d[k] = [v]
 						elif type(d[k]) is list:
-							d[f"{k}.list.{len(d[k])}"] = v
+							n = len(d[k])
+							d[f"{k}.list.{n}"] = v
 							d[k].append(v)
 						else:
-							d[f"{k}.list.{len(d[k])}"] = v
+							n = len(d[k])
+							d[f"{k}.list.{n}"] = v
 							d[k] += v
 				elif line.startswith("."):
 					d[ns+name] = v
@@ -763,21 +787,13 @@ where modenv can be any combination of:
 + fabric1.16.5
 + fabric1.17.1
 + fabric1.18.1
-+ forge1.12.2 (coming soon)
++ fabric1.18.2
 + forge1.16.5 (partial support)
-+ forge1.17.1 (coming soon)
-+ forge1.18.1 (coming soon)
-+ all (builds all supported mod environments and game versions)
-+ 1.12.2 (builds all supported 1.12.2 mod environments)
-+ 1.16.5 (builds all supported 1.16.5 mod environments)
-+ 1.17.1 (builds all supported 1.17.1 mod environments)
-+ 1.18.1 (builds all supported 1.18.1 mod environments)
 
 Additionally, modenv may be appended with any combination of:
 + buildjar (builds mod jar file)
 + runClient (launches an offline client with the mod installed)
 + runServer (launches an offline server with the mod installed)
-
 """)
 		exit()
 	else:

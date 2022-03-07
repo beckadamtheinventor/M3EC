@@ -4,7 +4,7 @@ contentid:    ruby_pickaxe
 class:        RubyPickaxe
 tooltype:     PickaxeItem
 material:     RubyToolMaterial
-attackspeed:  3
-attackdamage: -2.4f
+attackspeed:  -2.4f
+attackdamage: 1
 title:        Ruby Pickaxe
 texture:      ruby_pickaxe

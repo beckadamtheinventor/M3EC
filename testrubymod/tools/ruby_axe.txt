@@ -1,0 +1,10 @@
+@:            tool
+tool:         ToolItem
+contentid:    ruby_axe
+class:        RubyAxe
+tooltype:     AxeItem
+material:     RubyToolMaterial
+attackspeed:  -2.4f
+attackdamage: 4
+title:        Ruby Axe
+texture:      ruby_axe
