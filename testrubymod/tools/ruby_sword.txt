@@ -1,0 +1,10 @@
+@:            tool
+tool:         ToolItem
+contentid:    ruby_sword
+class:        RubySword
+tooltype:     SwordItem
+material:     RubyToolMaterial
+attackspeed:  -2.4f
+attackdamage: 3
+title:        Ruby Sword
+texture:      ruby_sword

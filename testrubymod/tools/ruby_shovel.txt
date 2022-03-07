@@ -1,0 +1,10 @@
+@:            tool
+tool:         ToolItem
+contentid:    ruby_shovel
+class:        RubyShovel
+tooltype:     ShovelItem
+material:     RubyToolMaterial
+attackspeed:  -2.4f
+attackdamage: 1
+title:        Ruby Shovel
+texture:      ruby_shovel
