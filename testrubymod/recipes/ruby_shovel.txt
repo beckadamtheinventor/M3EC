@@ -1,0 +1,12 @@
+@:         recipe
+recipe:    ShapedRecipe
+contentid: ruby_shovel
++pattern:   "#"
++pattern:   "s"
++pattern:   "s"
++itemkeys:  #
++items:     testrubymod:ruby
++itemkeys:  s
++items:     minecraft:stick
+result:     testrubymod:ruby_shovel
+count:      1

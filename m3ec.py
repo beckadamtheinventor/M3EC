@@ -456,7 +456,11 @@ def build_resources(project_path, builddir, manifest_dict):
 						if lang not in langdict.keys():
 							langdict[lang] = {}
 						langdict[lang][f"{content_type}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.{lang}"]
-				langdict["en_us"][f"{content_type}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.title"]
+				if content_type in ["food", "fuel", "armor", "tool"]:
+					content_type_mc = "item"
+				else:
+					content_type_mc = content_type
+				langdict["en_us"][f"{content_type_mc}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.title"]
 
 	if "mod.langs" in manifest_dict.keys():
 		for lang in manifest_dict["mod.langs"]:

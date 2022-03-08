@@ -1,0 +1,12 @@
+@:         recipe
+recipe:    ShapedRecipe
+contentid: ruby_pickaxe
++pattern:   "###"
++pattern:   " s "
++pattern:   " s "
++itemkeys:  #
++items:     testrubymod:ruby
++itemkeys:  s
++items:     minecraft:stick
+result:     testrubymod:ruby_pickaxe
+count:      1

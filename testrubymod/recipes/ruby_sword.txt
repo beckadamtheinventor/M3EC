@@ -1,0 +1,12 @@
+@:         recipe
+recipe:    ShapedRecipe
+contentid: ruby_sword
++pattern:   "#"
++pattern:   "#"
++pattern:   "s"
++itemkeys:  #
++items:     testrubymod:ruby
++itemkeys:  s
++items:     minecraft:stick
+result:     testrubymod:ruby_sword
+count:      1

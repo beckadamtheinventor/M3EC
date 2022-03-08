@@ -30,7 +30,9 @@ public class ${mod.class} implements ModInitializer {
 			${mod.ore.$%v.vein.size}))
 		.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(
 			0,
-			${mod.ore.$%v.miny},
+---if mod.ore.$%v.vein.atbedrock
+			1,---fi---if mod.ore.$%v.miny
+			${mod.ore.$%v.miny},---fi
 			${mod.ore.$%v.maxy})))
 		.spreadHorizontally()
 		.repeat(${mod.ore.$%v.vein.perchunk});---end
