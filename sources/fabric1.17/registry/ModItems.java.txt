@@ -42,7 +42,7 @@ public class ModItems {
 
 	//Tool items
 ---iter mod.registry.tool.names
-	public static ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackspeed}, ${mod.tool.$%v.attackdamage}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
     public static void RegisterItems() {
 ---iter mod.registry.item.names

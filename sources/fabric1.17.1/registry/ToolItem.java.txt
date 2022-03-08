@@ -1,7 +1,7 @@
 
 package ${mod.package}.registry;
 
-import net.minecraft.item.PickaxeItem;
+import net.minecraft.item.${tooltype};
 import net.minecraft.item.ToolMaterial;
 
 public class ${class} extends ${tooltype} {
