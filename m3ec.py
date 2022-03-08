@@ -414,12 +414,13 @@ def build_resources(project_path, builddir, manifest_dict):
 					manifest_dict["texture"], ext = os.path.splitext(manifest_dict["texture"])
 
 			if content_type in ["item", "food", "armor", "tool", "fuel"]:
-				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".json"), manifest_dict))
 				copy_textures(content_type, cid, manifest_dict, project_path, item_textures_assets_dir)
+				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".json"), manifest_dict))
 
 			if content_type == "block":
 				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
 				manifest_dict[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
+				copy_textures(content_type, cid, manifest_dict, project_path, block_textures_assets_dir)
 				if "hasInventory" in manifest_dict.keys():
 					if manifest_dict["hasInventory"]:
 						if "inventoryType" in manifest_dict.keys():
@@ -438,7 +439,6 @@ def build_resources(project_path, builddir, manifest_dict):
 					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockstate"]), manifest_dict))
 				else:
 					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".json"), manifest_dict))
-				copy_textures(content_type, cid, manifest_dict, project_path, block_textures_assets_dir)
 				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
 				if dtype.lower() != "none":
 					create_file(os.path.join(block_loot_table_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_loot_tables", dtype+".json"), manifest_dict))
@@ -491,11 +491,12 @@ def add_content(cid, content_type, d, manifest_dict):
 
 def maybe_run_gradle(path, modenv, javaver):
 	path = os.path.abspath(path)
-	if "buildjar" in modenv or "runClient" in modenv or "runServer" in modenv:
+	modenvlow = [m.lower() for m in modenv]
+	if "buildjar" in modenvlow or "runclient" in modenvlow or "runserver" in modenvlow:
 		javapath = find_java_version(javaver)
-		if javapath != "":
+		if javapath is not None:
 			javapath = "-Dorg.gradle.java.home="+javapath
-		if sys.platform.startswith("win32") or sys.platform.startswith("cygwin"):
+		if sys.platform.startswith("win32"):
 			fname = "gradlew.bat"
 		else:
 			fname = "gradlew"
@@ -509,38 +510,27 @@ def maybe_run_gradle(path, modenv, javaver):
 
 
 def find_java_version(javaver):
-	if os.path.exists(os.path.join(os.path.dirname(__file__), "javapaths.json")):
-		with open(os.path.join(os.path.dirname(__file__), "javapaths.json")) as f:
-			cfg = json.load(f)
-		if javaver in cfg.keys():
-			return cfg[javaver]
-	else:
-		cfg = {}
-	# javapath = "default"
-	javapath = None
-	if sys.platform.startswith("darwin") or sys.platform.startswith("linux"):
-		javapath = find_jdk("/usr/lib/jvm", javaver)
-	elif sys.platform.startswith("win32"):
+	if sys.platform.startswith("win32"):
 		javapath = find_jdk("C:\\Program Files\\Java", javaver)
 		if javapath is None:
 			javapath = find_jdk("C:\\Program Files (x86)\\Java", javaver)
+	else:
+		javapath = find_jdk("/usr/lib/jvm", javaver)
 
 	if javapath is None:
 		try:
-			javapath = input(f"Input path to Java jdk {javaver} by pasting or typing it here and pressing enter.\n\
+			return input(f"Input path to Java jdk {javaver} by pasting or typing it here and pressing enter.\n\
 	Or type \"default\" to use system default java path.\n")
 		except:
 			pass
 
 		if javapath.lower() == "default":
 			print(f"Using default Java for Java jdk {javaver}")
-			cfg[javaver] = ""
+			return None
 		else:
-			cfg[javaver] = os.path.normpath(javapath)
+			return os.path.normpath(javapath)
 
-	with open(os.path.join(os.path.dirname(__file__), "javapaths.json"),"w") as f:
-		json.dump(cfg, f)
-	return cfg[javaver]
+	return javapath
 
 def find_jdk(path, javaver):
 	if os.path.exists(path):
@@ -555,19 +545,23 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 	# print(project_tex_path)
 	if f"mod.{content_type}.{cid}.texture" in manifest_dict.keys():
 		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
+		manifest_dict["texture"] = os.path.basename(tex)
 	if f"mod.{content_type}.{cid}.texture_top" in manifest_dict.keys():
 		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_top"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
+		manifest_dict["texture_top"] = os.path.basename(tex)
 	if f"mod.{content_type}.{cid}.texture_bottom" in manifest_dict.keys():
 		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_bottom"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
+		manifest_dict["texture_bottom"] = os.path.basename(tex)
 	if f"mod.{content_type}.{cid}.texture_side" in manifest_dict.keys():
 		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_side"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, tex)+".png")
+		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
+		manifest_dict["texture_side"] = os.path.basename(tex)
 
 def texture_pathify(tex):
-	tex, ext = os.path.splitext(os.path.basename(tex))
+	tex, ext = os.path.splitext(tex)
 	return tex
 
 def make_dir(path):
