@@ -1,9 +1,0 @@
-{
-    "type": "minecraft:smelting",
-    "ingredient": {
-        "item": "${ingredient}"
-    },
-    "result": "${result}",
-    "experience": ${experience},
-    "cookingtime": ${time}
-}

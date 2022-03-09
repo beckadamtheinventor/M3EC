@@ -1,0 +1,9 @@
+{
+    "type": "minecraft:smoking",
+    "ingredient": {
+        "item": "${ingredient}"
+    },
+    "result": "${result}",
+    "experience": ${experience},
+    "cookingtime": ${time}
+}

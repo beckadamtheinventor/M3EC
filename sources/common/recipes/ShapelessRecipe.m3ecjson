@@ -1,0 +1,11 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+---list ingredients
+		{"item": "$%v"}---end
+    ],
+    "result": {
+        "item": "${result}",
+        "count": ${count}
+    }
+}

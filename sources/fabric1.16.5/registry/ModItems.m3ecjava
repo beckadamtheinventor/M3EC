@@ -1,0 +1,65 @@
+package ${mod.package}.registry;
+
+import ${mod.package}.${mod.class};
+---iter mod.registry.armormaterial.names
+import ${mod.package}.registry.$%v;---end
+---iter mod.registry.toolmaterial.names
+import ${mod.package}.registry.$%v;---end
+---iter mod.registry.tool.names
+import ${mod.package}.registry.${mod.tool.$%v.class};---end
+
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.ToolMaterial;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.FoodComponent;
+import net.minecraft.item.Item;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ToolItem;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+public class ModItems {
+
+    //Items
+---iter mod.registry.item.names
+	public static final Item ${mod.item.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+
+	//Food
+---iter mod.registry.food.names
+	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})${mod.food.$%v.snack}${mod.food.$%v.alwaysEdible}${mod.food.$%v.statusEffects}));---end
+
+    //Block Items
+---iter mod.registry.blockitem.names
+	public static final BlockItem ${mod.blockitem.$%v.uppercased} = new BlockItem(ModBlocks.${mod.blockitem.$%v.uppercased}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+
+	//Armor items
+---iter mod.registry.armor.names
+	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material}, EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+
+	//Tool items
+---iter mod.registry.tool.names
+	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+
+    public static void RegisterItems() {
+---iter mod.registry.item.names
+		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.item.$%v.uppercased});---end
+---iter mod.registry.food.names
+		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.food.$%v.uppercased});---end
+---iter mod.registry.blockitem.names
+		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.blockitem.$%v.uppercased});---end
+---iter mod.registry.fuel.names
+		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.fuel.$%v.uppercased});
+		FuelRegistry.INSTANCE.add(${mod.fuel.$%v.uppercased}, ${mod.fuel.$%v.burntime});---end
+---iter mod.registry.armor.names
+		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.armor.$%v.uppercased});---end
+---iter mod.registry.tool.names
+		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
+
+    }
+}
+

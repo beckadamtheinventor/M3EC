@@ -1,0 +1,12 @@
+
+package ${mod.package}.registry;
+
+import net.minecraft.item.ItemTier;
+import net.minecraft.item.${tooltype};
+
+public class ${class} extends ${tooltype} {
+	public ${class}(ItemTier tier, int attackDamage, float attackSpeed, Properties properties) {
+		super(tier, attackDamage, attackSpeed, properties);
+	}
+}
+

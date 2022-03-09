@@ -9,13 +9,17 @@ def build(project_path, modenv):
 	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment"]
 	source_path = os.path.join(os.path.dirname(__file__),"sources")
 
-	if os.path.isdir(project_path):
+	if not os.path.exists(project_path):
+		print(f"Manifest file \"{project_path}\" not found. Aborting.")
+
+	manifest_file = os.path.join(project_path, "manifest.m3ec")
+	if not os.path.exists(manifest_file):
 		manifest_file = os.path.join(project_path, "manifest.txt")
-	else:
-		manifest_file = project_path
+		if not os.path.exists(manifest_file):
+			print(f"Manifest file (manifest.m3ec/manifest.txt) not found in \"{project_path}\". Aborting.")
+
+	if not os.path.isdir(project_path):
 		project_path = os.path.dirname(project_path)
-	with open(manifest_file) as f:
-		manifest = f.read().splitlines()
 
 	manifest_dict = readDictFile(manifest_file)
 	try:
@@ -73,7 +77,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(ospath(os.path.join(project_path, path))):
-			if fname.endswith(".txt"):
+			if fname.endswith(".txt") or fname.endswith(".m3ec"):
 				d = readDictFile(fname, {})
 				if "@" in d.keys():
 					content_type = d["@"]
@@ -108,21 +112,21 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		build_resources(project_path, "fabric1.18.1", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.18.1", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.1", "MainClass.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.1/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.1/MainClass.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModBlocks.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.1/registry/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.1/registry/ModBlocks.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModItems.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.1/registry/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.1/registry/ModItems.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 		
@@ -134,21 +138,21 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		build_resources(project_path, "fabric1.18.2", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.18.2", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.2", "MainClass.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.2/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.2/MainClass.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModBlocks.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.2/registry/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.2/registry/ModBlocks.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModItems.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.2/registry/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.18.2/registry/ModItems.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 
@@ -191,12 +195,12 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 				manifest_dict[f"mod.registry.requires_{toollevel}"].append(block)
 		for toolclass in toolclasses:
 			if len(manifest_dict[f"mod.registry.requires_{toolclass}"]):
-				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable", f"{toolclass}.json"),
-					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toolclass}.json"), manifest_dict))
+				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable", f"{toolclass}.m3ecjson"),
+					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toolclass}.m3ecjson"), manifest_dict))
 		for toollevel in toollevels:
 			if len(manifest_dict[f"mod.registry.requires_{toollevel}"]):
-				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.json"),
-					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toollevel}.json"), manifest_dict))
+				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.m3ecjson"),
+					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toollevel}.m3ecjson"), manifest_dict))
 
 		maybe_run_gradle(os.path.join(project_path, "fabric1.18.2_build"), modenv, "17.")
 
@@ -206,21 +210,21 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		build_resources(project_path, "fabric1.17.1", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17.1", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.17.1", "MainClass.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.17.1/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.17.1/MainClass.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModBlocks.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.17.1/registry/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.17.1/registry/ModBlocks.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModItems.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.17.1/registry/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.17.1/registry/ModItems.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 
@@ -232,21 +236,21 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		build_resources(project_path, "fabric1.16.5", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.16.5", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.16.5", "MainClass.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.16.5/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.16.5/MainClass.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModBlocks.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.16.5/registry/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.16.5/registry/ModBlocks.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModItems.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"fabric1.16.5/registry/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"fabric1.16.5/registry/ModItems.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 
@@ -258,9 +262,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		build_resources(project_path, "forge1.16.5", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "MainClass.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "forge1.16.5", "MainClass.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/MainClass.java.txt\"")
+			print("Warning: Failed to read source \"forge1.16.5/MainClass.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
@@ -277,15 +281,15 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		else:
 			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "resources", "META-INF", "mods.toml"), data)
 
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "registry", "ModBlocks.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "forge1.16.5", "registry", "ModBlocks.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/registry/ModBlocks.java.txt\"")
+			print("Warning: Failed to read source \"forge1.16.5/registry/ModBlocks.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
 
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "registry", "ModItems.java.txt"), manifest_dict)
+		data = readf_file(os.path.join(source_path, "forge1.16.5", "registry", "ModItems.m3ecjava"), manifest_dict)
 		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/registry/ModItems.java.txt\"")
+			print("Warning: Failed to read source \"forge1.16.5/registry/ModItems.m3ecjava\"")
 		else:
 			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
 
@@ -293,9 +297,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		for block in manifest_dict["mod.registry.block.names"]:
 			manifest_dict["$%f"] = block
 			
-			data = readf_file(os.path.join(source_path, "forge1.16.5", "Block.java.txt"), manifest_dict)
+			data = readf_file(os.path.join(source_path, "forge1.16.5", "Block.m3ecjava"), manifest_dict)
 			if data is None:
-				print("Warning: Failed to read source \"forge1.16.5/Block.java.txt\"")
+				print("Warning: Failed to read source \"forge1.16.5/Block.m3ecjava\"")
 			else:
 				create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "blocks", manifest_dict[f"mod.block.{block}.class"]+".java"), data)
 
@@ -307,21 +311,21 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		# build_resources(project_path, "forge1.12.2", manifest_dict)
 
-		# data = readf_file(os.path.join(source_path, "forge1.12.2", "MainClass.java.txt"), manifest_dict)
+		# data = readf_file(os.path.join(source_path, "forge1.12.2", "MainClass.m3ecjava"), manifest_dict)
 		# if data is None:
-			# print("Warning: Failed to read source \"forge1.12.2/MainClass.java.txt\"")
+			# print("Warning: Failed to read source \"forge1.12.2/MainClass.m3ecjava\"")
 		# else:
 			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
 
-		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModBlocks.java.txt"), manifest_dict)
+		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModBlocks.m3ecjava"), manifest_dict)
 		# if data is None:
-			# print("Warning: Failed to read source \"forge1.12.2/init/ModBlocks.java.txt\"")
+			# print("Warning: Failed to read source \"forge1.12.2/init/ModBlocks.m3ecjava\"")
 		# else:
 			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModBlocks.java"), data)
 
-		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModItems.java.txt"), manifest_dict)
+		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModItems.m3ecjava"), manifest_dict)
 		# if data is None:
-			# print("Warning: Failed to read source \"forge1.12.2/init/ModItems.java.txt\"")
+			# print("Warning: Failed to read source \"forge1.12.2/init/ModItems.m3ecjava\"")
 		# else:
 			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModItems.java"), data)
 
@@ -415,7 +419,7 @@ def build_resources(project_path, builddir, manifest_dict):
 
 			if content_type in ["item", "food", "armor", "tool", "fuel"]:
 				copy_textures(content_type, cid, manifest_dict, project_path, item_textures_assets_dir)
-				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".json"), manifest_dict))
+				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".m3ecjson"), manifest_dict))
 
 			if content_type == "block":
 				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
@@ -428,27 +432,37 @@ def build_resources(project_path, builddir, manifest_dict):
 							if c not in includedClasses:
 								includedClasses.append(c)
 								copy_file(os.path.join(build_java_dir, "registry", manifest_dict["inventoryType"]+".java"), os.path.join(build_java_dir, "registry", manifest_dict["inventoryType"]+".java"))
-							create_file(os.path.join(build_java_dir, "registry", manifest_dict["class"]+".java"), readf_file(os.path.join(sourcesdir, "registry", "Inventory.java.txt")), manifest_dict)
+							create_file(os.path.join(build_java_dir, "registry", manifest_dict["class"]+".java"), readf_file(os.path.join(sourcesdir, "registry", "Inventory.m3ecjava")), manifest_dict)
 				statename = manifest_dict["blockstatetype"]
 				if tname.lower() == "custom":
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockmodel"]), manifest_dict))
 				else:
-					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".json"), manifest_dict))
-				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.json"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), manifest_dict))
+				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.m3ecjson"), manifest_dict))
 				if statename.lower() == "custom":
 					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockstate"]), manifest_dict))
 				else:
-					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".json"), manifest_dict))
+					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".m3ecjson"), manifest_dict))
 				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
 				if dtype.lower() != "none":
-					create_file(os.path.join(block_loot_table_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_loot_tables", dtype+".json"), manifest_dict))
+					create_file(os.path.join(block_loot_table_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_loot_tables", dtype+".m3ecjson"), manifest_dict))
+				if "forge" in manifest_dict["modloader"]:
+					if manifest_dict[f"mod.block.{cid}.toolclass"] in ["AXES", "HOES", "PICKAXES", "SHOVELS"]:
+						manifest_dict[f"mod.block.{cid}.toolclass"] = manifest_dict[f"mod.block.{cid}.toolclass"][:-1]
+					if manifest_dict[f"mod.block.{cid}.material"] == "SOIL":
+						manifest_dict[f"mod.block.{cid}.material"] = "DIRT"
+				elif "fabric" in manifest_dict["modloader"]:
+					if manifest_dict[f"mod.block.{cid}.toolclass"] in ["AXE", "HOE", "PICKAXE", "SHOVEL"]:
+						manifest_dict[f"mod.block.{cid}.toolclass"] = manifest_dict[f"mod.block.{cid}.toolclass"]+"S"
+					if manifest_dict[f"mod.block.{cid}.material"] == "DIRT":
+						manifest_dict[f"mod.block.{cid}.material"] = "SOIL"
 			elif content_type == "recipe":
-				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".json"), manifest_dict))
+				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), manifest_dict))
 
 			if content_type in ["armormaterial", "toolmaterial"]:
-				create_file(os.path.join(build_java_dir, "registry", cid+".java"), readf_file(os.path.join(sourcesdir, "registry", tname+".java.txt"), manifest_dict))
+				create_file(os.path.join(build_java_dir, "registry", cid+".java"), readf_file(os.path.join(sourcesdir, "registry", tname+".m3ecjava"), manifest_dict))
 			if content_type == "tool":
-				create_file(os.path.join(build_java_dir, "registry", manifest_dict[f"mod.{content_type}.{cid}.class"]+".java"), readf_file(os.path.join(sourcesdir, "registry", "ToolItem.java.txt"), manifest_dict))
+				create_file(os.path.join(build_java_dir, "registry", manifest_dict[f"mod.{content_type}.{cid}.class"]+".java"), readf_file(os.path.join(sourcesdir, "registry", "ToolItem.m3ecjava"), manifest_dict))
 
 			if content_type in ["item", "block", "food", "fuel", "armor", "tool"]:
 				if "langs" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
@@ -474,7 +488,7 @@ def build_resources(project_path, builddir, manifest_dict):
 			json.dump(langdict[lang], f)
 
 	if "fabric" in manifest_dict["modloader"]:
-		create_file(os.path.join(builddir, "src", "main", "resources", "fabric.mod.json"), readf_file(os.path.join(sourcesdir, "fabric.mod.json"), manifest_dict))
+		create_file(os.path.join(builddir, "src", "main", "resources", "fabric.mod.json"), readf_file(os.path.join(sourcesdir, "fabric.mod.m3ecjson"), manifest_dict))
 
 def add_content(cid, content_type, d, manifest_dict):
 	# print(f"registering {content_type} {cid}.")
@@ -485,7 +499,7 @@ def add_content(cid, content_type, d, manifest_dict):
 			# print(f"mod.{content_type}.{cid}.{key} = {d[key]}")
 			manifest_dict[f"mod.{content_type}.{cid}.{key}"] = d[key]
 		manifest_dict[f"mod.{content_type}.{cid}.uppercased"] = cid.upper()
-		manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
+		manifest_dict[f"mod.{content_type}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
 		manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
 	else:
 		print(f"Found more than one instance of {content_type} \"{cid}\"! Aborting.")
@@ -627,7 +641,7 @@ def readf(data, d):
 				for i in range(len(l)):
 					data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
 			else:
-				print(f"Critical internal error! {key} not found in dictionary passed to readf!")
+				print(f"Critical error! {key} not found in dictionary passed to readf!")
 				exit(1)
 		data2.append(data[j:])
 		data = "".join(data2)
@@ -650,7 +664,7 @@ def readf(data, d):
 					lst.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
 				data2.append(",".join(lst))
 			else:
-				print(f"Critical internal error! {key} not found in dictionary passed to readf!")
+				print(f"Critical error! {key} not found in dictionary passed to readf!")
 				return None
 		data2.append(data[j:])
 		data = "".join(data2)
@@ -677,12 +691,9 @@ def readf(data, d):
 		data2.append(data[j:])
 		data = "".join(data2)
 
-	while any(["${"+key+"}" in data or "${"+key+"}^CAPITAL" in data or "${"+key+"^UPPER}" in data or "${"+key+"^LOWER}" in data for key in d.keys()]):
+	while any([any(["${"+key+M+"}" in data for M in ["","^CAPITAL","^UPPER","^LOWER"]]) for key in d.keys()]):
 		for key in d.keys():
-			data = data.replace("${"+key+"^CAPITAL}", str(d[key]).capitalize())
-			data = data.replace("${"+key+"^UPPER}", str(d[key]).upper())
-			data = data.replace("${"+key+"^LOWER}", str(d[key]).lower())
-			data = data.replace("${"+key+"}", str(d[key]))
+			data = data.replace("${"+key+"^CAPITAL}", str(d[key]).capitalize()).replace("${"+key+"^UPPER}", str(d[key]).upper()).replace("${"+key+"^LOWER}", str(d[key]).lower()).replace("${"+key+"}", str(d[key]))
 	# data2 = []
 	# i = 0
 	# for match in r.finditer(data):
@@ -690,9 +701,9 @@ def readf(data, d):
 		# i = match.end()
 	# data2.append(data[i:])
 	# return "".join(data2)
-	if "forge" in d["modloader"]:
-		for word in ["PICKAXES", "SHOVELS", "SWORDS", "HOES", "AXES"]:
-			data = data.replace(word, word[:-1])
+	# if "forge" in d["modloader"]:
+		# for word in ["PICKAXES", "SHOVELS", "SWORDS", "HOES", "AXES"]:
+			# data = data.replace(word, word[:-1])
 	return data
 
 def walk(path):

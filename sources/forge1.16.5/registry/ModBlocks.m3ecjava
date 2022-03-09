@@ -1,0 +1,17 @@
+package ${mod.package}.registry;
+
+import ${mod.package}.${mod.class};
+---iter mod.registry.block.names
+import ${mod.package}.blocks.${mod.block.$%v.class};---end
+import net.minecraft.block.Block;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+
+public class ModBlocks {
+
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ${mod.class}.MOD_ID);
+
+---iter mod.registry.block.names
+	public static final RegistryObject<Block> ${mod.block.$%v.uppercased} = BLOCKS.register("$%v", ${mod.block.$%v.class}::new);---end
+}

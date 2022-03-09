@@ -1,0 +1,38 @@
+
+package ${mod.package}.registry;
+
+import net.minecraft.item.IItemTier;
+import net.minecraft.item.crafting.Ingredient;
+
+
+public class ${contentid} implements IItemTier {
+	@Override
+	public int getUses() {
+		return ${durability};
+	}
+
+	@Override
+	public float getSpeed() {
+		return ${miningspeed};
+	}
+
+	@Override
+	public float getAttackDamageBonus() {
+		return ${attackdamage};
+	}
+
+	@Override
+	public int getLevel() {
+		return ${mininglevel};
+	}
+
+	@Override
+	public int getEnchantmentValue() {
+		return ${enchantability};
+	}
+
+	@Override
+	public Ingredient getRepairIngredient() {
+		return Ingredient.of(${repairitem}.get());
+	}
+}
