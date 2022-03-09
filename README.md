@@ -1,7 +1,7 @@
 # M3EC
 
 ## Minecraft Multi Mod Environment Compiler
-Version 0.4
+Version 0.5
 
 This compiler/script operates on the mentality of "as few files as possible" to create a mod.
 Check out the `testrubymod` folder for usage examples.
@@ -24,39 +24,33 @@ To build a project:
 Example:
 `python m3ec.py testrubymod fabric1.18.1`
 
-Valid `modenv`s:
-+ fabric (builds all supported game versions for fabric)
-+ fabric1.16.5
-+ fabric1.17.1
-+ fabric1.18.1
-+ forge (builds all supported game versions for forge)
-+ forge1.12.2 (coming soon)
-+ forge1.16.5 (partial support)
-+ forge1.17.1 (coming soon)
-+ all (builds all supported mod environments and game versions)
-+ 1.16.5 (builds all supported 1.16.5 mod environments)
-+ 1.17.1 (builds all supported 1.17.1 mod environments)
-+ 1.18.1 (builds all supported 1.18.1 mod environments)
-+ 1.12.2 (builds all supported 1.12.2 mod environments)
+### Supported Versions (Fabric)
+- 1.16.5
+- 1.17.x
+- 1.18.x
 
+### Supported Versions (Forge)
+- 1.16.5
 
-Once the mod project is built, you can use your choice of java IDEs (such as IntelliJ) to build the mod's jar file.
+### Planned Versions (Forge)
+- 1.12.2
+- 1.17.x
+- 1.18.x
 
-Alernatively you can compile and/or test the mod from the terminal by appending to the end of the project build command.
+Once the mod project is built, you can use your choice of java IDEs (such as IntelliJ) to build the mod's jar file, or build and/or test the mod from the terminal by appending to the end of the M3EC build command with the any of the following:
 - `buildjar` build the mod jar file.
 - `runclient` launch an offline client with the mod installed.
 - `runserver` launch an offline server with the mod installed.
 Your mod's jar file will be in the build/libs directory of the built project.
 
 When building, the program may prompt for a Java jdk path for a specific jdk version.
-On Windows you can find your java installations somewhere in `C:\\Program Files\\Java\\` or `C:\\Program Files (x86)\\Java\\`.
-On Linux, they will be somewhere in or around `/usr/lib/jvm/`.
+On Windows, Mac, and Linux M3EC should detect a JDK automatically. If it can't find the needed version it will prompt for a path to it.
 
 
 
 ## Features
 - simple items
-- foods with or without effect attributes
+- foods without effect attributes
 - simple single-texture blocks
 - grass-block-like 3-texture blocks
 - grass/flower-like single-texture cross blocks
@@ -64,7 +58,11 @@ On Linux, they will be somewhere in or around `/usr/lib/jvm/`.
 - item dropping blocks (such as campfires)
 - recipes of all default vanilla types
 - as many languages as supplied
-
-## Currently Broken Features
-- armor and armor materials
 - tools and tool materials
+
+## Planned Features
+- armor and armor materials
+- multiple creative tabs
+- scriptable block/item behaviours
+- more generation options
+- custom dimensions

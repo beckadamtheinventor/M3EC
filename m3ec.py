@@ -788,7 +788,7 @@ def ospath(path):
 if __name__=='__main__':
 	if len(sys.argv) < 3:
 		print("""
-Minecraft Multiple Mod Environment Compiler v0.4
+Minecraft Multiple Mod Environment Compiler v0.5
 Very much unfinished, currently only supports a handful of minecraft/modloader versions.
 Usage:
 	python m3ec.py path modenv
