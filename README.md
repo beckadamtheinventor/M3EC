@@ -27,7 +27,7 @@ M3EC supports building for a wide variety of modloaders and game versions from f
 ## Documentation
 Currently there isn't much documentation. It can be found in the `docs` folder of this repository.
 There is also a website: https://beckadamtheinventor.github.io/M3EC.
-
+However, there is an example mod (with most if not all features used) to help get you started.
 
 ## Usage
 To build a project:
