@@ -16,7 +16,8 @@ M3EC is Licensed under the GPL version 3.
 - Building for MC versions 1.18.x: Java JDK/OpenJDK 17.
 
 ## Documentation
-Documentation can be found in the `docs` folder of this repository.
+Currently there isn't much documentation. It can be found in the `docs` folder of this repository.
+There is also a website: https://beckadamtheinventor.github.io/M3EC.
 
 ## Usage
 To build a project:
