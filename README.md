@@ -9,21 +9,32 @@ Currently it only supports a handful of Minecraft versions/modloaders.
 
 M3EC is Licensed under the GPL version 3.
 
+
+## About
+M3EC is a script that turns a series of simple content manifest files into the code required to build a Minecraft Mod. It has support for a variety of content types, such as simple blocks/items, tools/tool materials, ores, and more.
+M3EC mod building is designed to require as few files as possible. Have you ever found yourself adding countless files to countless nested directories just to make a simple content mod? M3EC can build a working content mod for all the versions and modloaders it supports with only 3 files: the mod's main manifest, a png image, and a content manifest!
+
+M3EC supports building for a wide variety of modloaders and game versions from fabric 1.16.5 to 1.18.2 and forge 1.16.5. (with 1.12.2 support planned) It can even build and launch the mod for you and select the appropriate JDK automatically!
+
+
 ## Prerequisites
 - Python 3.6 or higher.
 - Building for MC versions prior to 1.17.x: Java JDK/OpenJDK 8.
 - Building for MC versions 1.17.x: Java JDK/OpenJDK 16.
 - Building for MC versions 1.18.x: Java JDK/OpenJDK 17.
 
+
 ## Documentation
 Currently there isn't much documentation. It can be found in the `docs` folder of this repository.
 There is also a website: https://beckadamtheinventor.github.io/M3EC.
+
 
 ## Usage
 To build a project:
 + `python m3ec.py path_to_mod_dir modenv`
 Example:
 `python m3ec.py testrubymod fabric1.18.1`
+
 
 ### Supported Versions (Fabric)
 - 1.16.5
@@ -60,6 +71,7 @@ On Windows, Mac, and Linux M3EC should detect a JDK automatically. If it can't f
 - recipes of all default vanilla types
 - as many languages as supplied
 - tools and tool materials
+
 
 ## Planned Features
 - armor and armor materials
