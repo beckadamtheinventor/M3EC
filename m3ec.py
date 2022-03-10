@@ -22,6 +22,10 @@ def build(project_path, modenv):
 		project_path = os.path.dirname(project_path)
 
 	manifest_dict = readDictFile(manifest_file)
+
+	manifest_dict["manifest_file"] = manifest_file
+	manifest_dict["project_path"] = project_path
+
 	try:
 		fname = os.path.join(source_path, "mc", "blocks.json")
 		with open(fname) as f:
@@ -44,9 +48,10 @@ def build(project_path, modenv):
 
 	manifest_dict["mod.maven_group"] = f"{prefix}.{modauthor}".lower()
 
+
 	modpath = manifest_dict["mod.package"]
 	modmcpath = manifest_dict["mod.mcpath"]
-	modmcpathdir = os.path.join(prefix, modauthor.lower(), modclass.lower())
+	modmcpathdir = 	manifest_dict["mod.packagedir"] = os.path.join(prefix, modauthor, modclass).lower()
 
 	for k in ["credits", "description"]:
 		if f"mod.{k}" not in manifest_dict.keys():
@@ -78,7 +83,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(ospath(os.path.join(project_path, path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec"):
-				d = readDictFile(fname, {})
+				d = readDictFile(fname)
 				if "@" in d.keys():
 					content_type = d["@"]
 					if content_type == "itemfactory":
@@ -103,34 +108,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	# for key in manifest_dict.keys():
 		# print(f"{key}: {manifest_dict[key]}")
 
-	source_path = os.path.join(os.path.dirname(__file__),"sources")
+	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "sources")
 	path = project_path
-
-	if "fabric1.18.1" in modenv or modenv == "1.18.1" or modenv == "all" or modenv == "fabric":
-		print("Building fabric 1.18.1 mod project")
-		manifest_dict["modloader"] = "fabric"
-
-		build_resources(project_path, "fabric1.18.1", manifest_dict)
-
-		data = readf_file(os.path.join(source_path, "fabric1.18.1", "MainClass.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.1/MainClass.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
-
-		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModBlocks.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.1/registry/ModBlocks.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
-
-		data = readf_file(os.path.join(source_path, "fabric1.18.1", "registry", "ModItems.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.1/registry/ModItems.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.18.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
-		
-		maybe_run_gradle(os.path.join(project_path, "fabric1.18.1_build"), modenv, "17.")
 
 	if "fabric1.18.2" in modenv or modenv == "1.18.2" or modenv == "all" or modenv == "fabric":
 		print("Building fabric 1.18.2 mod project")
@@ -204,132 +183,143 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 		maybe_run_gradle(os.path.join(project_path, "fabric1.18.2_build"), modenv, "17.")
 
-	if "fabric1.17.1" in modenv or modenv == "1.17.1" or modenv == "all" or modenv == "fabric":
-		print("Building fabric 1.17.1 mod project")
-		manifest_dict["modloader"] = "fabric"
+	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
+		print("Fabric 1.18.0 builds are broken right now; ores will be skipped.")
+		build_mod("fabric", "1.18", modenv, manifest_dict)
 
-		build_resources(project_path, "fabric1.17.1", manifest_dict)
+	if "fabric1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.18.1", modenv, manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17.1", "MainClass.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.17.1/MainClass.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.17", modenv, manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModBlocks.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.17.1/registry/ModBlocks.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
+	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.17.1", modenv, manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.17.1", "registry", "ModItems.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.17.1/registry/ModItems.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.17.1_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.16.5", modenv, manifest_dict)
 
-		maybe_run_gradle(os.path.join(project_path, "fabric1.17.1_build"), modenv, "16.")
+	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.16.5", modenv, manifest_dict)
 
-	if "fabric1.16.5" in modenv or modenv == "1.16.5" or modenv == "all" or modenv == "fabric":
-		print("Building fabric 1.16.5 mod project")
-		manifest_dict["modloader"] = "fabric"
+	if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.12.2", modenv, manifest_dict)
 
-		build_resources(project_path, "fabric1.16.5", manifest_dict)
 
-		data = readf_file(os.path.join(source_path, "fabric1.16.5", "MainClass.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.16.5/MainClass.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+def build_mod(modloader, version, modenv, manifest_dict):
+	print(f"Building {modloader} {version} mod project")
+	manifest_dict["modloader"] = modloader
+	source_path = manifest_dict["source_path"]
+	project_path = manifest_dict["project_path"]
+	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
 
-		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModBlocks.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.16.5/registry/ModBlocks.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
+	try:
+		with open(os.path.join(source_path, f"{modloader}{version}", "m3ec_build.json")) as f:
+			versionbuilder = json.load(f)
+	except FileNotFoundError:
+		print(f"Warning: {modloader} {version} is not yet implemented; skipping build.")
+		return False
 
-		data = readf_file(os.path.join(source_path, "fabric1.16.5", "registry", "ModItems.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.16.5/registry/ModItems.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
+	if "firstActions" in versionbuilder.keys():
+		execActions(versionbuilder["firstActions"], versionbuilder, manifest_dict)
 
-		maybe_run_gradle(os.path.join(project_path, "fabric1.16.5_build"), modenv, "1.8.")
+	build_resources(project_path, f"{modloader}{version}", manifest_dict)
 
-	if "forge1.16.5" in modenv or modenv == "1.16.5" or modenv == "all" or modenv == "forge":
-		print("Building forge 1.16.5 mod project")
-		manifest_dict["modloader"] = "forge"
-
-		build_resources(project_path, "forge1.16.5", manifest_dict)
-
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "MainClass.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/MainClass.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
-
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "pack.mcmeta"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/pack.mcmeta\"")
-		else:
-			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "resources", "pack.mcmeta"), data)
-
-		make_dir(os.path.join(path, "forge1.16.5_build", "src", "main", "resources", "META-INF"))
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "META-INF", "mods.toml"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/META-INF/mods.toml\"")
-		else:
-			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "resources", "META-INF", "mods.toml"), data)
-
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "registry", "ModBlocks.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/registry/ModBlocks.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
-
-		data = readf_file(os.path.join(source_path, "forge1.16.5", "registry", "ModItems.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"forge1.16.5/registry/ModItems.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
-
-		make_dir(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "blocks"))
-		for block in manifest_dict["mod.registry.block.names"]:
-			manifest_dict["$%f"] = block
-			
-			data = readf_file(os.path.join(source_path, "forge1.16.5", "Block.m3ecjava"), manifest_dict)
-			if data is None:
-				print("Warning: Failed to read source \"forge1.16.5/Block.m3ecjava\"")
+	if "preActions" in versionbuilder.keys():
+		execActions(versionbuilder["preActions"], versionbuilder, manifest_dict)
+	
+	if "sources" in versionbuilder.keys():
+		for file in versionbuilder["sources"]:
+			source, dest = file["source"], file["dest"]
+			mandatory = True
+			if "optional" in file.keys():
+				if file["optional"] is True:
+					mandatory = False
+			if "iterate" in file.keys():
+				for i in range(len(manifest_dict[file["iterate"]])):
+					manifest_dict["%i"] = i
+					manifest_dict["%v"] = manifest_dict[file["iterate"]][i]
+					rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", source), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
+					if mandatory and not rv:
+						print(f"Error: Failed to read source file \"{modloader}{version}/{source}\"")
+						return False
 			else:
-				create_file(os.path.join(path, "forge1.16.5_build", "src", "main", "java", modmcpathdir, "blocks", manifest_dict[f"mod.block.{block}.class"]+".java"), data)
+				rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", source), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
+				if mandatory and not rv:
+					print(f"Error: Failed to read source file \"{modloader}{version}/{source}\"")
+					return False
 
-		maybe_run_gradle(os.path.join(project_path, "forge1.16.5_build"), modenv, "1.8.")
+	if "copy" in versionbuilder.keys():
+		for file in versionbuilder["copy"]:
+			shutil.copy(file["source"], file["dest"])
 
-	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
-		# print("Building forge 1.12.2 mod project")
-		# manifest_dict["modloader"] = "forge"
+	if "postActions" in versionbuilder.keys():
+		execActions(versionbuilder["postActions"], versionbuilder, manifest_dict)
 
-		# build_resources(project_path, "forge1.12.2", manifest_dict)
+	if "javaVersion" in versionbuilder.keys():
+		maybe_run_gradle(os.path.join(project_path, f"{modloader}{version}_build"), modenv, versionbuilder["javaVersion"])
 
-		# data = readf_file(os.path.join(source_path, "forge1.12.2", "MainClass.m3ecjava"), manifest_dict)
-		# if data is None:
-			# print("Warning: Failed to read source \"forge1.12.2/MainClass.m3ecjava\"")
-		# else:
-			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
+	if "finalActions" in versionbuilder.keys():
+		execActions(versionbuilder["finalActions"], versionbuilder, manifest_dict)
 
-		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModBlocks.m3ecjava"), manifest_dict)
-		# if data is None:
-			# print("Warning: Failed to read source \"forge1.12.2/init/ModBlocks.m3ecjava\"")
-		# else:
-			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModBlocks.java"), data)
+	return True
 
-		# data = readf_file(os.path.join(source_path, "forge1.12.2", "init", "ModItems.m3ecjava"), manifest_dict)
-		# if data is None:
-			# print("Warning: Failed to read source \"forge1.12.2/init/ModItems.m3ecjava\"")
-		# else:
-			# create_file(os.path.join(path, "forge1.12.2_build", "src", "main", "java", modmcpathdir, "init", "ModItems.java"), data)
+def execActions(actions, versionbuilder, d):
+	if "actionvars" in d.keys():
+		d["actionvars"] = {"oldvars": d["actionvars"], "accumulator": None}
+	else:
+		d["actionvars"] = {"accumulator": None}
+	_execActions(actions, versionbuilder, d)
 
-		# maybe_run_gradle("forge1.12.2_build", modenv, "1.8.")
+def _execActions(actions, versionbuilder, d):
+	for action in actions:
+		a = action["action"]
+		if a == "var":
+			if "source" in action.keys() and "dest" in action.keys():
+				d["actionvars"][action["dest"]] = d["actionvars"][action["source"]]
+			elif "name" in action.keys() and "value" in action.keys():
+				d["actionvars"][action["name"]] = action["value"]
+		elif a == "doActions":
+			cond = None
+			if "while" in action.keys() and "var" in action.keys():
+				cond = action["var"]
+			while True:
+				_execActions(action["actions"], versionbuilder, d)
+				if cond is None:
+					break
+				if not d["actionvars"][cond]:
+					break
+		elif a == "repeatActions":
+			rep = 1
+			if "repeat" in action.keys():
+				rep = int(action["repeat"])
+			for i in range(rep):
+				_execActions(action["actions"], versionbuilder, d)
+		elif a == "makedir" or a == "make_dir":
+			make_dir(os.path.join(d["build_path"], readf(action["value"], d)))
+		elif a == "readf":
+			if "file" in action.keys():
+				d["$%f"] = action["file"]
+				accumulator = readf_file(readf(action["file"], d), d)
+			else:
+				accumulator = readf(action["value"], d)
+		elif a == "copy" or a == "move":
+			if "source" in action.keys() and "dest" in action.keys():
+				accumulator = readf(action["source"], d)
+				if os.exists(accumulator):
+					if a == "copy":
+						shutil.copy(fname, readf(action["dest"], d))
+					elif a == "move":
+						shutil.move(fname, readf(action["dest"], d))
+				else:
+					accumulator = None
+			elif "file" in action.keys():
+				fname = readf(action["file"], d)
+				if os.exists(fname):
+					with open(fname) as f:
+						accumulator = f.read()
+				else:
+					accumulator = None
 
 
 def build_resources(project_path, builddir, manifest_dict):
@@ -425,14 +415,6 @@ def build_resources(project_path, builddir, manifest_dict):
 				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
 				manifest_dict[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
 				copy_textures(content_type, cid, manifest_dict, project_path, block_textures_assets_dir)
-				if "hasInventory" in manifest_dict.keys():
-					if manifest_dict["hasInventory"]:
-						if "inventoryType" in manifest_dict.keys():
-							c = "inventoryType"
-							if c not in includedClasses:
-								includedClasses.append(c)
-								copy_file(os.path.join(build_java_dir, "registry", manifest_dict["inventoryType"]+".java"), os.path.join(build_java_dir, "registry", manifest_dict["inventoryType"]+".java"))
-							create_file(os.path.join(build_java_dir, "registry", manifest_dict["class"]+".java"), readf_file(os.path.join(sourcesdir, "registry", "Inventory.m3ecjava")), manifest_dict)
 				statename = manifest_dict["blockstatetype"]
 				if tname.lower() == "custom":
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockmodel"]), manifest_dict))
@@ -456,14 +438,10 @@ def build_resources(project_path, builddir, manifest_dict):
 						manifest_dict[f"mod.block.{cid}.toolclass"] = manifest_dict[f"mod.block.{cid}.toolclass"]+"S"
 					if manifest_dict[f"mod.block.{cid}.material"] == "DIRT":
 						manifest_dict[f"mod.block.{cid}.material"] = "SOIL"
-			elif content_type == "recipe":
+			if content_type == "recipe":
 				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), manifest_dict))
-
-			if content_type in ["armormaterial", "toolmaterial"]:
-				create_file(os.path.join(build_java_dir, "registry", cid+".java"), readf_file(os.path.join(sourcesdir, "registry", tname+".m3ecjava"), manifest_dict))
-			if content_type == "tool":
-				create_file(os.path.join(build_java_dir, "registry", manifest_dict[f"mod.{content_type}.{cid}.class"]+".java"), readf_file(os.path.join(sourcesdir, "registry", "ToolItem.m3ecjava"), manifest_dict))
-
+			if content_type in ["toolmaterial", "armormaterial"]:
+				manifest_dict[f"mod.{content_type}.{cid}.class"] = cid
 			if content_type in ["item", "block", "food", "fuel", "armor", "tool"]:
 				if "langs" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
 					for lang in manifest_dict[f"mod.{content_type}.{cid}.langs"]:
@@ -487,8 +465,6 @@ def build_resources(project_path, builddir, manifest_dict):
 		with open(os.path.join(lang_dir, lang+".json"),"w") as f:
 			json.dump(langdict[lang], f)
 
-	if "fabric" in manifest_dict["modloader"]:
-		create_file(os.path.join(builddir, "src", "main", "resources", "fabric.mod.json"), readf_file(os.path.join(sourcesdir, "fabric.mod.m3ecjson"), manifest_dict))
 
 def add_content(cid, content_type, d, manifest_dict):
 	# print(f"registering {content_type} {cid}.")
@@ -598,6 +574,15 @@ def copy_file(src, dest):
 		print(f"Failed to copy file \"{src}\" into \"{dest}\"")
 		exit(1)
 
+
+def readf_copyfile(source, dest, d):
+	data = readf_file(source, d)
+	if data is None:
+		return False
+	create_file(dest, data)
+	return True
+
+
 def create_file(fname, data):
 	if data is None:
 		print(f"Warning: Skipping creation of empty file \"{fname}\"")
@@ -607,6 +592,7 @@ def create_file(fname, data):
 				f.write(data)
 		except FileNotFoundError:
 			print(f"Warning: Failed to create file \"{fname}\"")
+
 
 def readf_file(path, d):
 	# print(f"Calling readf on {path}")
@@ -728,7 +714,9 @@ def getDictVal(d, k, fname):
 	except KeyError:
 		print(f"Missing \"{k}\" in file \"{fname}\"!")
 
-def readDictFile(fname, d={}):
+def readDictFile(fname, d=None):
+	if d is None:
+		d = dict()
 	try:
 		with open(fname) as f:
 			return readDictString(f.read(), d)
@@ -793,18 +781,39 @@ Very much unfinished, currently only supports a handful of minecraft/modloader v
 Usage:
 	python m3ec.py path modenv
 where modenv can be any combination of:
++ all
++ 1.16.5
++ 1.17
++ 1.17.1
++ 1.18
++ 1.18.1
++ 1.18.2
++ fabric
 + fabric1.16.5
++ fabric1.17
 + fabric1.17.1
++ fabric1.18 (ores are broken and will be skipped)
 + fabric1.18.1
 + fabric1.18.2
-+ forge1.16.5 (partial support)
++ forge
++ forge1.16.5
 
 Additionally, modenv may be appended with any combination of:
-+ buildjar (builds mod jar file)
-+ runClient (launches an offline client with the mod installed)
-+ runServer (launches an offline server with the mod installed)
++ buildjar (builds mod into a jar file)
++ runclient (launches an offline client with the mod installed)
++ runserver (launches an offline server with the mod installed)
+
+---------------------------------------------------------------------
+--  input "quit" to quit.
+---------------------------------------------------------------------
 """)
-		exit()
+		while True:
+			d = input("m3ec> ").split(" ")
+			if len(d) > 1:
+				build(d[0], " ".join(d[1:]))
+			elif len(d):
+				if d[0] in ["exit", "quit", "e", "q", "x"]:
+					break
 	else:
 		build(sys.argv[1], " ".join(sys.argv[2:]))
 

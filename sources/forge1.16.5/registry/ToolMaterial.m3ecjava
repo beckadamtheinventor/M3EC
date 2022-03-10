@@ -5,34 +5,34 @@ import net.minecraft.item.IItemTier;
 import net.minecraft.item.crafting.Ingredient;
 
 
-public class ${contentid} implements IItemTier {
+public class ${mod.toolmaterial.${%v}.class} implements IItemTier {
 	@Override
 	public int getUses() {
-		return ${durability};
+		return ${mod.toolmaterial.${%v}.durability};
 	}
 
 	@Override
 	public float getSpeed() {
-		return ${miningspeed};
+		return ${mod.toolmaterial.${%v}.miningspeed};
 	}
 
 	@Override
 	public float getAttackDamageBonus() {
-		return ${attackdamage};
+		return ${mod.toolmaterial.${%v}.attackdamage};
 	}
 
 	@Override
 	public int getLevel() {
-		return ${mininglevel};
+		return ${mod.toolmaterial.${%v}.mininglevel};
 	}
 
 	@Override
 	public int getEnchantmentValue() {
-		return ${enchantability};
+		return ${mod.toolmaterial.${%v}.enchantability};
 	}
 
 	@Override
 	public Ingredient getRepairIngredient() {
-		return Ingredient.of(${repairitem}.get());
+		return Ingredient.of(${mod.toolmaterial.${%v}.repairitem}.get());
 	}
 }

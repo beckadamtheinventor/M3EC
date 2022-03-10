@@ -26,13 +26,11 @@ public class ModItems {
 
     //Items
 ---iter mod.registry.item.names
-	public static final Item ${mod.item.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP)---if mod.item.$%v.maxCount
-.maxCount(${mod.item.$%v.maxCount})---fi);---end
+	public static final Item ${mod.item.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
 	//Food
 ---iter mod.registry.food.names
-	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})${mod.food.$%v.snack}---if mod.food.$%v.alwaysedible
-.alwaysEdible()---fi${mod.food.$%v.statusEffects}));---end
+	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})${mod.food.$%v.snack}${mod.food.$%v.alwaysEdible}${mod.food.$%v.statusEffects}));---end
 
     //Block Items
 ---iter mod.registry.blockitem.names
@@ -44,7 +42,7 @@ public class ModItems {
 
 	//Tool items
 ---iter mod.registry.tool.names
-	public static ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
     public static void RegisterItems() {
 ---iter mod.registry.item.names

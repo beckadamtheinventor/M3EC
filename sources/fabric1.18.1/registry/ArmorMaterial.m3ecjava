@@ -8,13 +8,13 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
-public class ${contentid} implements ArmorMaterial {
+public class ${mod.armormaterial.${%v}.class} implements ArmorMaterial {
 	private static int[] BASE_DURABILITY = new int[] {13, 15, 16, 11};
-	private static int[] PROTECTION_VALUES = new int[] {${protection.helmet}, ${protection.chestplate}, ${protection.leggings}, ${protection.boots}};
+	private static int[] PROTECTION_VALUES = new int[] {${mod.armormaterial.${%v}.protection.helmet}, ${mod.armormaterial.${%v}.protection.chestplate}, ${mod.armormaterial.${%v}.protection.leggings}, ${mod.armormaterial.${%v}.protection.boots}};
 
 	@Override
 	public int getDurability(EquipmentSlot slot) {
-		return BASE_DURABILITY[slot.getEntitySlotId()] * ${durability};
+		return BASE_DURABILITY[slot.getEntitySlotId()] * ${mod.armormaterial.${%v}.durability};
 	}
  
 	@Override
@@ -24,32 +24,32 @@ public class ${contentid} implements ArmorMaterial {
  
 	@Override
 	public int getEnchantability() {
-		return ${enchantability};
+		return ${mod.armormaterial.${%v}.enchantability};
 	}
  
 	@Override
 	public SoundEvent getEquipSound() {
-		return SoundEvents.${sound};
+		return SoundEvents.${mod.armormaterial.${%v}.sound};
 	}
  
 	@Override
 	public Ingredient getRepairIngredient() {
-		return Ingredient.ofItems(${repairitem});
+		return Ingredient.ofItems(${mod.armormaterial.${%v}.repairitem});
 	}
  
 	@Override
 	public String getName() {
-		return "${name}";
+		return "${mod.armormaterial.${%v}.name}";
 	}
  
 	@Override
 	public float getToughness() {
-		return ${toughness};
+		return ${mod.armormaterial.${%v}.toughness}F;
 	}
  
 	@Override
 	public float getKnockbackResistance() {
-		return ${knockbackresistance};
+		return ${mod.armormaterial.${%v}.knockbackresistance}F;
 	}
 }
 

@@ -1,0 +1,18 @@
+package ${mod.package}.blocks;
+
+import net.minecraft.block.*;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.common.ToolType;
+
+public class ${mod.block.$%f.class} extends Block {
+	public ${mod.block.$%f.class}() {
+		super(Block.Properties.of(Material.${mod.block.$%f.material})
+				.strength(${mod.block.$%f.hardness}f, ${mod.block.$%f.resistance}f)
+				.sound(SoundType.${mod.block.$%f.sounds})
+				.harvestLevel(${mod.block.$%f.toollevel})
+				.harvestTool(ToolType.${mod.block.$%f.toolclass})
+				---if mod.block.$%f.requiresTool
+				.requiresCorrectToolForDrops()---fi
+				);
+	}
+}

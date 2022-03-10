@@ -13,13 +13,14 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(
+@Mod
+/*(
 		modid = "${mod.mcpath}",
 		name = "${mod.title}",
 		version = "${mod.version}",
 		useMetadata = false,
 		acceptedMinecraftVersions = "[1.12,1.13)"
-)
+)*/
 public class ${mod.class} {
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -45,5 +46,12 @@ public class ${mod.class} {
             return new ItemStack(ModItems.${mod.iconItem}.get());
         }
     };
+	
+	@SubscribeEvent
+	public void registerBlocks(RegistryEvent.Register<Block> event) {
+		event.getRegistry().registerAll(---list mod.registry.block.names
+										ModBlocks.${mod.block.$%v^UPPER}---end
+);
+	}
 
 }

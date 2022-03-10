@@ -2,10 +2,10 @@
 package ${mod.package}.registry;
 
 import net.minecraft.item.ItemTier;
-import net.minecraft.item.${tooltype};
+import net.minecraft.item.${mod.tool.${%v}.tooltype};
 
-public class ${class} extends ${tooltype} {
-	public ${class}(ItemTier tier, int attackDamage, float attackSpeed, Properties properties) {
+public class ${mod.tool.${%v}.class} extends ${mod.tool.${%v}.tooltype} {
+	public ${mod.tool.${%v}.class}(ItemTier tier, int attackDamage, float attackSpeed, Properties properties) {
 		super(tier, attackDamage, attackSpeed, properties);
 	}
 }

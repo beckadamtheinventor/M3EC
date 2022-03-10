@@ -4,14 +4,14 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.common.ToolType;
 
-public class ${mod.block.$%f.class} extends Block {
-	public ${mod.block.$%f.class}() {
-		super(Block.Properties.of(Material.${mod.block.$%f.material})
-				.strength(${mod.block.$%f.hardness}f, ${mod.block.$%f.resistance}f)
-				.sound(SoundType.${mod.block.$%f.sounds})
-				.harvestLevel(${mod.block.$%f.toollevel})
-				.harvestTool(ToolType.${mod.block.$%f.toolclass})
-				---if mod.block.$%f.requiresTool
+public class ${mod.block.${%v}.class} extends Block {
+	public ${mod.block.${%v}.class}() {
+		super(Block.Properties.of(Material.${mod.block.${%v}.material})
+				.strength(${mod.block.${%v}.hardness}f, ${mod.block.${%v}.resistance}f)
+				.sound(SoundType.${mod.block.${%v}.sounds})
+				.harvestLevel(${mod.block.${%v}.toollevel})
+				.harvestTool(ToolType.${mod.block.${%v}.toolclass})
+				---if mod.block.${%v}.requiresTool
 				.requiresCorrectToolForDrops()---fi
 				);
 	}

@@ -4,30 +4,30 @@ package ${mod.package}.registry;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 
-public class ${contentid} implements ToolMaterial {
-	public static final ${contentid} INSTANCE = new ${contentid}();
+public class ${%v} implements ToolMaterial {
+	public static final ${%v} INSTANCE = new ${%v}();
 	@Override
 	public int getDurability() {
-		return ${durability};
+		return ${mod.toolmaterial.${%v}.durability};
 	}
 	@Override
 	public float getMiningSpeedMultiplier() {
-		return ${miningspeed};
+		return ${mod.toolmaterial.${%v}.miningspeed};
 	}
 	@Override
 	public float getAttackDamage() {
-		return ${attackdamage};
+		return ${mod.toolmaterial.${%v}.attackdamage};
 	}
 	@Override
 	public int getEnchantability() {
-		return ${enchantability};
+		return ${mod.toolmaterial.${%v}.enchantability};
 	}
 	@Override
 	public Ingredient getRepairIngredient() {
-		return Ingredient.ofItems(${repairitem});
+		return Ingredient.ofItems(${mod.toolmaterial.${%v}.repairitem});
 	}
 	@Override
 	public int getMiningLevel() {
-		return ${mininglevel};
+		return ${mod.toolmaterial.${%v}.mininglevel};
 	}
 }

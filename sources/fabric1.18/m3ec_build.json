@@ -1,0 +1,45 @@
+{
+	"modloader": "fabric",
+	"minecraftVersion": "1.18",
+	"javaVersion": "17.",
+	"sources": [
+		{
+			"source": "fabric.mod.m3ecjson",
+			"dest": "src/main/resources/fabric.mod.json"
+		},
+		{
+			"source": "MainClass.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+		},
+		{
+			"source": "registry/ModBlocks.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+		},
+		{
+			"source": "registry/ModItems.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+		},
+		{
+			"iterate": "mod.registry.toolmaterial.names",
+			"source": "registry/ToolMaterial.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.tool.names",
+			"source": "registry/ToolItem.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.armormaterial.names",
+			"source": "registry/ArmorMaterial.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.armor.names",
+			"source": "registry/ArmorItem.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armor.${%v}.class}.java"
+		}
+
+	]
+	
+}

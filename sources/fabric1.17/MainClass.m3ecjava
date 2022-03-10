@@ -31,8 +31,9 @@ public class ${mod.class} implements ModInitializer {
 			${mod.ore.$%v.vein.block}.getDefaultState(),
 			${mod.ore.$%v.vein.size}))
 		.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(
-			UniformHeightProvider.create(
-			YOffset.fixed(${mod.ore.$%v.miny}), 
+			UniformHeightProvider.create(YOffset.fixed---if mod.ore.$%v.vein.atbedrock
+(0)---fi---if mod.ore.$%v.miny
+(${mod.ore.$%v.miny})---fi,
 			YOffset.fixed(${mod.ore.$%v.maxy})))))
 		.spreadHorizontally()
 		.repeat(${mod.ore.$%v.vein.perchunk});---end
