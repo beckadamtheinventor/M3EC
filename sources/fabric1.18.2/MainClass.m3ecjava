@@ -35,21 +35,20 @@ public class ${mod.class} implements ModInitializer {
 		(Feature.ORE, new OreFeatureConfig(OreConfiguredFeatures.STONE_ORE_REPLACEABLES, ${mod.ore.$%v.vein.block}.getDefaultState(), ${mod.ore.$%v.vein.size}));
 
 	public static PlacedFeature OVERWORLD_${mod.ore.$%v.uppercased}_PLACED_FEATURE = new PlacedFeature
-		(RegistryEntry.of(OVERWORLD_RUBY_ORE_ORE_CONFIGURED_FEATURE),
+		(RegistryEntry.of(OVERWORLD_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE),
 ---fi---if mod.ore.$%v.NetherOre
 	private static ConfiguredFeature<?, ?> NETHER_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE = new ConfiguredFeature
 		(Feature.ORE, new OreFeatureConfig(OreConfiguredFeatures.STONE_ORE_REPLACEABLES, ${mod.ore.$%v.vein.block}.getDefaultState(), ${mod.ore.$%v.vein.size}));
 
 	public static PlacedFeature NETHER_${mod.ore.$%v.uppercased}_PLACED_FEATURE = new PlacedFeature
-		(RegistryEntry.of(OVERWORLD_RUBY_ORE_ORE_CONFIGURED_FEATURE),
+		(RegistryEntry.of(NETHER_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE),
 ---fi---if mod.ore.$%v.EndOre
 	private static ConfiguredFeature<?, ?> END_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE = new ConfiguredFeature
 		(Feature.ORE, new OreFeatureConfig(new BlockMatchRuleTest(Blocks.END_STONE), ${mod.ore.$%v.vein.block}.getDefaultState(), ${mod.ore.$%v.vein.size}));
 
-	public static PlacedFeature OVERWORLD_${mod.ore.$%v.uppercased}_PLACED_FEATURE = new PlacedFeature
-		(RegistryEntry.of(OVERWORLD_RUBY_ORE_ORE_CONFIGURED_FEATURE),
----fi
-			Arrays.asList(
+	public static PlacedFeature END_${mod.ore.$%v.uppercased}_PLACED_FEATURE = new PlacedFeature
+		(RegistryEntry.of(END_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE),
+---fi			Arrays.asList(
 				CountPlacementModifier.of(10),
 				SquarePlacementModifier.of(),
 				HeightRangePlacementModifier.uniform(---if mod.ore.$%v.vein.atbedrock

@@ -112,29 +112,6 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	path = project_path
 
 	if "fabric1.18.2" in modenv or modenv == "1.18.2" or modenv == "all" or modenv == "fabric":
-		print("Building fabric 1.18.2 mod project")
-		manifest_dict["modloader"] = "fabric"
-
-		build_resources(project_path, "fabric1.18.2", manifest_dict)
-
-		data = readf_file(os.path.join(source_path, "fabric1.18.2", "MainClass.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.2/MainClass.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, f"{modclass}.java"), data)
-
-		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModBlocks.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.2/registry/ModBlocks.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, "registry", "ModBlocks.java"), data)
-
-		data = readf_file(os.path.join(source_path, "fabric1.18.2", "registry", "ModItems.m3ecjava"), manifest_dict)
-		if data is None:
-			print("Warning: Failed to read source \"fabric1.18.2/registry/ModItems.m3ecjava\"")
-		else:
-			create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "java", modmcpathdir, "registry", "ModItems.java"), data)
-
 		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft"))
 		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags"))
 		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks"))
@@ -181,7 +158,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.m3ecjson"),
 					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toollevel}.m3ecjson"), manifest_dict))
 
-		maybe_run_gradle(os.path.join(project_path, "fabric1.18.2_build"), modenv, "17.")
+		build_mod("fabric", "1.18.2", modenv, manifest_dict)
 
 	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
 		print("Fabric 1.18.0 builds are broken right now; ores will be skipped.")
