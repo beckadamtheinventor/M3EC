@@ -111,7 +111,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "sources")
 	path = project_path
 
-	if "fabric1.18.2" in modenv or modenv == "1.18.2" or modenv == "all" or modenv == "fabric":
+	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
 		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft"))
 		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags"))
 		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks"))
