@@ -1,7 +1,8 @@
 {
     "type": "minecraft:blasting",
-    "ingredient": {
-        "item": "${ingredient}"
+    "ingredient": {---if ingredient
+        "item": "${ingredient}"---fi---if ingredienttag
+		"tag": "${ingredienttag}"
     },
     "result": "${result}",
     "experience": ${experience},

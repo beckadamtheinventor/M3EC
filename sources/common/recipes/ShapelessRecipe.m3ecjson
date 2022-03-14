@@ -2,7 +2,9 @@
     "type": "minecraft:crafting_shapeless",
     "ingredients": [
 ---list ingredients
-		{"item": "$%v"}---end
+---if $%v #contains tag:
+		{"tag": "$%v"}---fi---if !$%v #contains tag:
+		{"item": "$%v"}---fi---end
     ],
     "result": {
         "item": "${result}",

@@ -1,12 +1,14 @@
 {
-    "type": "minecraft:smithing",
-    "base": {
-        "item": "${ingredient}"
-    },
-    "addition": {
-        "item": "${ingredient2}"
-    },
-    "result": {
-        "item": "${result}"
-    }
+	"type": "minecraft:smithing",
+	"base": {---if ingredient
+		"item": "${ingredient}"---fi---if ingredienttag
+		"tag": "${ingredienttag}"
+	},
+	"addition": {---if ingredient2
+        "item": "${ingredient2}"---fi---if ingredient2tag
+		"tag": "${ingredient2tag}"
+	},
+	"result": {
+		"item": "${result}"
+	}
 }

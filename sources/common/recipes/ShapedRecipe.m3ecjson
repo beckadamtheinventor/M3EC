@@ -5,8 +5,10 @@
 		$%v---end
     ],
     "key": {
----list itemkeys
-		"$%v": {"item": "${items.list.$%i}"}---end
+---list items
+---if $%v #contains tag:
+		"${itemkeys.list.$%i}": {"tag": "$%v"}---fi---if !$%v #contains tag:
+		"${itemkeys.list.$%i}": {"item": "$%v"}---fi---end
     },
     "result": {
         "item": "${result}",

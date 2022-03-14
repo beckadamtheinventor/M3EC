@@ -7,6 +7,6 @@ contentid: ruby_hoe_reversed
 +itemkeys:  #
 +items:     testrubymod:ruby
 +itemkeys:  s
-+items:     minecraft:stick
++items:     tag:minecraft:sticks
 result:     testrubymod:ruby_hoe
 count:      1

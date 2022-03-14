@@ -1,7 +1,8 @@
 {
     "type": "minecraft:smelting",
-    "ingredient": {
-        "item": "${ingredient}"
+    "ingredient": {---if ingredienttag
+        "tag": "${ingredienttag}"---fi---if ingredient
+		"item": "${ingredient}---fi
     },
     "result": "${result}",
     "experience": ${experience},

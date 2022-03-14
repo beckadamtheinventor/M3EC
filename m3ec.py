@@ -112,11 +112,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	path = project_path
 
 	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
-		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft"))
-		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags"))
-		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks"))
-		make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable"))
+		build_mod("fabric", "1.18.2", modenv, manifest_dict)
 		
+		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft"))
+		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags"))
+		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks"))
+		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable"))
+
 		toolclasses = ["axe", "pickaxe", "shovel", "hoe"]
 		toollevels = ["stone", "iron", "diamond"]
 		for toolclass in toolclasses:
@@ -125,6 +127,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			manifest_dict[f"mod.registry.requires_{toollevel}"] = []
 		
 		for block in manifest_dict["mod.registry.block.names"]:
+			# print(block, manifest_dict[f"mod.block.{block}.toolclass"], manifest_dict[f"mod.block.{block}.toollevel"])
+
 			toollevel = toolclass = None
 			if f"mod.block.{block}.toolclass" in manifest_dict.keys():
 				toolclass = manifest_dict[f"mod.block.{block}.toolclass"]
@@ -149,16 +153,16 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 				manifest_dict[f"mod.block.{block}.hastoolrequirements"] = "true"
 				manifest_dict[f"mod.registry.requires_{toolclass}"].append(block)
 				manifest_dict[f"mod.registry.requires_{toollevel}"].append(block)
+
 		for toolclass in toolclasses:
 			if len(manifest_dict[f"mod.registry.requires_{toolclass}"]):
-				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable", f"{toolclass}.m3ecjson"),
+				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable", f"{toolclass}.json"),
 					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toolclass}.m3ecjson"), manifest_dict))
 		for toollevel in toollevels:
 			if len(manifest_dict[f"mod.registry.requires_{toollevel}"]):
-				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.m3ecjson"),
+				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.json"),
 					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toollevel}.m3ecjson"), manifest_dict))
 
-		build_mod("fabric", "1.18.2", modenv, manifest_dict)
 
 	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
 		print("Fabric 1.18.0 builds are broken right now; ores will be skipped.")
@@ -392,16 +396,20 @@ def build_resources(project_path, builddir, manifest_dict):
 				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
 				manifest_dict[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
 				copy_textures(content_type, cid, manifest_dict, project_path, block_textures_assets_dir)
-				statename = manifest_dict["blockstatetype"]
-				if tname.lower() == "custom":
-					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockmodel"]), manifest_dict))
+				if "blockstatetype" in manifest_dict.keys():
+					statename = manifest_dict["blockstatetype"]
+				else:
+					statename = "Single"
+				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.m3ecjson"), manifest_dict))
+				create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".m3ecjson"), manifest_dict))
+				if statename == "3Axis":
+					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_side.m3ecjson"), manifest_dict))
+				elif statename == "Trapdoor":
+					create_file(os.path.join(block_models_assets_dir, cid+"_bottom.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_bottom.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_open.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_open.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_top.m3ecjson"), manifest_dict))
 				else:
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), manifest_dict))
-				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.m3ecjson"), manifest_dict))
-				if statename.lower() == "custom":
-					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(project_path, manifest_dict["blockstate"]), manifest_dict))
-				else:
-					create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".m3ecjson"), manifest_dict))
 				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
 				if dtype.lower() != "none":
 					create_file(os.path.join(block_loot_table_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_loot_tables", dtype+".m3ecjson"), manifest_dict))
@@ -514,25 +522,19 @@ def find_jdk(path, javaver):
 def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 	project_tex_path = os.path.join(project_path, manifest_dict["mod.textures"])
 	# print(project_tex_path)
-	if f"mod.{content_type}.{cid}.texture" in manifest_dict.keys():
-		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
-		manifest_dict["texture"] = os.path.basename(tex)
-	if f"mod.{content_type}.{cid}.texture_top" in manifest_dict.keys():
-		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_top"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
-		manifest_dict["texture_top"] = os.path.basename(tex)
-	if f"mod.{content_type}.{cid}.texture_bottom" in manifest_dict.keys():
-		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_bottom"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
-		manifest_dict["texture_bottom"] = os.path.basename(tex)
-	if f"mod.{content_type}.{cid}.texture_side" in manifest_dict.keys():
-		tex = texture_pathify(manifest_dict[f"mod.{content_type}.{cid}.texture_side"])
-		copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
-		manifest_dict["texture_side"] = os.path.basename(tex)
+	for side in ["", "_top", "_bottom", "_side", "_front", "_back"]:
+		if f"mod.{content_type}.{cid}.texture{side}" in manifest_dict.keys():
+			tex = texture_pathify(manifest_dict, f"mod.{content_type}.{cid}.texture{side}", content_type, cid)
+			copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
+			manifest_dict[f"texture{side}"] = os.path.basename(tex)
 
-def texture_pathify(tex):
+def texture_pathify(tex, d, ct, cid):
 	tex, ext = os.path.splitext(tex)
+	if ":" not in tex:
+		mod = d["mod.mcpath"]
+		if "/" not in tex:
+			return f"{mod}:{ct}/{tex}"
+		return f"{mod}:{tex}"
 	return tex
 
 def make_dir(path):
@@ -639,18 +641,36 @@ def readf(data, d):
 			i = data.find("---if ", j)
 			data2.append(data[j:i])
 			n = data.find("\n", i+6)
-			key = data[i+6:n]
+			if data[i+6] == '!':
+				inverted = True
+				key = data[i+7:n]
+			else:
+				inverted = False
+				key = data[i+6:n]
+			if " " in key:
+				key, tail = key.split(" ", maxsplit=1)
+			else:
+				tail = []
+			condtrue = False
+			if "#contains" in tail:
+				if len(tail):
+					if all([w in key for w in tail[1:]]):
+						condtrue = True
+						for w in tail[1:]:
+							key = key.replace(w, "")
+				elif len(key):
+					condtrue = True
+			elif key in d.keys():
+				condtrue = True
+			if inverted:
+				condtrue = not condtrue
 			# print(f"Checking if {key} is defined. ",end="")
 			j = data.find("---fi",n)
-			if key in d.keys():
+			if condtrue:
 				# print("key found.")
-				l = d[key]
 				data2.append(data[n:j])
 				# print(data2[-1])
-				j += 5
-			else:
-				# print("key not found.")
-				j += 5
+			j += 5
 		data2.append(data[j:])
 		data = "".join(data2)
 

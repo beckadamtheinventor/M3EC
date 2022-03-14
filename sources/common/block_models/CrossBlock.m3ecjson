@@ -1,6 +1,6 @@
 {
     "parent": "block/cross",
     "textures": {
-        "cross": "${mod.mcpath}:blocks/${texture}"
+        "cross": "${texture}"
     }
 }
