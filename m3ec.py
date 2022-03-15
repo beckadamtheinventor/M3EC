@@ -100,12 +100,82 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 						if "contentid" in d.keys():
 							cid = d["contentid"]
 							add_content(cid, content_type, d, manifest_dict)
+						if content_type == "block":
+							midcid = manifest_dict["mod.mcpath"]+":"+cid
+							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
+								old_title = d["title"]
+								d["title"] = d["title"]+" Slab"
+								d["contentid"] = cid+"_slab"
+								d["droptype"] = "Self"
+								d["blockstatetype"] = "Slab"
+								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
+								d["BlockClass"] = "SlabBlock"
+								add_content(cid+"_slab", content_type, d, manifest_dict)
+								d["title"] = old_title
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
+									add_content(cid+"_slab", "recipe", {
+										"@": "recipe", "recipe": "ShapedRecipe",
+										"pattern": ['"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+										"result": midcid+"_slab", "count": "6",
+									}, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.stonecuttingrecipe"):
+									add_content(cid+"_slab_stonecutter", "recipe", {
+										"@": "recipe", "recipe": "StoneCuttingRecipe",
+										"ingredient": midcid, "result": midcid+"_slab", "count": "2",
+									}, manifest_dict)
+							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs"):
+								old_title = d["title"]
+								d["title"] = d["title"]+" Stairs"
+								d["contentid"] = cid+"_stairs"
+								d["droptype"] = "Self"
+								d["blockstatetype"] = "Stair"
+								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
+								d["BlockClass"] = "ModStairsBlock"
+								d["BlockMaterialBlock"] = cid
+								add_content(cid+"_stairs", content_type, d, manifest_dict)
+								d["title"] = old_title
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
+									add_content(cid+"_stairs", "recipe", {
+										"@": "recipe", "recipe": "ShapedRecipe",
+										"pattern": ['"#  "', '"## "', '"###"'], "items": [midcid], "itemkeys": ["#"],"itemkeys.list.0": "#",
+										"result": midcid+"_stairs", "count": "4",
+									}, manifest_dict)
+									add_content(cid+"_stairs_reversed", "recipe", {
+										"@": "recipe", "recipe": "ShapedRecipe",
+										"pattern": ['"  #"', '" ##"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+										"result": midcid+"_stairs", "count": "4",
+									}, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.stonecuttingrecipe"):
+									add_content(cid+"_stairs_stonecutter", "recipe", {
+										"@": "recipe", "recipe": "StoneCuttingRecipe",
+										"ingredient": midcid, "result": midcid+"_stairs", "count": "1",
+									}, manifest_dict)
+							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
+								old_title = d["title"]
+								d["title"] = d["title"]+" Trapdoor"
+								d["contentid"] = cid+"_trapdoor"
+								d["droptype"] = "Self"
+								d["blockstatetype"] = "Trapdoor"
+								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
+								d["BlockClass"] = "SlabBlock"
+								add_content(cid+"_trapdoor", content_type, d, manifest_dict)
+								d["title"] = old_title
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
+									add_content(cid+"_trapdoor", "recipe", {
+										"@": "recipe", "recipe": "ShapedRecipe",
+										"pattern": ['"###"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+										"result": midcid+"_trapdoor", "count": "2",
+									}, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.stonecuttingrecipe"):
+									add_content(cid+"_slab_stonecutter", "recipe", {
+										"@": "recipe", "recipe": "StoneCuttingRecipe",
+										"ingredient": midcid, "result": midcid+"_trapdoor", "count": "1",
+									}, manifest_dict)
 						else:
 							print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
 				else:
 					print(f"Warning: Skipping file \"{fname}\" due to missing content type.")
 
-	# for key in manifest_dict.keys():
 		# print(f"{key}: {manifest_dict[key]}")
 
 	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "sources")
@@ -405,9 +475,17 @@ def build_resources(project_path, builddir, manifest_dict):
 				if statename == "3Axis":
 					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_side.m3ecjson"), manifest_dict))
 				elif statename == "Trapdoor":
-					create_file(os.path.join(block_models_assets_dir, cid+"_bottom.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_bottom.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_open.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_open.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_top.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_bottom.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_bottom.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_open.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_open.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_top.m3ecjson"), manifest_dict))
+				elif statename == "Slab":
+					create_file(os.path.join(block_models_assets_dir, cid+"_double.json"), readf_file(os.path.join(commons_path, "block_models", "SimpleBlock.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", statename+".m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_top.m3ecjson"), manifest_dict))
+				elif statename == "Stair":
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", "Stair.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_inner.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_inner.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_outer.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_outer.m3ecjson"), manifest_dict))
 				else:
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), manifest_dict))
 				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
@@ -463,10 +541,12 @@ def add_content(cid, content_type, d, manifest_dict):
 		manifest_dict[f"mod.{content_type}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
 		manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
 	else:
-		print(f"Found more than one instance of {content_type} \"{cid}\"! Aborting.")
+		print(f"Found more than one instance of \"{cid}\" for content type \"{content_type}\"! Aborting.")
 		exit()
 	if content_type == "item" and "mod.iconItem" not in manifest_dict.keys():
 		manifest_dict["mod.iconItem"] = manifest_dict[f"mod.{content_type}.{cid}.uppercased"]
+
+
 
 def maybe_run_gradle(path, modenv, javaver):
 	path = os.path.abspath(path)
@@ -524,18 +604,27 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 	# print(project_tex_path)
 	for side in ["", "_top", "_bottom", "_side", "_front", "_back"]:
 		if f"mod.{content_type}.{cid}.texture{side}" in manifest_dict.keys():
-			tex = texture_pathify(manifest_dict, f"mod.{content_type}.{cid}.texture{side}", content_type, cid)
+			tex, ext = os.path.splitext(manifest_dict[f"mod.{content_type}.{cid}.texture{side}"])
 			copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
-			manifest_dict[f"texture{side}"] = os.path.basename(tex)
+			manifest_dict[f"texture{side}"] = texture_pathify(manifest_dict, tex, content_type, cid)
 
-def texture_pathify(tex, d, ct, cid):
+def texture_pathify(d, tex, ct, cid):
 	tex, ext = os.path.splitext(tex)
 	if ":" not in tex:
+		if ct in ["tool", "armor", "blockitem", "food", "fuel"]:
+			ct = "item"
 		mod = d["mod.mcpath"]
-		if "/" not in tex:
-			return f"{mod}:{ct}/{tex}"
-		return f"{mod}:{tex}"
+		return f"{mod}:{ct}s/{os.path.basename(tex)}"
 	return tex
+
+def checkDictKeyTrue(d, key):
+	if key in d.keys():
+		if type(d[key]) is str:
+			if d[key].lower() in ["true", "yes", "1"]:
+				return True
+		else:
+			return d[key]
+	return False
 
 def make_dir(path):
 	try:
@@ -720,48 +809,98 @@ def readDictFile(fname, d=None):
 	except FileNotFoundError:
 		return None
 
-def readDictString(data, d={}):
+# def readDictString(data, d={}):
+	# ns = ""
+	# for line in data.splitlines():
+		# if len(line) and not line.startswith("#"):
+			# if ":" in line:
+				# name, value = line.split(":",maxsplit=1)
+				# v = value.lstrip(" \t")
+				# if line.startswith("+"):
+					# if line.startswith("+."):
+						# if len(name)>2:
+							# k = ns+name[1:]
+							# if k not in d.keys():
+								# d[f"{k}.list.0"] = v
+								# d[k] = [v]
+							# elif type(d[k]) is list:
+								# n = len(d[k])
+								# d[f"{k}.list.{n}"] = v
+								# d[k].append(v)
+							# else:
+								# d[f"{k}.list.{n}"] = v
+								# d[k] += v
+						# else:
+							# d[ns].append(v)
+					# else:
+						# k = name[1:]
+						# if k not in d.keys():
+							# d[f"{k}.list.0"] = v
+							# d[k] = [v]
+						# elif type(d[k]) is list:
+							# n = len(d[k])
+							# d[f"{k}.list.{n}"] = v
+							# d[k].append(v)
+						# else:
+							# n = len(d[k])
+							# d[f"{k}.list.{n}"] = v
+							# d[k] += v
+				# elif line.startswith("."):
+					# d[ns+name] = v
+				# else:
+					# ns = name
+					# d[name] = v
+	# return d
+
+def readDictString(data, d=None):
+	if d is None:
+		d = {}
 	ns = ""
+	lineno = 1
+	d["#comments"] = {}
 	for line in data.splitlines():
 		if len(line) and not line.startswith("#"):
 			if ":" in line:
 				name, value = line.split(":",maxsplit=1)
 				v = value.lstrip(" \t")
-				if line.startswith("+"):
-					if line.startswith("+."):
-						if len(name)>2:
-							k = ns+name[1:]
-							if k not in d.keys():
-								d[f"{k}.list.0"] = v
-								d[k] = [v]
-							elif type(d[k]) is list:
-								n = len(d[k])
-								d[f"{k}.list.{n}"] = v
-								d[k].append(v)
-							else:
-								d[f"{k}.list.{n}"] = v
-								d[k] += v
-						else:
-							d[ns].append(v)
-					else:
-						k = name[1:]
+				if line.startswith("+.") or line.startswith(".+"):
+					if len(name)>2:
+						k = f"{ns}.{name[2:]}"
 						if k not in d.keys():
-							d[f"{k}.list.0"] = v
+							d[f"{k}^list.0"] = v
 							d[k] = [v]
 						elif type(d[k]) is list:
 							n = len(d[k])
-							d[f"{k}.list.{n}"] = v
+							d[f"{k}^list.{n}"] = v
 							d[k].append(v)
 						else:
-							n = len(d[k])
-							d[f"{k}.list.{n}"] = v
+							d[f"{k}^list.{n}"] = v
 							d[k] += v
+					else:
+						d[ns].append(v)
+				elif line.startswith("+"):
+					k = name[1:]
+					if k not in d.keys():
+						d[f"{k}^list.0"] = v
+						d[k] = [v]
+					elif type(d[k]) is list:
+						n = len(d[k])
+						d[f"{k}^list.{n}"] = v
+						d[k].append(v)
+					else:
+						n = len(d[k])
+						d[f"{k}^list.{n}"] = v
+						d[k] += v
 				elif line.startswith("."):
 					d[ns+name] = v
 				else:
 					ns = name
 					d[name] = v
+		else:
+			d["#comments"][lineno] = line
+		lineno += 1
 	return d
+
 
 def ospath(path):
 	if sys.platform == "win32":

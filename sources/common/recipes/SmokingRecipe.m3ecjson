@@ -1,9 +1,8 @@
 {
     "type": "minecraft:smoking",
-	"ingredient": {---if ingredient
-        "item": "${ingredient}"---fi---if ingredienttag
-		"tag": "${ingredienttag}"
-    },
+	"ingredient": {
+        "item": "${ingredient}"
+	},
     "result": "${result}",
     "experience": ${experience},
     "cookingtime": ${time}

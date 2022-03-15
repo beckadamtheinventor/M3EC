@@ -32,10 +32,6 @@ public class ModItems {
 ---iter mod.registry.food.names
 	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})${mod.food.$%v.snack}${mod.food.$%v.alwaysEdible}${mod.food.$%v.statusEffects}));---end
 
-    //Block Items
----iter mod.registry.blockitem.names
-	public static final BlockItem ${mod.blockitem.$%v.uppercased} = new BlockItem(ModBlocks.${mod.blockitem.$%v.uppercased}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
-
 	//Armor items
 ---iter mod.registry.armor.names
 	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material}, EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
@@ -49,8 +45,6 @@ public class ModItems {
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.item.$%v.uppercased});---end
 ---iter mod.registry.food.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.food.$%v.uppercased});---end
----iter mod.registry.blockitem.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.blockitem.$%v.uppercased});---end
 ---iter mod.registry.fuel.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.fuel.$%v.uppercased});
 		FuelRegistry.INSTANCE.add(${mod.fuel.$%v.uppercased}, ${mod.fuel.$%v.burntime});---end

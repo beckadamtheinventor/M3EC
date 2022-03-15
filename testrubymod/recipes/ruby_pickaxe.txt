@@ -7,6 +7,6 @@ contentid: ruby_pickaxe
 +itemkeys:  #
 +items:     testrubymod:ruby
 +itemkeys:  s
-+items:     tag:minecraft:sticks
++items:     minecraft:stick
 result:     testrubymod:ruby_pickaxe
 count:      1

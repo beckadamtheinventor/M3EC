@@ -1,6 +1,8 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
+import ${mod.package}.StairBlock;
+import ${mod.package}.SlabBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.Block;
@@ -11,7 +13,8 @@ import net.minecraft.util.registry.Registry;
 
 public class ModBlocks {
 ---iter mod.registry.block.names
-	public static final Block ${mod.block.$%v.uppercased} = new Block(FabricBlockSettings
+	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
+${mod.block.$%v.BlockMaterialBlock^UPPER},---fiFabricBlockSettings
 		.of(Material.${mod.block.$%v.material})
 		.breakByTool(FabricToolTags.${mod.block.$%v.toolclass},${mod.block.$%v.toollevel})
 		---if mod.block.$%v.requiresTool
@@ -19,9 +22,19 @@ public class ModBlocks {
 		.strength(${mod.block.$%v.hardness}f,${mod.block.$%v.resistance}f)
 		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
 
+	private static Block registerBlock(String name, Block block, ItemGroup group) {
+		registerBlockItem(name, block, group);
+		return Registry.register(Registry.BLOCK, new Identifier(${mod.mcpath}.MOD_ID, name), block);
+	}
+
+	private static Item registerBlockItem(String name, Block block, ItemGroup group) {
+		return Registry.register(Registry.ITEM, new Identifier(${mod.mcpath}.MOD_ID, name),
+				new BlockItem(block, new FabricItemSettings().group(group)));
+	}
+
     public static void RegisterBlocks() {
 ---iter mod.registry.block.names
-		Registry.register(Registry.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v.uppercased});---end
+		registerBlock("$%v", ${mod.block.$%v.uppercased}, ${mod.class}.ITEM_GROUP);---end
     }
 
 }

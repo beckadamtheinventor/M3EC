@@ -7,6 +7,6 @@ contentid: ruby_shovel
 +itemkeys:  #
 +items:     testrubymod:ruby
 +itemkeys:  s
-+items:     tag:minecraft:sticks
++items:     minecraft:stick
 result:     testrubymod:ruby_shovel
 count:      1

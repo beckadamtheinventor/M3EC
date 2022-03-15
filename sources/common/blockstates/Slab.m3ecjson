@@ -1,13 +1,13 @@
 {
   "variants": {
     "type=bottom": {
-      "model": "${cid}_bottom"
+      "model": "${mod.mcpath}:block/${contentid}"
     },
     "type=double": {
-      "model": "${cid}"
+      "model": "${mod.mcpath}:block/${contentid}_double"
     },
     "type=top": {
-      "model": "${cid}_top"
+      "model": "${mod.mcpath}:block/${contentid}_top"
     }
   }
 }
