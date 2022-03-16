@@ -1,4 +1,3 @@
-
 #------ M3EC config file language explanation -------
 #This is a comment.
 #variable:  value       sets variable to value

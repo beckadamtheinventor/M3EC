@@ -1,5 +1,9 @@
 
-import os, sys, json, subprocess, shutil
+import os, sys, json, shutil
+
+from _m3ec.actions import *
+from _m3ec.gradle import *
+from _m3ec.util import *
 
 def build(project_path, modenv):
 	if " " in modenv:
@@ -7,7 +11,7 @@ def build(project_path, modenv):
 	else:
 		modenv = [modenv]
 	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment"]
-	source_path = os.path.join(os.path.dirname(__file__),"sources")
+	source_path = os.path.join(os.path.dirname(__file__), "data")
 
 	if not os.path.exists(project_path):
 		print(f"Manifest file \"{project_path}\" not found. Aborting.")
@@ -79,27 +83,31 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		manifest_dict[f"mod.registry.{content_type}.names"] = []
 
 	manifest_dict[f"mod.registry.blockitem.names"] = []
+	manifest_dict[f"mod.files"] = {}
 
 	for path in manifest_dict["mod.paths"]:
-		for fname in walk(ospath(os.path.join(project_path, path))):
+		for fname in walk(os.path.normpath(os.path.join(project_path, path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec"):
 				d = readDictFile(fname)
 				if "@" in d.keys():
+					if "contentid" not in d.keys():
+						print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
+						continue
 					content_type = d["@"]
 					if content_type == "itemfactory":
 						for cid in d["items"]:
 							dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":cid+".png"}
-							add_content(cid, "item", dictinst, manifest_dict)
+							add_content(cid, "item", dictinst, manifest_dict, fname)
 					elif content_type == "recipe":
 						if "contentid" in d.keys():
 							cid = d["contentid"]
 						else:
 							cid = os.path.splitext(os.path.split(fname)[-1])[0]
-						add_content(cid, content_type, d, manifest_dict)
+						add_content(cid, content_type, d, manifest_dict, fname)
 					else:
 						if "contentid" in d.keys():
 							cid = d["contentid"]
-							add_content(cid, content_type, d, manifest_dict)
+							add_content(cid, content_type, d, manifest_dict, fname)
 						if content_type == "block":
 							midcid = manifest_dict["mod.mcpath"]+":"+cid
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
@@ -171,17 +179,16 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 										"@": "recipe", "recipe": "StoneCuttingRecipe",
 										"ingredient": midcid, "result": midcid+"_trapdoor", "count": "1",
 									}, manifest_dict)
-						else:
-							print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
 				else:
 					print(f"Warning: Skipping file \"{fname}\" due to missing content type.")
 
 		# print(f"{key}: {manifest_dict[key]}")
 
-	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "sources")
+	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
 	path = project_path
 
-	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
+	if "fabric1.18.2" in modenv:
+ # or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv
 		build_mod("fabric", "1.18.2", modenv, manifest_dict)
 		
 		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft"))
@@ -227,11 +234,11 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		for toolclass in toolclasses:
 			if len(manifest_dict[f"mod.registry.requires_{toolclass}"]):
 				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable", f"{toolclass}.json"),
-					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toolclass}.m3ecjson"), manifest_dict))
+					readf_file(os.path.join(os.path.dirname(__file__), "data", f"requires_{toolclass}.m3ecjson"), manifest_dict))
 		for toollevel in toollevels:
 			if len(manifest_dict[f"mod.registry.requires_{toollevel}"]):
 				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.json"),
-					readf_file(os.path.join(os.path.dirname(__file__), "sources", f"requires_{toollevel}.m3ecjson"), manifest_dict))
+					readf_file(os.path.join(os.path.dirname(__file__), "data", f"requires_{toollevel}.m3ecjson"), manifest_dict))
 
 
 	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
@@ -253,7 +260,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
 		build_mod("forge", "1.16.5", modenv, manifest_dict)
 
-	if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
+	if "forge1.12.2" in modenv:
+	# or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
 		build_mod("forge", "1.12.2", modenv, manifest_dict)
 
 
@@ -315,66 +323,8 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	return True
 
-def execActions(actions, versionbuilder, d):
-	if "actionvars" in d.keys():
-		d["actionvars"] = {"oldvars": d["actionvars"], "accumulator": None}
-	else:
-		d["actionvars"] = {"accumulator": None}
-	_execActions(actions, versionbuilder, d)
-
-def _execActions(actions, versionbuilder, d):
-	for action in actions:
-		a = action["action"]
-		if a == "var":
-			if "source" in action.keys() and "dest" in action.keys():
-				d["actionvars"][action["dest"]] = d["actionvars"][action["source"]]
-			elif "name" in action.keys() and "value" in action.keys():
-				d["actionvars"][action["name"]] = action["value"]
-		elif a == "doActions":
-			cond = None
-			if "while" in action.keys() and "var" in action.keys():
-				cond = action["var"]
-			while True:
-				_execActions(action["actions"], versionbuilder, d)
-				if cond is None:
-					break
-				if not d["actionvars"][cond]:
-					break
-		elif a == "repeatActions":
-			rep = 1
-			if "repeat" in action.keys():
-				rep = int(action["repeat"])
-			for i in range(rep):
-				_execActions(action["actions"], versionbuilder, d)
-		elif a == "makedir" or a == "make_dir":
-			make_dir(os.path.join(d["build_path"], readf(action["value"], d)))
-		elif a == "readf":
-			if "file" in action.keys():
-				d["$%f"] = action["file"]
-				accumulator = readf_file(readf(action["file"], d), d)
-			else:
-				accumulator = readf(action["value"], d)
-		elif a == "copy" or a == "move":
-			if "source" in action.keys() and "dest" in action.keys():
-				accumulator = readf(action["source"], d)
-				if os.exists(accumulator):
-					if a == "copy":
-						shutil.copy(fname, readf(action["dest"], d))
-					elif a == "move":
-						shutil.move(fname, readf(action["dest"], d))
-				else:
-					accumulator = None
-			elif "file" in action.keys():
-				fname = readf(action["file"], d)
-				if os.exists(fname):
-					with open(fname) as f:
-						accumulator = f.read()
-				else:
-					accumulator = None
-
-
 def build_resources(project_path, builddir, manifest_dict):
-	source_path = os.path.join(os.path.dirname(__file__),"sources")
+	source_path = os.path.join(os.path.dirname(__file__),"data")
 	src = os.path.join(source_path, builddir, "gradle")
 	dest = os.path.join(project_path, builddir+"_build")
 	commons_path = os.path.join(source_path, "common")
@@ -529,76 +479,6 @@ def build_resources(project_path, builddir, manifest_dict):
 			json.dump(langdict[lang], f)
 
 
-def add_content(cid, content_type, d, manifest_dict):
-	# print(f"registering {content_type} {cid}.")
-	if cid not in manifest_dict[f"mod.registry.{content_type}.names"]:
-		manifest_dict[f"mod.registry.{content_type}.names"].append(cid)
-		manifest_dict[f"mod.{content_type}.{cid}.keys"] = list(d.keys())
-		for key in d.keys():
-			# print(f"mod.{content_type}.{cid}.{key} = {d[key]}")
-			manifest_dict[f"mod.{content_type}.{cid}.{key}"] = d[key]
-		manifest_dict[f"mod.{content_type}.{cid}.uppercased"] = cid.upper()
-		manifest_dict[f"mod.{content_type}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
-		manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
-	else:
-		print(f"Found more than one instance of \"{cid}\" for content type \"{content_type}\"! Aborting.")
-		exit()
-	if content_type == "item" and "mod.iconItem" not in manifest_dict.keys():
-		manifest_dict["mod.iconItem"] = manifest_dict[f"mod.{content_type}.{cid}.uppercased"]
-
-
-
-def maybe_run_gradle(path, modenv, javaver):
-	path = os.path.abspath(path)
-	modenvlow = [m.lower() for m in modenv]
-	if "buildjar" in modenvlow or "runclient" in modenvlow or "runserver" in modenvlow:
-		javapath = find_java_version(javaver)
-		if javapath is not None:
-			javapath = "-Dorg.gradle.java.home="+javapath
-		if sys.platform.startswith("win32"):
-			fname = "gradlew.bat"
-		else:
-			fname = "gradlew"
-
-	if "buildjar" in modenv:
-		subprocess.Popen([os.path.join(path, fname), "build", "jar", javapath], cwd=path).wait()
-	if "runClient" in modenv:
-		subprocess.Popen([os.path.join(path, fname), "runClient", javapath], cwd=path).wait()
-	if "runServer" in modenv:
-		subprocess.Popen([os.path.join(path, fname), "runServer", javapath], cwd=path).wait()
-
-
-def find_java_version(javaver):
-	if sys.platform.startswith("win32"):
-		javapath = find_jdk("C:\\Program Files\\Java", javaver)
-		if javapath is None:
-			javapath = find_jdk("C:\\Program Files (x86)\\Java", javaver)
-	else:
-		javapath = find_jdk("/usr/lib/jvm", javaver)
-
-	if javapath is None:
-		try:
-			return input(f"Input path to Java jdk {javaver} by pasting or typing it here and pressing enter.\n\
-	Or type \"default\" to use system default java path.\n")
-		except:
-			pass
-
-		if javapath.lower() == "default":
-			print(f"Using default Java for Java jdk {javaver}")
-			return None
-		else:
-			return os.path.normpath(javapath)
-
-	return javapath
-
-def find_jdk(path, javaver):
-	if os.path.exists(path):
-		for root, dirs, files in os.walk(path):
-			for d in dirs:
-				if javaver in d and d.startswith("jdk"):
-					return os.path.join(root, d)
-	return None
-
 def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 	project_tex_path = os.path.join(project_path, manifest_dict["mod.textures"])
 	# print(project_tex_path)
@@ -607,306 +487,6 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 			tex, ext = os.path.splitext(manifest_dict[f"mod.{content_type}.{cid}.texture{side}"])
 			copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
 			manifest_dict[f"texture{side}"] = texture_pathify(manifest_dict, tex, content_type, cid)
-
-def texture_pathify(d, tex, ct, cid):
-	tex, ext = os.path.splitext(tex)
-	if ":" not in tex:
-		if ct in ["tool", "armor", "blockitem", "food", "fuel"]:
-			ct = "item"
-		mod = d["mod.mcpath"]
-		return f"{mod}:{ct}s/{os.path.basename(tex)}"
-	return tex
-
-def checkDictKeyTrue(d, key):
-	if key in d.keys():
-		if type(d[key]) is str:
-			if d[key].lower() in ["true", "yes", "1"]:
-				return True
-		else:
-			return d[key]
-	return False
-
-def make_dir(path):
-	try:
-		os.mkdir(path)
-	except FileExistsError:
-		pass
-
-
-def copy_file(src, dest):
-	try:
-		with open(src, "rb") as f:
-			with open(dest, "wb") as f2:
-				f2.write(f.read())
-	except FileNotFoundError:
-		print(f"Failed to copy file \"{src}\" into \"{dest}\"")
-		exit(1)
-
-
-def readf_copyfile(source, dest, d):
-	data = readf_file(source, d)
-	if data is None:
-		return False
-	create_file(dest, data)
-	return True
-
-
-def create_file(fname, data):
-	if data is None:
-		print(f"Warning: Skipping creation of empty file \"{fname}\"")
-	else:
-		try:
-			with open(fname, "w") as f:
-				f.write(data)
-		except FileNotFoundError:
-			print(f"Warning: Failed to create file \"{fname}\"")
-
-
-def readf_file(path, d):
-	# print(f"Calling readf on {path}")
-	try:
-		with open(path) as f:
-			rv = readf(f.read(), d)
-			if rv is None:
-				print(f"Key Error in file: \"{path}\"")
-				quit()
-			return rv
-	except FileNotFoundError:
-		print(f"file \"{path}\" not found")
-		return None
-
-def readf(data, d):
-	if "$%f" in d.keys():
-		data = data.replace("$%f", d["$%f"])
-
-	if "---iter " in data:
-		data2 = []
-		j = 0
-		while "---iter " in data[j:]:
-			i = data.find("---iter ", j)
-			data2.append(data[j:i])
-			n = data.find("\n", i+8)
-			key = data[i+8:n]
-			if key in d.keys():
-				l = d[key]
-				j = data.find("---end",n)
-				block = data[n:j]
-				j += 6
-				for i in range(len(l)):
-					data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
-			else:
-				print(f"Critical error! {key} not found in dictionary passed to readf!")
-				exit(1)
-		data2.append(data[j:])
-		data = "".join(data2)
-
-	if "---list " in data:
-		data2 = []
-		j = 0
-		while "---list " in data[j:]:
-			i = data.find("---list ", j)
-			data2.append(data[j:i])
-			n = data.find("\n", i+8)
-			key = data[i+8:n]
-			if key in d.keys():
-				l = d[key]
-				j = data.find("---end",n)
-				block = data[n:j]
-				j += 6
-				lst = []
-				for i in range(len(l)):
-					lst.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
-				data2.append(",".join(lst))
-			else:
-				print(f"Critical error! {key} not found in dictionary passed to readf!")
-				return None
-		data2.append(data[j:])
-		data = "".join(data2)
-
-	if "---if " in data:
-		data2 = []
-		j = 0
-		while "---if " in data[j:]:
-			i = data.find("---if ", j)
-			data2.append(data[j:i])
-			n = data.find("\n", i+6)
-			if data[i+6] == '!':
-				inverted = True
-				key = data[i+7:n]
-			else:
-				inverted = False
-				key = data[i+6:n]
-			if " " in key:
-				key, tail = key.split(" ", maxsplit=1)
-			else:
-				tail = []
-			condtrue = False
-			if "#contains" in tail:
-				if len(tail):
-					if all([w in key for w in tail[1:]]):
-						condtrue = True
-						for w in tail[1:]:
-							key = key.replace(w, "")
-				elif len(key):
-					condtrue = True
-			elif key in d.keys():
-				condtrue = True
-			if inverted:
-				condtrue = not condtrue
-			# print(f"Checking if {key} is defined. ",end="")
-			j = data.find("---fi",n)
-			if condtrue:
-				# print("key found.")
-				data2.append(data[n:j])
-				# print(data2[-1])
-			j += 5
-		data2.append(data[j:])
-		data = "".join(data2)
-
-	while any([any(["${"+key+M+"}" in data for M in ["","^CAPITAL","^UPPER","^LOWER"]]) for key in d.keys()]):
-		for key in d.keys():
-			data = data.replace("${"+key+"^CAPITAL}", str(d[key]).capitalize()).replace("${"+key+"^UPPER}", str(d[key]).upper()).replace("${"+key+"^LOWER}", str(d[key]).lower()).replace("${"+key+"}", str(d[key]))
-	# data2 = []
-	# i = 0
-	# for match in r.finditer(data):
-		# data2.append(data[i:match.start()])
-		# i = match.end()
-	# data2.append(data[i:])
-	# return "".join(data2)
-	# if "forge" in d["modloader"]:
-		# for word in ["PICKAXES", "SHOVELS", "SWORDS", "HOES", "AXES"]:
-			# data = data.replace(word, word[:-1])
-	return data
-
-def walk(path):
-	found_names = []
-	for fname in _walk(path):
-		fname = os.path.abspath(fname)
-		if fname not in found_names:
-			found_names.append(fname)
-			yield fname
-
-def _walk(path):
-	for root,dirs,files in os.walk(path):
-		for dname in dirs:
-			for fname in walk(os.path.join(root, dname)):
-				yield fname
-		for fname in files:
-			yield os.path.join(root, fname)
-
-def getDictVal(d, k, fname):
-	try:
-		return d[k]
-	except KeyError:
-		print(f"Missing \"{k}\" in file \"{fname}\"!")
-
-def readDictFile(fname, d=None):
-	if d is None:
-		d = dict()
-	try:
-		with open(fname) as f:
-			return readDictString(f.read(), d)
-	except FileNotFoundError:
-		return None
-
-# def readDictString(data, d={}):
-	# ns = ""
-	# for line in data.splitlines():
-		# if len(line) and not line.startswith("#"):
-			# if ":" in line:
-				# name, value = line.split(":",maxsplit=1)
-				# v = value.lstrip(" \t")
-				# if line.startswith("+"):
-					# if line.startswith("+."):
-						# if len(name)>2:
-							# k = ns+name[1:]
-							# if k not in d.keys():
-								# d[f"{k}.list.0"] = v
-								# d[k] = [v]
-							# elif type(d[k]) is list:
-								# n = len(d[k])
-								# d[f"{k}.list.{n}"] = v
-								# d[k].append(v)
-							# else:
-								# d[f"{k}.list.{n}"] = v
-								# d[k] += v
-						# else:
-							# d[ns].append(v)
-					# else:
-						# k = name[1:]
-						# if k not in d.keys():
-							# d[f"{k}.list.0"] = v
-							# d[k] = [v]
-						# elif type(d[k]) is list:
-							# n = len(d[k])
-							# d[f"{k}.list.{n}"] = v
-							# d[k].append(v)
-						# else:
-							# n = len(d[k])
-							# d[f"{k}.list.{n}"] = v
-							# d[k] += v
-				# elif line.startswith("."):
-					# d[ns+name] = v
-				# else:
-					# ns = name
-					# d[name] = v
-	# return d
-
-def readDictString(data, d=None):
-	if d is None:
-		d = {}
-	ns = ""
-	lineno = 1
-	d["#comments"] = {}
-	for line in data.splitlines():
-		if len(line) and not line.startswith("#"):
-			if ":" in line:
-				name, value = line.split(":",maxsplit=1)
-				v = value.lstrip(" \t")
-				if line.startswith("+.") or line.startswith(".+"):
-					if len(name)>2:
-						k = f"{ns}.{name[2:]}"
-						if k not in d.keys():
-							d[f"{k}^list.0"] = v
-							d[k] = [v]
-						elif type(d[k]) is list:
-							n = len(d[k])
-							d[f"{k}^list.{n}"] = v
-							d[k].append(v)
-						else:
-							d[f"{k}^list.{n}"] = v
-							d[k] += v
-					else:
-						d[ns].append(v)
-				elif line.startswith("+"):
-					k = name[1:]
-					if k not in d.keys():
-						d[f"{k}^list.0"] = v
-						d[k] = [v]
-					elif type(d[k]) is list:
-						n = len(d[k])
-						d[f"{k}^list.{n}"] = v
-						d[k].append(v)
-					else:
-						n = len(d[k])
-						d[f"{k}^list.{n}"] = v
-						d[k] += v
-				elif line.startswith("."):
-					d[ns+name] = v
-				else:
-					ns = name
-					d[name] = v
-		else:
-			d["#comments"][lineno] = line
-		lineno += 1
-	return d
-
-
-def ospath(path):
-	if sys.platform == "win32":
-		return os.path.abspath(os.path.normpath(path.replace("/", "\\")))
-	else:
-		return os.path.abspath(os.path.normpath(path.replace("\\", "/")))
 
 
 if __name__=='__main__':

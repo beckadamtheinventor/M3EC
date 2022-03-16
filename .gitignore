@@ -1,6 +1,7 @@
 */*_build
 */*_build
 */todo
+__pycache__
 javapaths.json
 config
 todo

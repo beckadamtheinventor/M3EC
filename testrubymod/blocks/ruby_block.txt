@@ -20,6 +20,3 @@ sounds:            METAL
 fr_ca:   Bloc de Rubis
 fr_fr:   Bloc de Rubis
 
-autogenerate:
-.slabs: yes
-.stairs: yes
