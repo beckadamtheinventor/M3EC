@@ -34,7 +34,7 @@ def build(project_path, modenv):
 		fname = os.path.join(source_path, "mc", "blocks.json")
 		with open(fname) as f:
 			blocks = json.load(f)
-		for block in blocks:
+		for block in blocks["content"]:
 			blockid = block["name"]
 			for key in block.keys():
 				if key != blockid:
@@ -107,6 +107,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 					else:
 						if "contentid" in d.keys():
 							cid = d["contentid"]
+							if content_type == "block":
+								d["BlockClass"] = "Block"
 							add_content(cid, content_type, d, manifest_dict, fname)
 						if content_type == "block":
 							midcid = manifest_dict["mod.mcpath"]+":"+cid
@@ -138,7 +140,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 								d["droptype"] = "Self"
 								d["blockstatetype"] = "Stair"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["BlockClass"] = "ModStairsBlock"
+								d["BlockClass"] = "ModStairBlock"
 								d["BlockMaterialBlock"] = cid
 								add_content(cid+"_stairs", content_type, d, manifest_dict)
 								d["title"] = old_title
@@ -165,7 +167,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 								d["droptype"] = "Self"
 								d["blockstatetype"] = "Trapdoor"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["BlockClass"] = "SlabBlock"
+								d["BlockClass"] = "ModTrapdoorBlock"
 								add_content(cid+"_trapdoor", content_type, d, manifest_dict)
 								d["title"] = old_title
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
@@ -187,59 +189,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
 	path = project_path
 
-	if "fabric1.18.2" in modenv:
- # or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv
+	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.18.2", modenv, manifest_dict)
-		
-		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft"))
-		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags"))
-		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks"))
-		# make_dir(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable"))
-
-		toolclasses = ["axe", "pickaxe", "shovel", "hoe"]
-		toollevels = ["stone", "iron", "diamond"]
-		for toolclass in toolclasses:
-			manifest_dict[f"mod.registry.requires_{toolclass}"] = []
-		for toollevel in toollevels:
-			manifest_dict[f"mod.registry.requires_{toollevel}"] = []
-		
-		for block in manifest_dict["mod.registry.block.names"]:
-			# print(block, manifest_dict[f"mod.block.{block}.toolclass"], manifest_dict[f"mod.block.{block}.toollevel"])
-
-			toollevel = toolclass = None
-			if f"mod.block.{block}.toolclass" in manifest_dict.keys():
-				toolclass = manifest_dict[f"mod.block.{block}.toolclass"]
-			if f"mod.block.{block}.toollevel" in manifest_dict.keys():
-				toollevel = manifest_dict[f"mod.block.{block}.toollevel"]
-			if toolclass is None or toollevel is None:
-				print(f"Error: Block {block} must contain toolclass and toollevel or neither of them.")
-				exit(1)
-			if toolclass is not None and toollevel is not None:
-				try:
-					toollevel = toollevels[int(toollevel)]
-				except:
-					pass
-				if toolclass == "PICKAXES":
-					toolclass = "pickaxe"
-				elif toolclass == "AXES":
-					toolclass = "axe"
-				elif toolclass == "SHOVELS":
-					toolclass = "shovel"
-				elif toolclass == "HOES":
-					toolclass = "hoe"
-				manifest_dict[f"mod.block.{block}.hastoolrequirements"] = "true"
-				manifest_dict[f"mod.registry.requires_{toolclass}"].append(block)
-				manifest_dict[f"mod.registry.requires_{toollevel}"].append(block)
-
-		for toolclass in toolclasses:
-			if len(manifest_dict[f"mod.registry.requires_{toolclass}"]):
-				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", "mineable", f"{toolclass}.json"),
-					readf_file(os.path.join(os.path.dirname(__file__), "data", f"requires_{toolclass}.m3ecjson"), manifest_dict))
-		for toollevel in toollevels:
-			if len(manifest_dict[f"mod.registry.requires_{toollevel}"]):
-				create_file(os.path.join(path, "fabric1.18.2_build", "src", "main", "resources", "data", "minecraft", "tags", "blocks", f"needs_{toollevel}_tool.json"),
-					readf_file(os.path.join(os.path.dirname(__file__), "data", f"requires_{toollevel}.m3ecjson"), manifest_dict))
-
 
 	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
 		print("Fabric 1.18.0 builds are broken right now; ores will be skipped.")
@@ -268,6 +219,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 def build_mod(modloader, version, modenv, manifest_dict):
 	print(f"Building {modloader} {version} mod project")
 	manifest_dict["modloader"] = modloader
+	manifest_dict["gameversion"] = version
 	source_path = manifest_dict["source_path"]
 	project_path = manifest_dict["project_path"]
 	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
@@ -451,6 +403,17 @@ def build_resources(project_path, builddir, manifest_dict):
 						manifest_dict[f"mod.block.{cid}.toolclass"] = manifest_dict[f"mod.block.{cid}.toolclass"]+"S"
 					if manifest_dict[f"mod.block.{cid}.material"] == "DIRT":
 						manifest_dict[f"mod.block.{cid}.material"] = "SOIL"
+				if not manifest_dict[f"mod.block.{cid}.toollevel"].isnumeric():
+					manifest_dict[f"mod.block.{cid}.toollevelstring"] = "MiningLevels." + manifest_dict[f"mod.block.{cid}.toollevel"]
+					if manifest_dict[f"mod.block.{cid}.toollevel"] in ["WOOD", "STONE", "IRON", "DIAMOND", "NETHERITE"]:
+						manifest_dict[f"mod.block.{cid}.toollevelint"] = str(["WOOD", "STONE", "IRON", "DIAMOND", "NETHERITE"].index(manifest_dict[f"mod.block.{cid}.toollevel"]))
+					else:
+						manifest_dict[f"mod.block.{cid}.toollevelint"] = "0"
+				else:
+					manifest_dict[f"mod.block.{cid}.toollevelstring"] = manifest_dict[f"mod.block.{cid}.toollevel"]
+					manifest_dict[f"mod.block.{cid}.toollevelint"] = manifest_dict[f"mod.block.{cid}.toollevel"]
+				# print(manifest_dict[f"mod.block.{cid}.toollevelstring"], manifest_dict[f"mod.block.{cid}.toollevelint"])
+
 			if content_type == "recipe":
 				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), manifest_dict))
 			if content_type in ["toolmaterial", "armormaterial"]:

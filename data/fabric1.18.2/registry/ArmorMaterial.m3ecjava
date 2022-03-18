@@ -44,12 +44,12 @@ public class ${mod.armormaterial.${%v}.class} implements ArmorMaterial {
  
 	@Override
 	public float getToughness() {
-		return ${mod.armormaterial.${%v}.toughness}F;
+		return ${mod.armormaterial.${%v}.toughness}f;
 	}
  
 	@Override
 	public float getKnockbackResistance() {
-		return ${mod.armormaterial.${%v}.knockbackresistance}F;
+		return ${mod.armormaterial.${%v}.knockbackresistance}f;
 	}
 }
 

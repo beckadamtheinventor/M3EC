@@ -1,6 +1,6 @@
 
 
-import os, sys, json, subprocess, tempfile, hashlib
+import os, sys, json, subprocess, tempfile, hashlib, shutil
 from PIL import Image
 from _m3ec.util import *
 
@@ -77,9 +77,9 @@ if not os.path.exists(PLACEHOLDER_IMAGE_FILE):
 
 
 
-def ContentSelectWindow(manifest_dict, content_type, skip=0, count=16):
+def ContentSelectWindow(manifest_dict, content_type, skip=0, count=16, vanillabutton=True):
 	while True:
-		e = _ContentSelectWindow(manifest_dict, content_type, skip, count)
+		e = _ContentSelectWindow(manifest_dict, content_type, skip, count, vanillabutton)
 		if type(e) is str:
 			if e == "Prev":
 				if skip > count:
@@ -87,23 +87,32 @@ def ContentSelectWindow(manifest_dict, content_type, skip=0, count=16):
 				else:
 					skip = 0
 			elif e == "Next":
-				if skip+count < len(manifest_dict[f"mod.registry.{content_type}.names"]):
-					skip += count
+				if content_type == "vanilla":
+					if skip+count < len(manifest_dict["mc.names"]):
+						skip += count
+				else:
+					if skip+count < len(manifest_dict[f"mod.registry.{content_type}.names"]):
+						skip += count
 			else:
 				return e
 		elif not e or e is None:
 			return None
 
-def _ContentSelectWindow(manifest_dict, content_type, skip, count):
+def _ContentSelectWindow(manifest_dict, content_type, skip, count, vanillabutton):
 	# global WIN_WIDTH, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE_WIDE
+	contentnames = []
 	if type(content_type) is not list:
-		content_types = [content_type]
-		ctstr = content_type
-		manifest_dict[f"mod.registry.{content_type}.names"].sort()
-		for cid in manifest_dict[f"mod.registry.{content_type}.names"]:
-			contentnames.append((content_type, cid))
+		if content_type == "vanilla":
+			content_types = ["block", "item"]
+			ctstr = "block/item"
+			contentnames = sorted([("",item) for item in manifest_dict["mc.names"]])
+			content_types = [content_type]
+		else:
+			ctstr = content_type
+			manifest_dict[f"mod.registry.{content_type}.names"].sort()
+			for cid in manifest_dict[f"mod.registry.{content_type}.names"]:
+				contentnames.append((content_type, cid))
 	else:
-		contentnames = []
 		content_types = content_type
 		ctstr = "/".join(content_types)
 		for ct in content_types:
@@ -112,8 +121,10 @@ def _ContentSelectWindow(manifest_dict, content_type, skip, count):
 				contentnames.append((ct, cid))
 	layout = [
 		[sg.Sizer(WIN_WIDTH, 0)],
+		[sg.Input(k="itemname"), sg.Button(f"{ctstr} name", k="submititemname")],
+		[sg.Button(f"Vanilla {ctstr}s", key="Vanilla", size=EDITOR_BUTTON_SIZE)] if content_type != "vanilla" and vanillabutton else [],
 		[sg.Button(f"Previous {count} {ctstr}s", key="Prev", size=EDITOR_BUTTON_SIZE)] if skip>0 else [],
-		([sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), manifest_dict[f"mod.{ct}.{name}.texture"]),
+		([sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), d=manifest_dict, k=f"mod.{ct}.{name}.texture"),
 			sg.Button(name, key=f"select_{name}", size=EDITOR_BUTTON_SIZE_WIDE),
 		] for ct,name in contentnames[skip:skip+min(len(contentnames)-skip, count)]),
 		[sg.Button(f"Next {count} {ctstr}s", key="Next", size=EDITOR_BUTTON_SIZE)] if skip+count<len(contentnames) else [],
@@ -127,6 +138,13 @@ def _ContentSelectWindow(manifest_dict, content_type, skip, count):
 		elif event in ('Next', 'Prev'):
 			window.close()
 			return event
+		elif event in ('Vanilla',):
+			window.close()
+			return ContentSelectWindow(manifest_dict, "vanilla")
+		elif event in ('submititemname',):
+			if len(values['itemname']):
+				window.close()
+				return values['itemname']
 		elif event.startswith("select_"):
 			window.close()
 			# print(event)
@@ -137,6 +155,130 @@ def _ContentSelectWindow(manifest_dict, content_type, skip, count):
 
 
 def CreateRecipe(mfd):
+	layout = [
+		[sg.Sizer(WIN_WIDTH, 0)],
+		[sg.Text("Recipe Type")],
+		[sg.Button("Shaped", k="shaped", size=EDITOR_BUTTON_SIZE),
+			sg.Button("Shapeless", k="shapeless", size=EDITOR_BUTTON_SIZE),
+			sg.Button("Smelting", k="smelting", size=EDITOR_BUTTON_SIZE),
+			sg.Button("Stonecutter", k="stonecutter", size=EDITOR_BUTTON_SIZE),
+			sg.Button("Smithing", k="smithing", size=EDITOR_BUTTON_SIZE),
+		],
+		[sg.Cancel()],
+	]
+	event, values = sg.Window("Create New Recipe", layout).read(close=True)
+	if event == "shaped":
+		recipe = CreateShapedRecipe(mfd)
+	elif event == "shapeless":
+		recipe = CreateShapelessRecipe(mfd)
+	elif event == "smelting":
+		recipe = CreateSmeltingRecipe(mfd)
+	elif event == "stonecutter":
+		recipe = CreateStonecutterRecipe(mfd)
+	elif event == "smithing":
+		recipe = CreateSmithingRecipe(mfd)
+	else:
+		return None
+	
+	if type(recipe) is dict:
+		n = 1
+		cid = recipe["result"]
+		while cid in mfd["mod.registry.recipe.names"]:
+			n += 1
+			cid = recipe["result"]+"_"+str(n)
+		recipe["contentid"] = cid
+
+		fname = os.path.join(mfd["project_path"], "recipes", cid+".m3ec")
+		n = 1
+		while os.path.exists(fname):
+			n += 1
+			fname = os.path.join(mfd["project_path"], "recipes", cid+"_"+str(n)+".m3ec")
+
+		writeDictFile(fname, recipe)
+		add_content(cid, "recipe", recipe, mfd, fname)
+	return recipe
+
+def CreateShapedRecipe(mfd):
+	sx, sy = EDITOR_BUTTON_SIZE
+	layout = [
+		[sg.Sizer(WIN_WIDTH,0)],
+		[sg.Button("empty", k="item1", size=EDITOR_BUTTON_SIZE),
+			sg.Button("empty", k="item2", size=EDITOR_BUTTON_SIZE),
+			sg.Button("empty", k="item3", size=EDITOR_BUTTON_SIZE),
+		],
+		[sg.Button("empty", k="item4", size=EDITOR_BUTTON_SIZE),
+			sg.Button("empty", k="item5", size=EDITOR_BUTTON_SIZE),
+			sg.Button("empty", k="item6", size=EDITOR_BUTTON_SIZE),
+			sg.Sizer(sx, sy),
+			sg.Button("result", k="itemresult", size=EDITOR_BUTTON_SIZE),
+		],
+		[sg.Button("empty", k="item7", size=EDITOR_BUTTON_SIZE),
+			sg.Button("empty", k="item8", size=EDITOR_BUTTON_SIZE),
+			sg.Button("empty", k="item9", size=EDITOR_BUTTON_SIZE),
+			sg.Sizer(sx, sy),
+			sg.Text("Count:"),
+			sg.Input(size=EDITOR_BUTTON_SIZE, k="count"),
+		],
+		[sg.Sizer(0, 20)],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE), sg.Cancel(size=EDITOR_BUTTON_SIZE)],
+	]
+	window = sg.Window("Create Shaped Recipe", layout)
+	recipe = {"@": "recipe", "recipe": "ShapedRecipe", "pattern": [], "items":[], "itemkeys":[], "result": "", "count": "1"}
+	while True:
+		event, values = window.read()
+		if event in (sg.WINDOW_CLOSED, 'Cancel'):
+			break
+		elif event == "Ok":
+			if not len(recipe["pattern"]):
+				ErrorWindow("Recipe must contain at least one item.")
+				continue
+			if not len(recipe["result"]):
+				ErrorWindow("Result must not be empty.")
+				continue
+			if len(values["count"]):
+				if not values["count"].isalnum() or "." in values["count"] or int(values["count"]) < 1:
+					ErrorWindow("Count must be a number greater than or equal to 1.")
+					continue
+				recipe["count"] = values["count"]
+			for row in range(len(recipe["pattern"])):
+				recipe["pattern"][row] = '"'+"".join(recipe["pattern"][row])+'"'
+			window.close()
+			return recipe
+		elif event.startswith("item"):
+			item = ContentSelectWindow(mfd, ["block", "item"])
+			if event[4:] == "result":
+				recipe["result"] = item
+			else:
+				num = int(event[4])
+				row = num // 3
+				col = num % 3
+				while len(recipe["pattern"]) <= row:
+					recipe["pattern"].append([])
+				while len(recipe["pattern"][row]) <= col:
+					recipe["pattern"][row].append(" ")
+				if item in recipe["items"]:
+					recipe["pattern"][row][col] = recipe["itemkeys"][recipe["items"].index(item)]
+				else:
+					c = chr(ord('A') + len(recipe["items"]))
+					recipe["pattern"][row][col] = c
+					recipe["itemkeys"].append(c)
+					recipe["items"].append(item)
+			if item is None:
+				window[event].update("empty")
+			else:
+				window[event].update(item)
+	window.close()
+
+def CreateShapelessRecipe(mfd):
+	pass
+
+def CreateSmeltingRecipe(mfd):
+	pass
+
+def CreateStonecutterRecipe(mfd):
+	pass
+
+def CreateSmithingRecipe(mfd):
 	pass
 
 def CreateBlock(mfd):
@@ -148,14 +290,14 @@ def CreateBlock(mfd):
 		[sg.Text("(Note: you can input existing block names to copy)")],
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Text("Tool type required to mine"),
-			sg.Radio("None", "tooltype", k="tooltypenone", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("None", "tooltype", k="tooltypenone", size=EDITOR_BUTTON_SIZE_THIN, default=True),
 			sg.Radio("Axe", "tooltype", k="tooltypeaxe", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Hoe", "tooltype", k="tooltypehoe", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Pickaxe", "tooltype", k="tooltypepickaxe", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Shovel", "tooltype", k="tooltypeshovel", size=EDITOR_BUTTON_SIZE_THIN),
 		],
 		[sg.Text("Tool level required to mine"),
-			sg.Radio("Stone", "toollevel", k="toollevelstone", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("Stone", "toollevel", k="toollevelstone", size=EDITOR_BUTTON_SIZE_THIN, default=True),
 			sg.Radio("Iron", "toollevel", k="toolleveliron", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Diamond", "toollevel", k="toolleveldiamond", size=EDITOR_BUTTON_SIZE_THIN),
 		],
@@ -163,11 +305,11 @@ def CreateBlock(mfd):
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Text("Block Drop Type")],
 		[sg.Radio("None", "droptype", k="dropnone", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Drops Self", "droptype", k="dropnone", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Fixed Drops", "droptype", k="dropnone", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Fortunable", "droptype", k="dropnone", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("Drops Self", "droptype", k="dropself", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("Fixed Drops", "droptype", k="dropfixed", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("Fortunable", "droptype", k="dropfortunable", size=EDITOR_BUTTON_SIZE_THIN),
 		],
-		[sg.Button("Item to Drop", k="selectdropitem", size=EDITOR_BUTTON_SIZE_WIDE), sg.Text(k="dropitem")],
+		[sg.Button("Item to Drop", k="selectdropitem", size=EDITOR_BUTTON_SIZE_WIDE), sg.Text(k="dropitem"), sg.Text("Drop Count/Chances:"), sg.Input(k="dropcount")],
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Text("Block Texture Layout")],
 		[sg.Radio("Single (Like dirt blocks)", "style", k="single", default=True, size=EDITOR_BUTTON_SIZE)],
@@ -198,20 +340,20 @@ def CreateBlock(mfd):
 			sg.FileBrowse(key="imgfilefront", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
 		],
 		[sg.Sizer(WIN_WIDTH, 20)],
-		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE)],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
 	]
 	window = sg.Window("Create New Block", layout)
+	dropitem = None
 	while True:
 		event, values = window.read()
-		if event in ('Cancel',):
-			window.close()
 		if event in (sg.WINDOW_CLOSED, 'Cancel'):
+			window.close()
 			return None
 		elif event in ('selectdropitem',):
-			item = ContentSelectWindow(mfd, ["block", "item"])
-			if item is None:
+			dropitem = ContentSelectWindow(mfd, ["block", "item"])
+			if dropitem is None:
 				continue
-			window["dropitem"].update(item)
+			window["dropitem"].update(dropitem)
 		elif event in ('Ok',):
 			cid = values["title"]
 			if not len(cid):
@@ -235,7 +377,7 @@ def CreateBlock(mfd):
 				if not len(imgmain):
 					ErrorWindow("Main texture must be defined.", parent=window)
 					continue
-				imgmain = GetImageAsPNG(imgmain)
+				imgmain = GetImageAsPNG(imgmain, mfd)
 				if imgmain is None:
 					continue
 				d["texture"] = imgmain
@@ -244,14 +386,14 @@ def CreateBlock(mfd):
 				if not len(imgtop):
 					ErrorWindow("Top texture must be defined for pillar blocks.", parent=window)
 					continue
-				imgtop = GetImageAsPNG(imgtop)
+				imgtop = GetImageAsPNG(imgtop, mfd)
 				if imgtop is None:
 					continue
 				imgside = values["imgfileside"]
 				if not len(imgside):
 					ErrorWindow("Side texture must be defined for pillar blocks.", parent=window)
 					continue
-				imgside = GetImageAsPNG(imgside)
+				imgside = GetImageAsPNG(imgside, mfd)
 				if imgside is None:
 					continue
 				d["texture_top"] = imgmain
@@ -261,21 +403,21 @@ def CreateBlock(mfd):
 				if not len(imgtop):
 					ErrorWindow("Top texture must be defined for ground-like blocks.", parent=window)
 					continue
-				imgtop = GetImageAsPNG(imgtop)
+				imgtop = GetImageAsPNG(imgtop, mfd)
 				if imgtop is None:
 					continue
 				imgbottom = values["imgfilebottom"]
 				if not len(imgbottom):
 					ErrorWindow("Bottom texture must be defined for ground-like blocks.", parent=window)
 					continue
-				imgbottom = GetImageAsPNG(imgbottom)
+				imgbottom = GetImageAsPNG(imgbottom, mfd)
 				if imgbottom is None:
 					continue
 				imgside = values["imgfileside"]
 				if not len(imgside):
 					ErrorWindow("Side texture must be defined for ground-like blocks.", parent=window)
 					continue
-				imgside = GetImageAsPNG(imgside)
+				imgside = GetImageAsPNG(imgside, mfd)
 				if imgside is None:
 					continue
 				d["texture_bottom"] = imgbottom
@@ -286,28 +428,28 @@ def CreateBlock(mfd):
 				if not len(imgtop):
 					ErrorWindow("Top texture must be defined for ground-like blocks.", parent=window)
 					continue
-				imgtop = GetImageAsPNG(imgtop)
+				imgtop = GetImageAsPNG(imgtop, mfd)
 				if imgtop is None:
 					continue
 				imgside = values["imgfileside"]
 				if not len(imgside):
 					ErrorWindow("Side texture must be defined for rotatable blocks.", parent=window)
 					continue
-				imgside = GetImageAsPNG(imgside)
+				imgside = GetImageAsPNG(imgside, mfd)
 				if imgside is None:
 					continue
 				imgbottom = values["imgfilebottom"]
 				if not len(imgbottom):
 					ErrorWindow("Bottom texture must be defined for ground-like blocks.", parent=window)
 					continue
-				imgbottom = GetImageAsPNG(imgbottom)
+				imgbottom = GetImageAsPNG(imgbottom, mfd)
 				if imgbottom is None:
 					continue
 				imgfront = values["imgfilefront"]
 				if not len(imgfront):
 					ErrorWindow("Front texture must be defined for ground-like blocks.", parent=window)
 					continue
-				imgfront = GetImageAsPNG(imgfront)
+				imgfront = GetImageAsPNG(imgfront, mfd)
 				if imgfront is None:
 					continue
 				d["texture_bottom"] = imgbottom
@@ -319,23 +461,27 @@ def CreateBlock(mfd):
 			hardness = values["hardness"]
 			resistance = values["resistance"]
 			if not len(hardness):
-				hardness = "1.0f"
+				hardness = "1.0"
 			else:
 				if not hardness.isnumeric():
-					hardness = str(mfd[f"mc.{hardness}.hardness"])
+					_, hardness, _ = ParseContentTitle(hardness)
+					if f"mc.{hardness}.hardness" in mfd.keys():
+						hardness = str(mfd[f"mc.{hardness}.hardness"])
+					else:
+						hardness = "1.0"
 				if "." not in hardness:
-					hardness = hardness+".0f"
-				else:
-					hardness = hardness+"f"
+					hardness = hardness+".0"
 			if not len(resistance):
-				resistance = "1.0f"
+				resistance = "1.0"
 			else:
 				if not resistance.isnumeric():
-					resistance = str(mfd[f"mc.{resistance}.resistance"])
+					_, resistance, _ = ParseContentTitle(resistance)
+					if f"mc.{resistance}.resistance" in mfd.keys():
+						resistance = str(mfd[f"mc.{resistance}.resistance"])
+					else:
+						resistance = "1.0"
 				if "." not in resistance:
-					resistance = resistance+".0f"
-				else:
-					resistance = resistance+"f"
+					resistance = resistance+".0"
 			d["hardness"] = mfd[f"mod.block.{name}.hardness"] = hardness
 			d["resistance"] = mfd[f"mod.block.{name}.resistance"] = resistance
 			if values["tooltypenone"]:
@@ -343,13 +489,13 @@ def CreateBlock(mfd):
 			else:
 				d["requiresTool"] = "yes"
 				if values["tooltypeaxe"]:
-					d["tooltype"] = "AXES"
+					d["toolclass"] = "AXES"
 				elif values["tooltypehoe"]:
-					d["tooltype"] = "HOES"
+					d["toolclass"] = "HOES"
 				elif values["tooltypepickaxe"]:
-					d["tooltype"] = "PICKAXES"
+					d["toolclass"] = "PICKAXES"
 				elif values["tooltypeshovel"]:
-					d["tooltype"] = "SHOVELS"
+					d["toolclass"] = "SHOVELS"
 			if values["toollevelstone"]:
 				d["toollevel"] = "STONE"
 			elif values["toolleveliron"]:
@@ -362,8 +508,29 @@ def CreateBlock(mfd):
 					# print(f"Original texture{tex} path:", d[f"texture{tex}"])
 					d[f"texture{tex}"] = os.path.relpath(d[f"texture{tex}"], os.path.join(mfd["project_path"], mfd["mod.textures"]))
 					# print(f"Relative texture{tex} path:", d[f"texture{tex}"])
-			writeDictFile(fname, d)
+			if not len(values["dropcount"]):
+				values["dropcount"] = "1"
+			if values["dropself"]:
+				d["droptype"] = "Self"
+			elif values["dropfixed"]:
+				if not len(dropitem):
+					ErrorWindow("Item name must not be blank for fixed drop type.")
+					continue
+				d["droptype"] = "Item"
+				d["drops"] = dropitem
+				d["dropcount"] = values["dropcount"]
+			elif values["dropfortunable"]:
+				if not len(dropitem):
+					ErrorWindow("Item name must not be blank for fixed drop type.")
+					continue
+				d["droptype"] = "Fortunable"
+				d["drops"] = dropitem
+				d["dropchances"] = values["dropcount"]
+			else:
+				d["droptype"] = "None"
+
 			window.close()
+			writeDictFile(fname, d)
 			add_content(name, "block", d, mfd, fname)
 			return d
 
@@ -371,9 +538,9 @@ def CreateItem(mfd):
 	windowitems = [
 		[sg.Text('Item Name'), sg.Input(key="itemname")],
 		[sg.Text('Texture'), sg.Input(key="imgfile"),
-			sg.FileBrowse(key="imgfile",file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
+			sg.FileBrowse(key="imgfile", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
 		],
-		[sg.Ok(), sg.Cancel()],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
 	]
 	window = sg.Window("Create New Item", windowitems)
 	while True:
@@ -386,7 +553,7 @@ def CreateItem(mfd):
 			if not len(values["imgfile"]):
 				ErrorWindow("Image file not specified.", parent=window)
 				continue
-			img = GetImageAsPNG(values["imgfile"])
+			img = GetImageAsPNG(values["imgfile"], mfd)
 			if img is None:
 				continue
 			itemtitle, itemname, itemupper = ParseContentTitle(itemtitle)
@@ -442,7 +609,8 @@ def LoadProject(fname):
 	else:
 		with open(fname) as f:
 			blocks = json.load(f)
-		for block in blocks:
+		manifest_dict["mc.names"] = blocks["names"]
+		for block in blocks["content"]:
 			blockid = block["name"]
 			for key in block.keys():
 				if key != blockid:
@@ -513,11 +681,13 @@ def LoadProject(fname):
 	if not os.path.exists(d):
 		os.mkdir(d)
 
-	# for key in manifest_dict.keys():
-		# print(f"{key}: {manifest_dict[key]}")
+	if "mod.iconItem" in manifest_dict.keys() and not VerifyMCName(manifest_dict["mod.iconItem"]):
+		item = manifest_dict["mod.iconItem"]
+		if VerifyMCName(os.path.basename(item)):
+			manifest_dict["mod.iconItem"] = os.path.basename(item)
+		else:
+			manifest_dict["mod.iconItem"] = None
 
-	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
-	path = project_path
 	return manifest_dict
 
 def SaveProject(fname, manifest_dict):
@@ -531,7 +701,6 @@ def SaveProject(fname, manifest_dict):
 		manifest_dict["mod.homepage"] = ""
 	if "mod.sources" not in manifest_dict.keys():
 		manifest_dict["mod.sources"] = ""
-
 	d = readDictFile(fname)
 	if d is None:
 		d = {}
@@ -544,7 +713,14 @@ def SaveProject(fname, manifest_dict):
 
 	writeDictFile(fname, d)
 
-def GetImageAsPNG(img):
+def GetImageAsPNG(img, d):
+	if not os.path.exists(img):
+		ErrorWindow(f"Image file \"{img}\" doesn't exist or couldn't be opened.")
+		return None
+	if not os.path.normpath(img).startswith(os.path.normpath(os.path.join(d["project_path"], d["mod.textures"]))):
+		newimg = os.path.normpath(os.path.join(d["project_path"], d["mod.textures"], os.path.basename(img)))
+		shutil.copy(os.path.normpath(img), newimg)
+		img = newimg
 	if not img.endswith(".png"):
 		try:
 			i = Image.open(img)
@@ -560,11 +736,16 @@ def GetImageAsPNG(img):
 		i.save(img)
 	return img
 
-def sgScaledImage(d, fname, size=(32, 32)):
+def sgScaledImage(fdir, fname=None, d=None, k=None, size=(32, 32)):
+	if type(d) is dict:
+		if k in d.keys():
+			fname = d[k]
+		else:
+			fname = PLACEHOLDER_IMAGE_FILE
 	if type(fname) is not str or not len(fname) or fname == "None":
 		fname = PLACEHOLDER_IMAGE_FILE
 	else:
-		fname = os.path.join(d, fname)
+		fname = os.path.join(fdir, fname)
 	if type(fname) is str:
 		td = os.path.join(tempfile.gettempdir(), "m3ecWizard.ImageTemp")
 		if os.path.exists(td) and not os.path.isdir(td):
@@ -606,7 +787,7 @@ def _ContentEditWindow(manifest_dict, content_type, skip, count):
 	layout = [
 		[sg.Sizer(WIN_WIDTH, 0)],
 		[sg.Button(f"Previous {count} {content_type}s", key="Prev", size=EDITOR_BUTTON_SIZE)] if skip>0 else [],
-		([sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), manifest_dict[f"mod.{content_type}.{name}.texture"]),
+		([sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), d=manifest_dict, k=f"mod.{content_type}.{name}.texture"),
 			sg.Button(name, key=f"rename_{name}", size=EDITOR_BUTTON_SIZE_WIDE),
 			# sg.Button("edit", key=f"edit_{name}", size=EDITOR_BUTTON_SIZE),
 			sg.Button("remove", key=f"remove_{name}", size=EDITOR_BUTTON_SIZE)
@@ -628,21 +809,20 @@ def _ContentEditWindow(manifest_dict, content_type, skip, count):
 			name = RenameValueWindow(old, valuetype=content_type)
 			if name is None:
 				continue
-			manifest_dict[f"mod.registry.{content_type}.names"][manifest_dict[f"mod.registry.{content_type}.names"].index(old)] = name
+			title, name, upper = ParseContentTitle(name)
+			manifest_dict[f"mod.registry.{content_type}.names"].remove(old)
+			manifest_dict[f"mod.registry.{content_type}.names"].append(name)
 			fname = manifest_dict["mod.files"][f"{content_type}.{old}"]
 			newname = os.path.join(os.path.dirname(fname), name+os.path.splitext(fname)[1])
 			if os.path.exists(fname):
 				os.rename(fname, newname)
 			del manifest_dict["mod.files"][f"{content_type}.{old}"]
 			manifest_dict["mod.files"][f"{content_type}.{name}"] = newname
-			d = {}
-			for key in manifest_dict.keys():
-				if f"{content_type}.{old}" in key:
-					d[key.replace(f"{content_type}.{old}", f"{content_type}.{newname}")] = manifest_dict[key]
-				else:
-					d[key] = manifest_dict[key]
-			del manifest_dict
-			manifest_dict = d
+			for key in list(manifest_dict.keys()):
+				if key.startswith(f"mod.{content_type}.{old}"):
+					# print(key, '-->', key.replace(f"mod.{content_type}.{old}", f"mod.{content_type}.{name}"))
+					manifest_dict[key.replace(f"mod.{content_type}.{old}", f"mod.{content_type}.{name}")] = manifest_dict[key]
+					del manifest_dict[key]
 			window.close()
 			return True
 		elif event.startswith("edit_"):
@@ -673,7 +853,7 @@ def _ModEditor(manifest_dict, fname):
 		manifest_dict["mod.iconItem"] = None
 	layout = [
 		[sg.Sizer(WIN_WIDTH,0)],
-		[sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), manifest_dict["mod.iconItem"]),
+		[sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), d=manifest_dict, k=f"mod.item.{manifest_dict['mod.iconItem']}.texture"),
 			sg.Button("Set Mod Icon", key="SetIcon", size=EDITOR_BUTTON_SIZE),
 			sg.Button(manifest_dict["mod.title"], key="SetTitle", size=EDITOR_BUTTON_SIZE),
 			sg.Button(manifest_dict["mod.mcpath"], key="SetName", size=EDITOR_BUTTON_SIZE),
@@ -708,10 +888,10 @@ def _ModEditor(manifest_dict, fname):
 		elif event in ('Build',):
 			BuildMod(manifest_dict)
 		elif event in ('SetIcon',):
-			item = ContentSelectWindow(manifest_dict, "item")
+			item = ContentSelectWindow(manifest_dict, "item", vanillabutton=False)
 			if item is None:
 				continue
-			manifest_dict["mod.iconItem"] = manifest_dict[f"mod.item.{item}.texture"]
+			manifest_dict["mod.iconItem"] = item
 			# print(manifest_dict["mod.iconItem"])
 			window.close()
 			return True

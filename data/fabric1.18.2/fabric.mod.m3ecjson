@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "${mod.mcpath}",
-  "version": "${mod.version}",
+  "version": "${version}",
 
   "name": "${mod.title}",
   "description": "${mod.description}",

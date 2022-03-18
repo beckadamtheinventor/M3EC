@@ -76,7 +76,7 @@
 		"facing=south,half=bottom,shape=straight": {
 			"uvlock": true,
 			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=north,half=bottom,shape=inner_right": {
 			"uvlock": true,
@@ -97,7 +97,7 @@
 		"facing=west,half=bottom,shape=straight": {
 			"uvlock": true,
 			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=north,half=top,shape=outer_right": {
 			"uvlock": true,
@@ -138,7 +138,7 @@
 			"uvlock": true,
 			"x": 180,
 			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=west,half=top,shape=outer_left": {
 			"uvlock": true,
@@ -150,12 +150,12 @@
 			"uvlock": true,
 			"x": 180,
 			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=east,half=top,shape=straight": {
 			"uvlock": true,
 			"x": 180,
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=west,half=bottom,shape=outer_right": {
 			"uvlock": true,
@@ -169,7 +169,7 @@
 			"model": "${mod.mcpath}:block/${contentid}_outer"
 		},
 		"facing=east,half=bottom,shape=straight": {
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=west,half=bottom,shape=outer_left": {
 			"uvlock": true,
@@ -184,7 +184,7 @@
 		"facing=north,half=bottom,shape=straight": {
 			"uvlock": true,
 			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=north,half=bottom,shape=inner_left": {
 			"uvlock": true,
@@ -195,7 +195,7 @@
 			"uvlock": true,
 			"x": 180,
 			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_stairs"
+			"model": "${mod.mcpath}:block/${contentid}"
 		},
 		"facing=south,half=bottom,shape=outer_right": {
 			"uvlock": true,

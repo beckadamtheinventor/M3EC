@@ -2,6 +2,34 @@
 	"modloader": "fabric",
 	"minecraftVersion": "1.18.1",
 	"javaVersion": "17.",
+	"preActions": [
+		{
+			"action": "makedir",
+			"value": "src/main/java/${mod.packagedir}/blocks"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}${gameversion}/ModDoorBlock.m3ecjava",
+			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModDoorBlock.java"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
+			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}${gameversion}/ModTrapdoorBlock.m3ecjava",
+			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
+		}
+	],
+	"postActions": [
+		{
+			"action": "copy",
+			"source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+		}
+	],
 	"sources": [
 		{
 			"source": "fabric.mod.m3ecjson",

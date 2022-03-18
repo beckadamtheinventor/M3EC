@@ -1,12 +1,19 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
-import ${mod.package}.StairBlock;
-import ${mod.package}.SlabBlock;
+import ${mod.package}.blocks.ModStairBlock;
+import ${mod.package}.blocks.ModDoorBlock;
+import ${mod.package}.blocks.ModTrapdoorBlock;
+
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.Block;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.block.Material;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -14,21 +21,22 @@ import net.minecraft.util.registry.Registry;
 public class ModBlocks {
 ---iter mod.registry.block.names
 	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
-${mod.block.$%v.BlockMaterialBlock^UPPER},---fiFabricBlockSettings
+${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSettings
 		.of(Material.${mod.block.$%v.material})
-		.breakByTool(FabricToolTags.${mod.block.$%v.toolclass},${mod.block.$%v.toollevel})
+		.breakByTool(FabricToolTags.${mod.block.$%v.toolclass}, ${mod.block.$%v.toollevelint})
 		---if mod.block.$%v.requiresTool
 		.requiresTool()---fi
 		.strength(${mod.block.$%v.hardness}f,${mod.block.$%v.resistance}f)
-		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
+		.sounds(BlockSoundGroup.${mod.block.$%v.sounds})---if mod.block.$%v.BlockClass #contains ModDoorBlock
+		.nonOpaque()---fi);---end
 
 	private static Block registerBlock(String name, Block block, ItemGroup group) {
 		registerBlockItem(name, block, group);
-		return Registry.register(Registry.BLOCK, new Identifier(${mod.mcpath}.MOD_ID, name), block);
+		return Registry.register(Registry.BLOCK, new Identifier(${mod.class}.MOD_ID, name), block);
 	}
 
 	private static Item registerBlockItem(String name, Block block, ItemGroup group) {
-		return Registry.register(Registry.ITEM, new Identifier(${mod.mcpath}.MOD_ID, name),
+		return Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, name),
 				new BlockItem(block, new FabricItemSettings().group(group)));
 	}
 

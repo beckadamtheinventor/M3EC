@@ -14,7 +14,7 @@ public class ModBlocks {
 		.of(Material.${mod.block.$%v.material})
 		---if mod.block.$%v.requiresTool
 		.requiresTool()---fi
-		.strength(${mod.block.$%v.hardness}f,${mod.block.$%v.resistance}f)
+		.strength(${mod.block.$%v.hardness}f, ${mod.block.$%v.resistance}f)
 		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
 
     public static void RegisterBlocks() {

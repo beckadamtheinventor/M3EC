@@ -178,18 +178,25 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 	manifest_dict[f"mod.files"][f"{content_type}.{cid}"] = fname
 	if content_type == "item" and "mod.iconItem" not in manifest_dict.keys():
 		manifest_dict["mod.iconItem"] = cid
-	if f"mod.{content_type}.{cid}.texture" not in manifest_dict.keys():
-		if f"mod.{content_type}.{cid}.texture_top" in manifest_dict.keys():
-			manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_top"]
-		elif f"mod.{content_type}.{cid}.texture_side" in manifest_dict.keys():
-			manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_side"]
-		elif f"mod.{content_type}.{cid}.texture_bottom" in manifest_dict.keys():
-			manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_bottom"]
-		elif f"mod.{content_type}.{cid}.texture_front" in manifest_dict.keys():
-			manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_front"]
-		else:
-			manifest_dict[f"mod.{content_type}.{cid}.texture"] = None
+	if content_type == "recipe":
+		manifest_dict[f"mod.{content_type}.{cid}.texture"] = d["result"]
+	else:
+		if f"mod.{content_type}.{cid}.texture" not in manifest_dict.keys():
+			if f"mod.{content_type}.{cid}.texture_top" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_top"]
+			elif f"mod.{content_type}.{cid}.texture_side" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_side"]
+			elif f"mod.{content_type}.{cid}.texture_bottom" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_bottom"]
+			elif f"mod.{content_type}.{cid}.texture_front" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_front"]
+			else:
+				manifest_dict[f"mod.{content_type}.{cid}.texture"] = None
+
 	return True
+
+def VerifyMCName(name):
+	return all([c in "abcdefghijklmnopqrstuvwxyz0123456789_" for c in name])
 
 def ParseContentTitle(title):
 	if title.isupper():
@@ -282,8 +289,9 @@ def readf(data, d):
 				j = data.find("---end",n)
 				block = data[n:j]
 				j += 6
-				for i in range(len(l)):
-					data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
+				if type(l) is list:
+					for i in range(len(l)):
+						data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
 			else:
 				print(f"Critical error! {key} not found in dictionary passed to readf!")
 				exit(1)
@@ -304,9 +312,10 @@ def readf(data, d):
 				block = data[n:j]
 				j += 6
 				lst = []
-				for i in range(len(l)):
-					lst.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
-				data2.append(",".join(lst))
+				if type(l) is list:
+					for i in range(len(l)):
+						lst.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
+					data2.append(",".join(lst))
 			else:
 				print(f"Critical error! {key} not found in dictionary passed to readf!")
 				return None
@@ -353,9 +362,48 @@ def readf(data, d):
 		data2.append(data[j:])
 		data = "".join(data2)
 
-	while any([any(["${"+key+M+"}" in data for M in ["","^CAPITAL","^UPPER","^LOWER"]]) for key in d.keys()]):
-		for key in d.keys():
-			data = data.replace("${"+key+"^CAPITAL}", str(d[key]).capitalize()).replace("${"+key+"^UPPER}", str(d[key]).upper()).replace("${"+key+"^LOWER}", str(d[key]).lower()).replace("${"+key+"}", str(d[key]))
+	num_fails = 0
+	prev_num_fails = 1
+	while num_fails != prev_num_fails:
+		prev_num_fails = num_fails
+		num_fails = 0
+		i = data.find("${")
+		while i != -1:
+			head, word = data[:i], data[i+2:]
+			rb = word.find("}")
+			if rb == -1:
+				print(data)
+				print("Critical Error: Mismatched open bracket in data passed to readf!")
+				return None
+			word, tail = word[:rb], word[rb+1:]
+			w = "${"+word+"}"
+			if "^" in word:
+				w = word.split("^", maxsplit=1)[0]
+				fns = word.split("^")[1:]
+				if w in d.keys():
+					w = d[w]
+					if type(w) is str:
+						for fn in fns:
+							if fn.lower() == "upper":
+								w = w.upper()
+							elif fn.lower() == "lower":
+								w = w.lower()
+							elif fn.lower() == "capital":
+								w = w.capitalize()
+					else:
+						w = str(w)
+				else:
+					num_fails += 1
+			elif word in d.keys():
+				w = d[word]
+			else:
+				num_fails += 1
+			data = head + w + tail
+			i = data.find("${", i+2)
+
+	# while any([any(["${"+key+M+"}" in data for M in ["","^CAPITAL","^UPPER","^LOWER"]]) for key in d.keys()]):
+		# for key in d.keys():
+			# data = data.replace("${"+key+"^CAPITAL}", str(d[key]).capitalize()).replace("${"+key+"^UPPER}", str(d[key]).upper()).replace("${"+key+"^LOWER}", str(d[key]).lower()).replace("${"+key+"}", str(d[key]))
 	# data2 = []
 	# i = 0
 	# for match in r.finditer(data):
@@ -366,4 +414,9 @@ def readf(data, d):
 	# if "forge" in d["modloader"]:
 		# for word in ["PICKAXES", "SHOVELS", "SWORDS", "HOES", "AXES"]:
 			# data = data.replace(word, word[:-1])
+
+	# if len(data) < 50:
+		# print(data)
+	
+	
 	return data
