@@ -362,17 +362,14 @@ def readf(data, d):
 		data2.append(data[j:])
 		data = "".join(data2)
 
-	num_fails = 0
-	prev_num_fails = 1
-	while num_fails != prev_num_fails:
-		prev_num_fails = num_fails
-		num_fails = 0
+	# just use some arbitrary number of iterations until I figure out a better algorithm
+	for j in range(8):
 		i = data.find("${")
 		while i != -1:
 			head, word = data[:i], data[i+2:]
 			rb = word.find("}")
 			if rb == -1:
-				print(data)
+				# print(data)
 				print("Critical Error: Mismatched open bracket in data passed to readf!")
 				return None
 			word, tail = word[:rb], word[rb+1:]
@@ -390,15 +387,11 @@ def readf(data, d):
 								w = w.lower()
 							elif fn.lower() == "capital":
 								w = w.capitalize()
-					else:
-						w = str(w)
-				else:
-					num_fails += 1
 			elif word in d.keys():
 				w = d[word]
-			else:
-				num_fails += 1
-			data = head + w + tail
+			# if "mc." in word:
+				# print(word, w)
+			data = head + str(w) + tail
 			i = data.find("${", i+2)
 
 	# while any([any(["${"+key+M+"}" in data for M in ["","^CAPITAL","^UPPER","^LOWER"]]) for key in d.keys()]):

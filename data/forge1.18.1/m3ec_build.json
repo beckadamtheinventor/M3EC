@@ -1,0 +1,96 @@
+{
+	"modloader": "forge",
+	"minecraftVersion": "1.18.1",
+	"javaVersion": "17.",
+	"preActions": [
+		{
+			"action": "makedir",
+			"value": "src/main/java/${mod.packagedir}/blocks"
+		},
+		{
+			"iterate": "mod.registry.block.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "if",
+					"condition": "?${mod.block.${%v}.BlockClass} #startswith ModStairBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "${mod.block.${%v}.BlockClass}",
+							"value": "StairsBlock"
+						}
+					]
+				},
+				{
+					"action": "if",
+					"condition": "?${mod.block.${%v}.BlockClass} #startswith ModDoorBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "${mod.block.${%v}.BlockClass}",
+							"value": "DoorBlock"
+						}
+					]
+				},
+				{
+					"action": "if",
+					"condition": "?${mod.block.${%v}.BlockClass} #startswith ModTrapdoorBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "${mod.block.${%v}.BlockClass}",
+							"value": "TrapdoorBlock"
+						}
+					]
+				}
+			]
+		}
+	],
+	"postActions": [
+		{
+			"action": "copy",
+			"source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+		}
+	],
+	"sources": [
+		{
+			"source": "pack.mcmeta",
+			"dest": "src/main/resources/pack.mcmeta"
+		},
+		{
+			"source": "MainClass.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+		},
+		{
+			"source": "registry/ModBlocks.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+		},
+		{
+			"source": "registry/ModItems.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+		},
+		{
+			"iterate": "mod.registry.toolmaterial.names",
+			"source": "registry/ToolMaterial.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.tool.names",
+			"source": "registry/ToolItem.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.armormaterial.names",
+			"source": "registry/ArmorMaterial.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.armor.names",
+			"source": "registry/ArmorItem.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armor.${%v}.class}.java"
+		}
+	]
+	
+}

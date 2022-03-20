@@ -9,7 +9,7 @@ public class ${mod.block.${%v}.class} extends Block {
 		super(Block.Properties.of(Material.${mod.block.${%v}.material})
 				.strength(${mod.block.${%v}.hardness}f, ${mod.block.${%v}.resistance}f)
 				.sound(SoundType.${mod.block.${%v}.sounds})
-				.harvestLevel(${mod.block.${%v}.toollevel})
+				.harvestLevel(${mod.block.${%v}.toollevelint})
 				.harvestTool(ToolType.${mod.block.${%v}.toolclass})
 				---if mod.block.${%v}.requiresTool
 				.requiresCorrectToolForDrops()---fi

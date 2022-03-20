@@ -189,8 +189,23 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
 	path = project_path
 
-	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18.2", modenv, manifest_dict)
+	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.16.5", modenv, manifest_dict)
+
+	if "forge1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.18.1", modenv, manifest_dict)
+
+	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
+		# build_mod("forge", "1.12.2", modenv, manifest_dict)
+
+	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.16.5", modenv, manifest_dict)
+
+	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.17", modenv, manifest_dict)
+
+	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.17.1", modenv, manifest_dict)
 
 	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
 		print("Fabric 1.18.0 builds are broken right now; ores will be skipped.")
@@ -199,21 +214,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "fabric1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.18.1", modenv, manifest_dict)
 
-	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17", modenv, manifest_dict)
-
-	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17.1", modenv, manifest_dict)
-
-	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.16.5", modenv, manifest_dict)
-
-	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.16.5", modenv, manifest_dict)
-
-	if "forge1.12.2" in modenv:
-	# or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.12.2", modenv, manifest_dict)
+	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.18.2", modenv, manifest_dict)
 
 
 def build_mod(modloader, version, modenv, manifest_dict):

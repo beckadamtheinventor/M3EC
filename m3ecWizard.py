@@ -13,6 +13,7 @@ Press enter to exit.")
 	exit()
 
 sg.theme("BrownBlue")
+
 WIN_WIDTH = 500
 EDITOR_BUTTON_SIZE = (18,1)
 EDITOR_BUTTON_SIZE_THIN = (10,1)
@@ -20,6 +21,33 @@ EDITOR_BUTTON_SIZE_WIDE = (36,1)
 PLACEHOLDER_IMAGE_FILE = os.path.join(os.path.dirname(__file__), "data", "wizard", "images", "placeholder.png")
 if not os.path.exists(PLACEHOLDER_IMAGE_FILE):
 	PLACEHOLDER_IMAGE_FILE = None
+
+SOUND_TYPES = sorted([
+	"wood", "gravel", "grass", "stone", "metal", "glass", "lily pad", "wool",
+	"sand", "snow", "powder snow", "ladder", "anvil", "slime", "honey",
+	"wet grass", "coal", "bamboo", "bamboo sapling", "scaffolding", "sweet berry bush",
+	"crop", "stem", "vine", "nether wart", "lantern", "nether stem", "nylium", "fungus",
+	"roots", "shroomlight", "weeping vines", "weeping vines low pitch", "soul sand",
+	"soul soil", "basalt", "wart block", "netherrack", "nether bricks", "nether sprouts",
+	"nether ore", "bone", "netherite", "ancient debris", "lodestone", "chain",
+	"nether gold ore", "gilded blackstone", "candle", "amethyst block", "amethyst cluster",
+	"small amethyst bud", "medium amethyst bud", "large amethyst bud", "tuff", "calcite",
+	"dripstone block", "pointed dripstone", "copper", "cave vines", "spore blossom",
+	"azalea", "flowering azalea", "moss carpet", "moss block", "big dripleaf",
+	"small dripleaf", "rooted dirt", "hanging roots", "azalea leaves", "sculk sensor",
+	"glow lichen", "deepslate", "deepslate bricks", "deepslate tiles", "polished deepslate",
+])
+
+MATERIAL_TYPES = sorted([
+	"air", "structure void", "portal", "carpet", "plant", "underwater plant",
+	"replaceable plant", "nether shoots", "replaceable nether plant", "water",
+	"bubble column", "lava", "snow layer", "fire", "decoration", "cobweb",
+	"sculk", "redstone lamp", "organic product", "soil", "solid organic",
+	"dense ice", "aggregate", "sponge", "shulker box", "wood", "nether wood",
+	"bamboo sapling", "bamboo", "wool", "tnt", "leaves", "glass", "ice",
+	"cactus", "stone", "metal", "snow block", "repair station", "barrier",
+	"piston", "moss block", "gourd", "egg", "cake", "amethyst", "powder snow",
+])
 
 # try:
 	# import PIL
@@ -152,7 +180,41 @@ def _ContentSelectWindow(manifest_dict, content_type, skip, count, vanillabutton
 	window.close()
 	return False
 	
+def SelectSound():
+	return SelectionList("Select Sound Type", SOUND_TYPES)
 
+def SelectMaterial():
+	return SelectionList("Select Material Type", MATERIAL_TYPES)
+
+def SelectionList(title, items):
+	layout = [
+		[sg.Sizer(WIN_WIDTH, 0)],
+		[sg.Input(k="custom"), sg.Button("submit custom value", k="Submit")],
+		[],
+	]
+	i = 0
+	for s in items:
+		layout[-1].append(sg.Button(s, k=s.replace(" ","_"), size=EDITOR_BUTTON_SIZE))
+		i = (i + 1) % 8
+		if not i:
+			layout.append([])
+	if not len(layout[-1]):
+		layout[-1].append(sg.Sizer(WIN_WIDTH, 0))
+
+	layout.extend([
+		[sg.Cancel()],
+		[sg.Sizer(WIN_WIDTH, 0)],
+	])
+	event, values = sg.Window(title, layout).read(close=True)
+	if event in ("Cancel", sg.WIN_CLOSED):
+		return None
+	elif event == "Submit":
+		if len(values["custom"]):
+			return values["custom"]
+		else:
+			return None
+	else:
+		return event
 
 def CreateRecipe(mfd):
 	layout = [
@@ -340,10 +402,13 @@ def CreateBlock(mfd):
 			sg.FileBrowse(key="imgfilefront", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
 		],
 		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Text("Sounds"), sg.Button("select", k="selectsounds", size=EDITOR_BUTTON_SIZE_WIDE)],
+		[sg.Text("Material"), sg.Button("select", k="selectmaterial", size=EDITOR_BUTTON_SIZE_WIDE)],
+		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
 	]
 	window = sg.Window("Create New Block", layout)
-	dropitem = None
+	dropitem = material = sound = None
 	while True:
 		event, values = window.read()
 		if event in (sg.WINDOW_CLOSED, 'Cancel'):
@@ -351,9 +416,16 @@ def CreateBlock(mfd):
 			return None
 		elif event in ('selectdropitem',):
 			dropitem = ContentSelectWindow(mfd, ["block", "item"])
-			if dropitem is None:
-				continue
-			window["dropitem"].update(dropitem)
+			if dropitem is not None:
+				window["dropitem"].update(dropitem)
+		elif event in ('selectsounds',):
+			sound = SelectSound()
+			if sound is not None:
+				window["selectsounds"].update(sound)
+		elif event in ('selectmaterial',):
+			material = SelectMaterial()
+			if material is not None:
+				window["selectmaterial"].update(material)
 		elif event in ('Ok',):
 			cid = values["title"]
 			if not len(cid):
@@ -372,6 +444,14 @@ def CreateBlock(mfd):
 			if name in mfd["mod.registry.block.names"] or name in mfd["mod.registry.item.names"]:
 				ErrorWindow(f"Block/Item {name} already exists.", parent=window)
 				continue
+			if sound is None:
+				ErrorWindow("Sound Type must be defined")
+				continue
+			if material is None:
+				ErrorWindow("Material Type must be defined")
+				continue
+			d["sounds"] = sound.upper().replace(" ","_")
+			d["material"] = material.upper().replace(" ","_")
 			if values["single"]:
 				imgmain = values["imgfilemain"]
 				if not len(imgmain):
@@ -578,6 +658,7 @@ def CreateItem(mfd):
 			writeDictFile(fname, d)
 			window.close()
 			return d
+
 
 def LoadProject(fname):
 	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment"]
@@ -943,7 +1024,6 @@ def _ModEditor(manifest_dict, fname):
 	return False
 
 def BuildMod(d):
-	global WIN_WIDTH, EDITOR_BUTTON_SIZE
 	layout = [
 		[sg.Text("Currently Fabric version 1.18 is broken and will not build ore generation.")],
 		[sg.Sizer(WIN_WIDTH, 20)],
@@ -958,6 +1038,7 @@ def BuildMod(d):
 		[sg.Button("Fabric 1.17.1", k="fabric1.17.1", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.18", k="fabric1.18", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.18.1", k="fabric1.18.1", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Fabric 1.18.2", k="fabric1.18.2", size=EDITOR_BUTTON_SIZE)],
 		[sg.Cancel()],
 		[sg.Text("",k="building")]
 	]
@@ -968,10 +1049,9 @@ def BuildMod(d):
 		cmd = ["python", os.path.join(os.path.dirname(__file__), "m3ec.py"), d["project_path"], event]
 		if values["buildjar"]:
 			cmd.append("buildjar")
-		subprocess.Popen(cmd).wait()
+		subprocess.Popen(cmd)
 
 def MainMenuWindow():
-	global WIN_WIDTH, EDITOR_BUTTON_SIZE
 	windowitems = [
 		[sg.Sizer(WIN_WIDTH,0)],
 		[sg.Text("M3EC Mod Wizard")],

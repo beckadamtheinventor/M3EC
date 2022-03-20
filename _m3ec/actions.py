@@ -247,7 +247,7 @@ def execActions(actions, versionbuilder, d, accumulator=None):
 
 def checkConditionString(condition, d):
 	if " " in condition:
-		condition = " ".split(condition)
+		condition = " ".split(condition, maxsplit=2)
 		val = condition.pop(0)
 		if val.startswith("!"):
 			val = val[1:]
@@ -277,6 +277,14 @@ def checkConditionString(condition, d):
 					return not inverted
 				elif condition[1] == "iterable" and (type(val) is list or type(val) is tuple):
 					return not inverted
+			elif condition[0] == "#startswith":
+				if type(val) is str:
+					if val.startswith(condition[1]):
+						return not inverted
+			elif condition[0] == "#endswith":
+				if type(val) is str:
+					if val.endswith(condition[1]):
+						return not inverted
 		return inverted
 
 	if condition in d.keys():
@@ -299,7 +307,9 @@ def checkConditionString(condition, d):
 
 def checkTrue(condition, d):
 	condition = readf(condition, d)
-	if condition.startswith("!"):
+	if condition.startswith("?"):
+		return checkConditionString(condition[1:], d)
+	elif condition.startswith("!"):
 		if condition[1:].startswith("keyexists "):
 			return condition.split(" ", maxsplit=1)[1] not in d.keys()
 		else:
@@ -364,6 +374,6 @@ def checkActionConditions(conditions, d):
 				return val
 		return False
 	elif type(conditions) is str:
-		return checkDictKeyTrue(d, conditions)
+		return checkTrue(conditions, d)
 	elif type(conditions) is bool or type(conditions) is int or type(conditions) is float:
 		return conditions
