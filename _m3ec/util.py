@@ -171,7 +171,10 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 	manifest_dict[f"mod.{content_type}.{cid}.keys"] = list(d.keys())
 	for key in d.keys():
 		# print(f"mod.{content_type}.{cid}.{key} = {d[key]}")
-		manifest_dict[f"mod.{content_type}.{cid}.{key}"] = d[key]
+		v = d[key]
+		if type(v) is str:
+			v = readf(v, manifest_dict)
+		manifest_dict[f"mod.{content_type}.{cid}.{key}"] = v
 	manifest_dict[f"mod.{content_type}.{cid}.uppercased"] = cid.upper()
 	manifest_dict[f"mod.{content_type}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
 	manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
@@ -387,10 +390,12 @@ def readf(data, d):
 								w = w.lower()
 							elif fn.lower() == "capital":
 								w = w.capitalize()
+				else:
+					num_fails += 1
 			elif word in d.keys():
 				w = d[word]
-			# if "mc." in word:
-				# print(word, w)
+			else:
+				num_fails += 1
 			data = head + str(w) + tail
 			i = data.find("${", i+2)
 
