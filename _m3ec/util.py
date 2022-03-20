@@ -390,12 +390,8 @@ def readf(data, d):
 								w = w.lower()
 							elif fn.lower() == "capital":
 								w = w.capitalize()
-				else:
-					num_fails += 1
 			elif word in d.keys():
 				w = d[word]
-			else:
-				num_fails += 1
 			data = head + str(w) + tail
 			i = data.find("${", i+2)
 
