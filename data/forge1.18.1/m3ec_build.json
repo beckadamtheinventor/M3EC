@@ -2,10 +2,30 @@
 	"modloader": "forge",
 	"minecraftVersion": "1.18.1",
 	"javaVersion": "17.",
+	"firstActions": [
+		{
+			"if": [
+				"^OR",
+				"?mod.registry.armor.names #length nonzero",
+				"?mod.registry.armormaterial.names #length nonzero"
+			],
+			"action": "print",
+			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		},
+		{
+			"if": "?mod.registry.enchantment.names #length nonzero",
+			"action": "print",
+			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		}
+	],
 	"preActions": [
 		{
 			"action": "makedir",
 			"value": "src/main/java/${mod.packagedir}/blocks"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/META-INF"
 		},
 		{
 			"iterate": "mod.registry.block.names",
@@ -13,38 +33,116 @@
 			"actions": [
 				{
 					"action": "if",
-					"condition": "?${mod.block.${%v}.BlockClass} #startswith ModStairBlock",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModStairBlock",
 					"actions": [
 						{
 							"action": "setdictkey",
-							"key": "${mod.block.${%v}.BlockClass}",
-							"value": "StairsBlock"
+							"key": "mod.block.${%v}.BlockClass",
+							"value": "StairBlock"
 						}
 					]
 				},
 				{
 					"action": "if",
-					"condition": "?${mod.block.${%v}.BlockClass} #startswith ModDoorBlock",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModDoorBlock",
 					"actions": [
 						{
 							"action": "setdictkey",
-							"key": "${mod.block.${%v}.BlockClass}",
+							"key": "mod.block.${%v}.BlockClass",
 							"value": "DoorBlock"
 						}
 					]
 				},
 				{
 					"action": "if",
-					"condition": "?${mod.block.${%v}.BlockClass} #startswith ModTrapdoorBlock",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModTrapdoorBlock",
 					"actions": [
 						{
 							"action": "setdictkey",
-							"key": "${mod.block.${%v}.BlockClass}",
+							"key": "mod.block.${%v}.BlockClass",
 							"value": "TrapdoorBlock"
 						}
 					]
 				}
 			]
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft/tags"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft/tags/blocks"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft/tags/blocks/mineable"
+		},
+		{
+			"iterate": ["axe", "pickaxe", "shovel", "hoe", "wood", "stone", "iron", "diamond", "netherite"],
+			"action": "setdictkey",
+			"key": "mod.registry.requires_${%v}",
+			"value": null
+		},
+		{
+			"iterate": "mod.registry.block.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "if",
+					"condition": [
+						"keyexists mod.block.${%v}.toolclass",
+						"keyexists mod.block.${%v}.toollevel"
+					],
+					"actions": [
+						{
+							"action": "getdictkey",
+							"key": "mod.block.${%v}.toollevel",
+							"dict": {"-1": null, "0":"WOOD", "1":"STONE", "2":"IRON", "3":"DIAMOND", "4":"NETHERITE"},
+							"default": "${mod.block.${%v}.toollevel}",
+							"var": "toollevel"
+						},
+						{
+							"action": "getdictkey",
+							"key": "mod.block.${%v}.toolclass",
+							"dict": {"PICKAXES":"PICKAXE", "AXES":"AXE", "SHOVELS":"SHOVEL", "HOES": "HOE"},
+							"default": "${mod.block.${%v}.toolclass}",
+							"var": "toolclass"
+						},
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.hastoolrequirements",
+							"value": true
+						},
+						{
+							"action": "appenddictkey",
+							"key": "mod.registry.requires_${toolclass^lower}",
+							"value": "${%v}"
+						},
+						{
+							"action": "appenddictkey",
+							"key": "mod.registry.requires_${toollevel^lower}",
+							"value": "${%v}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"iterate": ["axe", "pickaxe", "shovel", "hoe"],
+			"action": "copyf",
+			"source": "${source_path}/requires_${%v}.m3ecjson",
+			"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/mineable/${%v}.json"
+		},
+		{
+			"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
+			"action": "copyf",
+			"source": "${source_path}/requires_${%v}.m3ecjson",
+			"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/requires_${%v}_tool.json"
 		}
 	],
 	"postActions": [
@@ -58,6 +156,10 @@
 		{
 			"source": "pack.mcmeta",
 			"dest": "src/main/resources/pack.mcmeta"
+		},
+		{
+			"source": "META-INF/mods.toml",
+			"dest": "src/main/resources/META-INF/mods.toml"
 		},
 		{
 			"source": "MainClass.m3ecjava",
@@ -80,16 +182,6 @@
 			"iterate": "mod.registry.tool.names",
 			"source": "registry/ToolItem.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.armormaterial.names",
-			"source": "registry/ArmorMaterial.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.armor.names",
-			"source": "registry/ArmorItem.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armor.${%v}.class}.java"
 		}
 	]
 	

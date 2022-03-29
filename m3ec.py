@@ -5,12 +5,47 @@ from _m3ec.actions import *
 from _m3ec.gradle import *
 from _m3ec.util import *
 
+def interpret_args(argv):
+	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment", "recipetype"]
+	source_path = os.path.join(os.path.dirname(__file__), "data")
+	if argv[0].lower() == "help":
+		print("""Usage:
+project_path all|fabric|forge[gameversion]|fabric[gameversion]
+gen|generate item|food|fuel|block|ore|recipe|armor[material]|tool[material] content_id|Title [output_file] [key:value...]
+""")
+	elif len(argv) > 1:
+		if argv[0].lower() in ("generate", "gen"):
+			if argv[1] in content_types_list:
+				if len(argv) > 2:
+					title, cid, upper = ParseContentTitle(argv[2])
+				else:
+					title = cid = upper = ""
+				d = {"cid": cid, "title": title, "upper": upper}
+				if len(argv) > 4:
+					for a in argv[4:]:
+						if ":" in a:
+							k, v = a.split(":", maxsplit=1)
+							d[k] = v
+						else:
+							d[a] = "yes"
+				data = getDictString(d)
+				if len(argv) > 3:
+					try:
+						with open(argv[3], "w") as f:
+							f.write(data)
+					except IOError:
+						print(f"Failed to write destination file: {argv[3]}")
+				else:
+					print(data)
+		else:
+			build(argv[0], argv[1:])
+
 def build(project_path, modenv):
 	if " " in modenv:
 		modenv = modenv.split(" ")
-	else:
+	elif type(modenv) is not list:
 		modenv = [modenv]
-	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment"]
+	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment", "recipetype"]
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 
 	if not os.path.exists(project_path):
@@ -83,22 +118,28 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		manifest_dict[f"mod.registry.{content_type}.names"] = []
 
 	manifest_dict[f"mod.registry.blockitem.names"] = []
+	manifest_dict["mod.customclasses"] = []
 	manifest_dict[f"mod.files"] = {}
+
 
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(os.path.normpath(os.path.join(project_path, path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec"):
 				d = readDictFile(fname)
 				if "@" in d.keys():
-					if "contentid" not in d.keys():
-						print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
-						continue
 					content_type = d["@"]
-					if content_type == "itemfactory":
+					if content_type == "class":
+						manifest_dict["mod.customclasses"].append({"file":d["file"], "class":d["class"],"modloader":d["modloader"], "gameversions":d["gameversions"]})
+						continue
+					elif content_type == "itemfactory":
 						for cid in d["items"]:
 							dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":cid+".png"}
 							add_content(cid, "item", dictinst, manifest_dict, fname)
-					elif content_type == "recipe":
+						continue
+					if "contentid" not in d.keys():
+						print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
+						continue
+					if content_type == "recipe":
 						if "contentid" in d.keys():
 							cid = d["contentid"]
 						else:
@@ -107,21 +148,20 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 					else:
 						if "contentid" in d.keys():
 							cid = d["contentid"]
-							if content_type == "block":
+							if content_type == "block" and "BlockClass" not in d.keys():
 								d["BlockClass"] = "Block"
 							add_content(cid, content_type, d, manifest_dict, fname)
 						if content_type == "block":
 							midcid = manifest_dict["mod.mcpath"]+":"+cid
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
-								old_title = d["title"]
+								d = readDictFile(fname)
 								d["title"] = d["title"]+" Slab"
 								d["contentid"] = cid+"_slab"
-								d["droptype"] = "Self"
+								d["droptype"] = "Slab"
 								d["blockstatetype"] = "Slab"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
 								d["BlockClass"] = "SlabBlock"
 								add_content(cid+"_slab", content_type, d, manifest_dict)
-								d["title"] = old_title
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
 									add_content(cid+"_slab", "recipe", {
 										"@": "recipe", "recipe": "ShapedRecipe",
@@ -134,7 +174,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 										"ingredient": midcid, "result": midcid+"_slab", "count": "2",
 									}, manifest_dict)
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs"):
-								old_title = d["title"]
+								d = readDictFile(fname)
 								d["title"] = d["title"]+" Stairs"
 								d["contentid"] = cid+"_stairs"
 								d["droptype"] = "Self"
@@ -143,7 +183,6 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 								d["BlockClass"] = "ModStairBlock"
 								d["BlockMaterialBlock"] = cid
 								add_content(cid+"_stairs", content_type, d, manifest_dict)
-								d["title"] = old_title
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
 									add_content(cid+"_stairs", "recipe", {
 										"@": "recipe", "recipe": "ShapedRecipe",
@@ -161,7 +200,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 										"ingredient": midcid, "result": midcid+"_stairs", "count": "1",
 									}, manifest_dict)
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
-								old_title = d["title"]
+								d = readDictFile(fname)
 								d["title"] = d["title"]+" Trapdoor"
 								d["contentid"] = cid+"_trapdoor"
 								d["droptype"] = "Self"
@@ -169,7 +208,6 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
 								d["BlockClass"] = "ModTrapdoorBlock"
 								add_content(cid+"_trapdoor", content_type, d, manifest_dict)
-								d["title"] = old_title
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
 									add_content(cid+"_trapdoor", "recipe", {
 										"@": "recipe", "recipe": "ShapedRecipe",
@@ -208,7 +246,6 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		build_mod("fabric", "1.17.1", modenv, manifest_dict)
 
 	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
-		print("Fabric 1.18.0 builds are broken right now; ores will be skipped.")
 		build_mod("fabric", "1.18", modenv, manifest_dict)
 
 	if "fabric1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "fabric" in modenv:
@@ -221,7 +258,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 def build_mod(modloader, version, modenv, manifest_dict):
 	print(f"Building {modloader} {version} mod project")
 	manifest_dict["modloader"] = modloader
-	manifest_dict["gameversion"] = version
+	manifest_dict["gameversion"] = gameversion = version
 	source_path = manifest_dict["source_path"]
 	project_path = manifest_dict["project_path"]
 	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
@@ -234,12 +271,12 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		return False
 
 	if "firstActions" in versionbuilder.keys():
-		execActions(versionbuilder["firstActions"], versionbuilder, manifest_dict)
+		execActions(versionbuilder["firstActions"], manifest_dict)
 
 	build_resources(project_path, f"{modloader}{version}", manifest_dict)
 
 	if "preActions" in versionbuilder.keys():
-		execActions(versionbuilder["preActions"], versionbuilder, manifest_dict)
+		execActions(versionbuilder["preActions"], manifest_dict)
 	
 	if "sources" in versionbuilder.keys():
 		for file in versionbuilder["sources"]:
@@ -266,14 +303,22 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		for file in versionbuilder["copy"]:
 			shutil.copy(file["source"], file["dest"])
 
+	for customclass in manifest_dict["mod.customclasses"]:
+		if modloader == customclass["modloader"] and gameversion in customclass["gameversions"]:
+			fname = readf(customclass["file"], manifest_dict)
+			if not readf_copyfile(os.path.join(project_path, fname), os.path.join(build_path, "src", "main", "java", readf(customclass["class"], manifest_dict).replace(".", os.sep)+".java"), manifest_dict):
+				print(f"Error: Failed to read custom class file \"{fname}\"")
+				return False
+
+
 	if "postActions" in versionbuilder.keys():
-		execActions(versionbuilder["postActions"], versionbuilder, manifest_dict)
+		execActions(versionbuilder["postActions"], manifest_dict)
 
 	if "javaVersion" in versionbuilder.keys():
 		maybe_run_gradle(os.path.join(project_path, f"{modloader}{version}_build"), modenv, versionbuilder["javaVersion"])
 
 	if "finalActions" in versionbuilder.keys():
-		execActions(versionbuilder["finalActions"], versionbuilder, manifest_dict)
+		execActions(versionbuilder["finalActions"], manifest_dict)
 
 	return True
 
@@ -455,10 +500,9 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 
 
 if __name__=='__main__':
-	if len(sys.argv) < 3:
+	if len(sys.argv) < 2:
 		print("""
 Minecraft Multiple Mod Environment Compiler v0.6
-Very much unfinished, currently only supports a handful of minecraft/modloader versions.
 Usage:
 	python m3ec.py path modenv
 where modenv can be any combination of:
@@ -473,11 +517,15 @@ where modenv can be any combination of:
 + fabric1.16.5
 + fabric1.17
 + fabric1.17.1
-+ fabric1.18 (ores are broken and will be skipped)
++ fabric1.18
 + fabric1.18.1
 + fabric1.18.2
 + forge
 + forge1.16.5
+
+Note: Not all the game versions/modloaders listed are implemented to the same degree.
+      If a feature is present in your mod that is not yet supported by the version/modloader implementation,
+	  those features will be skipped and a warning will be printed to the console.
 
 Additionally, modenv may be appended with any combination of:
 + buildjar (builds mod into a jar file)
@@ -485,17 +533,18 @@ Additionally, modenv may be appended with any combination of:
 + runserver (launches an offline server with the mod installed)
 
 ---------------------------------------------------------------------
---  input "quit" to quit.
+--  interactive build prompt
+--  input "quit" to quit, "help" for help.
+--  usage: path modenv
 ---------------------------------------------------------------------
 """)
 		while True:
 			d = input("m3ec> ").split(" ")
-			if len(d) > 1:
-				build(d[0], " ".join(d[1:]))
-			elif len(d):
+			if len(d):
 				if d[0] in ["exit", "quit", "e", "q", "x"]:
 					break
+				interpret_args(d)
 	else:
-		build(sys.argv[1], " ".join(sys.argv[2:]))
+		interpret_args(sys.argv[1:])
 
 

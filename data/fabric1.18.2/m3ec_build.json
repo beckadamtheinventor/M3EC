@@ -2,6 +2,22 @@
 	"modloader": "fabric",
 	"minecraftVersion": "1.18.2",
 	"javaVersion": "17.",
+	"firstActions": [
+		{
+			"if": [
+				"^OR",
+				"?mod.registry.armor.names #length nonzero",
+				"?mod.registry.armormaterial.names #length nonzero"
+			],
+			"action": "print",
+			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		},
+		{
+			"if": "?mod.registry.enchantment.names #length nonzero",
+			"action": "print",
+			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		}
+	],
 	"preActions": [
 		{
 			"action": "makedir",
@@ -18,6 +34,14 @@
 		{
 			"action": "makedir",
 			"value": "src/main/resources/data/minecraft/tags/blocks/mineable"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/java/${mod.packagedir}/blocks"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/java/${mod.packagedir}/recipetype"
 		},
 		{
 			"iterate": ["axe", "pickaxe", "shovel", "hoe", "wood", "stone", "iron", "diamond", "netherite"],
@@ -80,6 +104,21 @@
 			"action": "copyf",
 			"source": "${source_path}/requires_${%v}.m3ecjson",
 			"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/requires_${%v}_tool.json"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}${gameversion}/ModDoorBlock.m3ecjava",
+			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModDoorBlock.java"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
+			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}${gameversion}/ModTrapdoorBlock.m3ecjava",
+			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
 		}
 	],
 	"postActions": [
@@ -125,6 +164,26 @@
 			"iterate": "mod.registry.armor.names",
 			"source": "registry/ArmorItem.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armor.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.recipetype.names",
+			"source": "recipetype/Recipe.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Recipe.java"
+		},
+		{
+			"iterate": "mod.registry.recipetype.names",
+			"source": "recipetype/RecipeBlock.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.recipetype.${%v}.BlockClass}.java"
+		},
+		{
+			"iterate": "mod.registry.recipetype.names",
+			"source": "recipetype/RecipeJsonFormat.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}JsonFormat.java"
+		},
+		{
+			"iterate": "mod.registry.recipetype.names",
+			"source": "recipetype/RecipeSerializer.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
 		}
 	]
 	

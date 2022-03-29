@@ -1,0 +1,12 @@
+
+package ${mod.package}.registry;
+
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.${mod.tool.${%v}.tooltype};
+
+public class ${mod.tool.${%v}.class} extends ${mod.tool.${%v}.tooltype} {
+	public ${mod.tool.${%v}.class}(Tier tier, int attackDamage, float attackSpeed, Properties properties) {
+		super(tier, attackDamage, attackSpeed, properties);
+	}
+}
+

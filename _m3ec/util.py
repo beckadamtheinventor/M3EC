@@ -1,5 +1,10 @@
 
-import os
+import os, json
+
+def load_resource(path, file, method=json.load):
+	with open(os.path.join(path, file)) as f:
+		return method(f)
+
 
 def walk(path):
 	found_names = []
@@ -94,7 +99,7 @@ def writeDictFile(fname, d):
 		# print("Writing Dictionary File: ", fname)
 		with open(fname, "w") as f:
 			f.write(getDictString(d))
-	except OSError:
+	except IOError:
 		return False
 	return True
 
@@ -105,13 +110,13 @@ def getDictString(d):
 	else:
 		comments = {}
 	if "__Generated" not in d.keys():
-		o.append("__Generated: by M3ECWizard")
+		o.append("__Generated:")
 
 	d2 = {}
 	for key in d.keys():
 		if "^list." not in key and "^keys" not in key:
 			if "." in key:
-				keys = key.split(".")
+				keys = key.split(".", maxsplit=1)
 				for i in range(len(keys)-1):
 					keys[i] = keys[i]+"."
 				a = d2
@@ -276,6 +281,8 @@ def readf_file(path, d):
 		return None
 
 def readf(data, d):
+	if type(data) is not str:
+		return data
 	if "$%f" in d.keys():
 		data = data.replace("$%f", d["$%f"])
 

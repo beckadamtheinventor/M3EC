@@ -2,6 +2,22 @@
 	"modloader": "forge",
 	"minecraftVersion": "1.16.5",
 	"javaVersion": "1.8.",
+	"firstActions": [
+		{
+			"if": [
+				"^OR",
+				"?mod.registry.armor.names #length nonzero",
+				"?mod.registry.armormaterial.names #length nonzero"
+			],
+			"action": "print",
+			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		},
+		{
+			"if": "?mod.registry.enchantment.names #length nonzero",
+			"action": "print",
+			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		}
+	],
 	"preActions": [
 		{
 			"action": "makedir",
@@ -35,16 +51,6 @@
 			"iterate": "mod.registry.tool.names",
 			"source": "registry/ToolItem.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.armormaterial.names",
-			"source": "registry/ArmorMaterial.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.armor.names",
-			"source": "registry/ArmorItem.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armor.${%v}.class}.java"
 		}
 	]
 	

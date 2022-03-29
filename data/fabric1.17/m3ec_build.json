@@ -2,6 +2,22 @@
 	"modloader": "fabric",
 	"minecraftVersion": "1.17",
 	"javaVersion": "16.",
+	"firstActions": [
+		{
+			"if": [
+				"^OR",
+				"?mod.registry.armor.names #length nonzero",
+				"?mod.registry.armormaterial.names #length nonzero"
+			],
+			"action": "print",
+			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		},
+		{
+			"if": "?mod.registry.enchantment.names #length nonzero",
+			"action": "print",
+			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		}
+	],
 	"sources": [
 		{
 			"source": "fabric.mod.m3ecjson",

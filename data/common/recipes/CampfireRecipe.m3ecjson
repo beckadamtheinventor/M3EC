@@ -4,6 +4,5 @@
         "item": "${ingredient}"
     },
     "result": "${result}",
-    "experience": ${experience},
     "cookingtime": ${time}
 }

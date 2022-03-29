@@ -1,0 +1,37 @@
+
+package ${mod.package}.registry;
+
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
+
+public class ${mod.toolmaterial.${%v}.class} implements Tier {
+	@Override
+	public int getUses() {
+		return ${mod.toolmaterial.${%v}.durability};
+	}
+
+	@Override
+	public float getSpeed() {
+		return ${mod.toolmaterial.${%v}.miningspeed};
+	}
+
+	@Override
+	public float getAttackDamageBonus() {
+		return ${mod.toolmaterial.${%v}.attackdamage};
+	}
+
+	@Override
+	public int getLevel() {
+		return ${mod.toolmaterial.${%v}.mininglevel};
+	}
+
+	@Override
+	public int getEnchantmentValue() {
+		return ${mod.toolmaterial.${%v}.enchantability};
+	}
+
+	@Override
+	public Ingredient getRepairIngredient() {
+		return Ingredient.of(${mod.toolmaterial.${%v}.repairitem}.get());
+	}
+}

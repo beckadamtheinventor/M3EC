@@ -2,6 +2,9 @@ package ${mod.package};
 
 import ${mod.package}.registry.ModBlocks;
 import ${mod.package}.registry.ModItems;
+---iter mod.registry.recipetype.names
+import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Recipe;---end
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -96,5 +99,10 @@ public class ${mod.class} implements ModInitializer {
 			RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier("${mod.mcpath}", "end_$%v")));
 	---fi
 ---end
+---iter mod.registry.recipetype.names
+		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);
+---end
+
+
 	}
 }

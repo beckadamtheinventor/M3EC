@@ -2,6 +2,71 @@
 	"modloader": "forge",
 	"minecraftVersion": "1.17.1",
 	"javaVersion": "16.",
+	"firstActions": [
+		{
+			"if": [
+				"^OR",
+				"?mod.registry.armor.names #length nonzero",
+				"?mod.registry.armormaterial.names #length nonzero"
+			],
+			"action": "print",
+			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		},
+		{
+			"if": "?mod.registry.enchantment.names #length nonzero",
+			"action": "print",
+			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		}
+	],
+	"preActions": [
+		{
+			"action": "makedir",
+			"value": "src/main/java/${mod.packagedir}/blocks"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/META-INF"
+		},
+		{
+			"iterate": "mod.registry.block.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "if",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModStairBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.BlockClass",
+							"value": "StairBlock"
+						}
+					]
+				},
+				{
+					"action": "if",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModDoorBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.BlockClass",
+							"value": "DoorBlock"
+						}
+					]
+				},
+				{
+					"action": "if",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModTrapdoorBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.BlockClass",
+							"value": "TrapdoorBlock"
+						}
+					]
+				}
+			]
+		}
+	],
 	"sources": [
 		{
 			"source": "MainClass.m3ecjava",

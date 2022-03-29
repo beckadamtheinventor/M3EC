@@ -12,8 +12,8 @@ hardness:          ${mc.emerald_ore.hardness}
 resistance:        ${mc.emerald_ore.resistance}
 material:          STONE
 toolclass:         PICKAXES
-toollevel:         2
-requiresTool:      .requiresTool()
+toollevel:         IRON
+requiresTool:      yes
 sounds:            STONE
 
 +langs:   fr_ca

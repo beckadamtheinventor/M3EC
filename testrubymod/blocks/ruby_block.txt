@@ -11,8 +11,8 @@ hardness:          ${mc.diamond_block.hardness}
 resistance:        ${mc.diamond_block.resistance}
 material:          METAL
 toolclass:         PICKAXES
-toollevel:         1
-requiresTool:
+toollevel:         IRON
+requiresTool:      yes
 sounds:            METAL
 
 +langs:   fr_ca
@@ -20,3 +20,10 @@ sounds:            METAL
 fr_ca:   Bloc de Rubis
 fr_fr:   Bloc de Rubis
 
+autogenerate:
+.slab: yes
+.slab.recipe: yes
+.slab.stonecuttingrecipe: yes
+.stairs: yes
+.stairs.recipe: yes
+.stairs.stonecuttingrecipe: yes

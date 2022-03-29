@@ -2,9 +2,12 @@
 import os, shutil, json
 from .util import *
 
-def execActions(actions, versionbuilder, d, accumulator=None):
+def execActions(actions, d, accumulator=None):
 	for action in actions:
+		if "if" in action.keys() and not checkActionConditions(action["if"], d):
+			continue
 		a = action["action"].lower()
+		# print(a)
 		if a == "var":
 			if "source" in action.keys() and "dest" in action.keys():
 				d[readf(action["dest"], d)] = d[readf(action["source"], d)]
@@ -116,14 +119,14 @@ def execActions(actions, versionbuilder, d, accumulator=None):
 		elif a == "if":
 			if "condition" in action.keys() and "actions" in action.keys():
 				if checkActionConditions(action["condition"], d):
-					execActions(action["actions"], versionbuilder, d, accumulator)
+					execActions(action["actions"], d, accumulator)
 
 		elif a == "doactions":
 			cond = None
 			if "while" in action.keys() and "var" in action.keys():
 				cond = action["var"]
 			while True:
-				execActions(action["actions"], versionbuilder, d, accumulator)
+				execActions(action["actions"], d, accumulator)
 				if cond is None:
 					break
 				if not d[cond]:
@@ -140,13 +143,28 @@ def execActions(actions, versionbuilder, d, accumulator=None):
 				for i in range(len(l)):
 					d["%i"] = i
 					d["%v"] = l[i]
-					execActions(action["actions"], versionbuilder, d, accumulator)
+					execActions(action["actions"], d, accumulator)
+
+			if "file" in action.keys():
+				if "iterate" in action.keys():
+					l = action["iterate"]
+					if type(l) is str:
+						l = d[l]
+				else:
+					l = [None]
+				for i in range(len(l)):
+					d["%i"] = i
+					d["%v"] = l[i]
+					fname = readf(action["file"], d)
+					if os.path.exists(fname):
+						with open(fname) as f:
+							execActions(json.load(f), d, accumulator)
 
 		elif a == "repeatactions":
 			if "repeat" in action.keys():
 				rep = int(action["repeat"])
 				for i in range(rep):
-					execActions(action["actions"], versionbuilder, d, accumulator)
+					execActions(action["actions"], d, accumulator)
 
 		elif a == "readf":
 			if "file" in action.keys():
@@ -241,14 +259,26 @@ def execActions(actions, versionbuilder, d, accumulator=None):
 					elif accumulator is not None:
 						f.write(str(accumulator))
 
-		elif a == "makedir" or a == "make_dir":
+		elif a in ("makedir", "make_dir"):
 			make_dir(os.path.join(d["build_path"], readf(action["value"], d)))
+		
+		elif a in ("print", "display", "error"):
+			if "string" in action.keys():
+				print(readf(action["string"], d),end=" ")
+			if "var" in action.keys():
+				if action["var"] in d.keys():
+					print(readf(d[action["var"]], d), end=" ")
+			if "value" in action.keys():
+				print(readf(action["value"], d), end=" ")
+			print()
+			if a == "error":
+				exit(1)
 
 
 def checkConditionString(condition, d):
 	if " " in condition:
-		condition = " ".split(condition, maxsplit=2)
-		val = condition.pop(0)
+		condition = condition.split(" ", maxsplit=2)
+		val = readf(condition.pop(0), d)
 		if val.startswith("!"):
 			val = val[1:]
 			inverted = True
@@ -284,6 +314,12 @@ def checkConditionString(condition, d):
 			elif condition[0] == "#endswith":
 				if type(val) is str:
 					if val.endswith(condition[1]):
+						return not inverted
+			elif condition[0] == "#length":
+				if type(val) is str or type(val) is list or type(val) is tuple:
+					if condition[1] == "nonzero" and len(val) > 0:
+						return not inverted
+					elif condition[1] == "zero" and len(val) <= 0:
 						return not inverted
 		return inverted
 
@@ -322,6 +358,7 @@ def checkTrue(condition, d):
 
 def checkActionConditions(conditions, d):
 	if type(conditions) is list:
+		conditions = conditions[:]
 		if len(conditions):
 			if conditions[0] == "^AND":
 				useand = True

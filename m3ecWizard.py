@@ -1,9 +1,8 @@
 
 
-import os, sys, json, subprocess, tempfile, hashlib, shutil
+import os, sys, json, tempfile, hashlib, shutil, threading, m3ec
 from PIL import Image
 from _m3ec.util import *
-
 
 try:
 	import PySimpleGUI as sg
@@ -16,94 +15,26 @@ sg.theme("BrownBlue")
 
 WIN_WIDTH = 500
 EDITOR_BUTTON_SIZE = (18,1)
+EDITOR_BUTTON_SIZE_X = 140
 EDITOR_BUTTON_SIZE_THIN = (10,1)
 EDITOR_BUTTON_SIZE_WIDE = (36,1)
-PLACEHOLDER_IMAGE_FILE = os.path.join(os.path.dirname(__file__), "data", "wizard", "images", "placeholder.png")
+
+M3EC_DATA_ROOT = os.path.join(os.path.dirname(__file__), "data")
+WIZARD_DATA_ROOT = os.path.join(M3EC_DATA_ROOT, "wizard")
+
+PLACEHOLDER_IMAGE_FILE = os.path.join(WIZARD_DATA_ROOT, "images", "placeholder.png")
 if not os.path.exists(PLACEHOLDER_IMAGE_FILE):
 	PLACEHOLDER_IMAGE_FILE = None
 
-SOUND_TYPES = sorted([
-	"wood", "gravel", "grass", "stone", "metal", "glass", "lily pad", "wool",
-	"sand", "snow", "powder snow", "ladder", "anvil", "slime", "honey",
-	"wet grass", "coal", "bamboo", "bamboo sapling", "scaffolding", "sweet berry bush",
-	"crop", "stem", "vine", "nether wart", "lantern", "nether stem", "nylium", "fungus",
-	"roots", "shroomlight", "weeping vines", "weeping vines low pitch", "soul sand",
-	"soul soil", "basalt", "wart block", "netherrack", "nether bricks", "nether sprouts",
-	"nether ore", "bone", "netherite", "ancient debris", "lodestone", "chain",
-	"nether gold ore", "gilded blackstone", "candle", "amethyst block", "amethyst cluster",
-	"small amethyst bud", "medium amethyst bud", "large amethyst bud", "tuff", "calcite",
-	"dripstone block", "pointed dripstone", "copper", "cave vines", "spore blossom",
-	"azalea", "flowering azalea", "moss carpet", "moss block", "big dripleaf",
-	"small dripleaf", "rooted dirt", "hanging roots", "azalea leaves", "sculk sensor",
-	"glow lichen", "deepslate", "deepslate bricks", "deepslate tiles", "polished deepslate",
-])
+if sys.platform.startswith("win32"):
+	ICON_FILE = os.path.join(WIZARD_DATA_ROOT, "images", "m3ec.ico")
+else:
+	ICON_FILE = os.path.join(WIZARD_DATA_ROOT, "images", "m3ec.png")
+if not os.path.exists(ICON_FILE):
+	ICON_FILE = None
 
-MATERIAL_TYPES = sorted([
-	"air", "structure void", "portal", "carpet", "plant", "underwater plant",
-	"replaceable plant", "nether shoots", "replaceable nether plant", "water",
-	"bubble column", "lava", "snow layer", "fire", "decoration", "cobweb",
-	"sculk", "redstone lamp", "organic product", "soil", "solid organic",
-	"dense ice", "aggregate", "sponge", "shulker box", "wood", "nether wood",
-	"bamboo sapling", "bamboo", "wool", "tnt", "leaves", "glass", "ice",
-	"cactus", "stone", "metal", "snow block", "repair station", "barrier",
-	"piston", "moss block", "gourd", "egg", "cake", "amethyst", "powder snow",
-])
-
-# try:
-	# import PIL
-# except ImportError:
-	# input("Python module \"PIL\" not installed. Please install it with \"pip install pillow --user\"\n\
-# Press enter to exit.")
-	# exit()
-
-# def pick_file(wintitle, kinds=[], path=None, multiselect=False, dirselect=False):
-	# files_list = []
-	# dir_prelist = [".. (parent directory)"]
-	# if multiselect:
-		# dir_prelist = ["Done Selecting"]+dir_prelist
-	# if path is None:
-		# path = os.path.dirname(__file__)
-	# while True:
-		# dir_list = list(os.listdir(path))
-		# if multiselect:
-			# choices_list = []
-			# for item in dir_list:
-				# if item in files_list:
-					# choices_list.append("[@] "+item)
-				# else:
-					# choices_list.append("[ ] "+item)
-				# if os.path.isdir(os.path.join(path, item)):
-					# choices_list[-1] += "/"
-		# else:
-			# choices_list = dir_list
-
-		# choice = easygui.choicebox(title=wintitle, msg=path, choices=dir_prelist+choices_list)
-		# if choice is None:
-			# return None
-		# if multiselect:
-			# c = choice[4:]
-		# else:
-			# c = choice
-		# if choice.startswith(".."):
-			# path = os.path.dirname(path)
-		# elif choice == "Done Selecting":
-			# return files_list
-		# elif os.path.isdir(os.path.join(path, c)):
-			# path = os.path.join(path, c)
-		# else:
-			# base, ext = os.path.splitext(c)
-			# if len(kinds) > 0 and ext.lower().lstrip(".") not in kinds:
-				# if not easygui.ynbox(title=wintitle, msg="Are you sure? This file is not a "+"/".join(kinds)+" file"):
-					# continue
-			# if multiselect:
-				# if c in files_list:
-					# files_list.remove(c)
-				# else:
-					# files_list.append(c)
-			# else:
-				# return os.path.join(path, choice)
-
-
+SOUND_TYPES = load_resource(WIZARD_DATA_ROOT, "sound_types.json")
+MATERIAL_TYPES = load_resource(WIZARD_DATA_ROOT, "material_types.json")
 
 def ContentSelectWindow(manifest_dict, content_type, skip=0, count=16, vanillabutton=True):
 	while True:
@@ -122,6 +53,12 @@ def ContentSelectWindow(manifest_dict, content_type, skip=0, count=16, vanillabu
 					if skip+count < len(manifest_dict[f"mod.registry.{content_type}.names"]):
 						skip += count
 			else:
+				if content_type == "vanilla":
+					if ":" not in e:
+						return "minecraft:"+e
+				else:
+					if ":" not in e:
+						return manifest_dict["mod.mcpath"]+":"+e
 				return e
 		elif not e or e is None:
 			return None
@@ -158,7 +95,7 @@ def _ContentSelectWindow(manifest_dict, content_type, skip, count, vanillabutton
 		[sg.Button(f"Next {count} {ctstr}s", key="Next", size=EDITOR_BUTTON_SIZE)] if skip+count<len(contentnames) else [],
 		[sg.Button("Go Back", key="Back", size=EDITOR_BUTTON_SIZE)],
 	]
-	window = sg.Window(f"Mod {ctstr} List", layout)
+	window = sg.Window(f"Mod {ctstr} List", layout, icon=ICON_FILE)
 	while True:
 		event, values = window.read()
 		if event in ('Back', sg.WIN_CLOSED):
@@ -205,7 +142,7 @@ def SelectionList(title, items):
 		[sg.Cancel()],
 		[sg.Sizer(WIN_WIDTH, 0)],
 	])
-	event, values = sg.Window(title, layout).read(close=True)
+	event, values = sg.Window(title, layout, icon=ICON_FILE).read(close=True)
 	if event in ("Cancel", sg.WIN_CLOSED):
 		return None
 	elif event == "Submit":
@@ -228,42 +165,44 @@ def CreateRecipe(mfd):
 		],
 		[sg.Cancel()],
 	]
-	event, values = sg.Window("Create New Recipe", layout).read(close=True)
+	event, values = sg.Window("Create New Recipe", layout, icon=ICON_FILE).read(close=True)
 	if event == "shaped":
-		recipe = CreateShapedRecipe(mfd)
+		recipes = CreateShapedRecipe(mfd)
 	elif event == "shapeless":
-		recipe = CreateShapelessRecipe(mfd)
+		recipes = CreateShapelessRecipe(mfd)
 	elif event == "smelting":
-		recipe = CreateSmeltingRecipe(mfd)
+		recipes = CreateSmeltingRecipe(mfd)
 	elif event == "stonecutter":
-		recipe = CreateStonecutterRecipe(mfd)
+		recipes = CreateStonecutterRecipe(mfd)
 	elif event == "smithing":
-		recipe = CreateSmithingRecipe(mfd)
+		recipes = CreateSmithingRecipe(mfd)
 	else:
 		return None
-	
-	if type(recipe) is dict:
-		n = 1
-		cid = recipe["result"]
-		while cid in mfd["mod.registry.recipe.names"]:
-			n += 1
-			cid = recipe["result"]+"_"+str(n)
-		recipe["contentid"] = cid
+	if recipes is None:
+		return None
+	for recipe in recipes:
+		if type(recipe) is dict:
+			n = 1
+			cid = recipe["result"].split(":", maxsplit=1)[1]
+			while cid in mfd["mod.registry.recipe.names"]:
+				n += 1
+				cid = recipe["result"]+"_"+str(n)
+			recipe["contentid"] = cid
 
-		fname = os.path.join(mfd["project_path"], "recipes", cid+".m3ec")
-		n = 1
-		while os.path.exists(fname):
-			n += 1
-			fname = os.path.join(mfd["project_path"], "recipes", cid+"_"+str(n)+".m3ec")
+			fname = os.path.join(mfd["project_path"], "recipes", cid+".m3ec")
+			n = 1
+			while os.path.exists(fname):
+				n += 1
+				fname = os.path.join(mfd["project_path"], "recipes", cid+"_"+str(n)+".m3ec")
 
-		writeDictFile(fname, recipe)
-		add_content(cid, "recipe", recipe, mfd, fname)
-	return recipe
+			writeDictFile(fname, recipe)
+			add_content(cid, "recipe", recipe, mfd, fname)
+	return [recipe for recipe in recipes]
 
 def CreateShapedRecipe(mfd):
-	sx, sy = EDITOR_BUTTON_SIZE
 	layout = [
 		[sg.Sizer(WIN_WIDTH,0)],
+		[sg.Text("Ingredients"), sg.Button("Set All",k="itemall")],
 		[sg.Button("empty", k="item1", size=EDITOR_BUTTON_SIZE),
 			sg.Button("empty", k="item2", size=EDITOR_BUTTON_SIZE),
 			sg.Button("empty", k="item3", size=EDITOR_BUTTON_SIZE),
@@ -271,20 +210,20 @@ def CreateShapedRecipe(mfd):
 		[sg.Button("empty", k="item4", size=EDITOR_BUTTON_SIZE),
 			sg.Button("empty", k="item5", size=EDITOR_BUTTON_SIZE),
 			sg.Button("empty", k="item6", size=EDITOR_BUTTON_SIZE),
-			sg.Sizer(sx, sy),
+			sg.Sizer(EDITOR_BUTTON_SIZE_X, 0),
 			sg.Button("result", k="itemresult", size=EDITOR_BUTTON_SIZE),
 		],
 		[sg.Button("empty", k="item7", size=EDITOR_BUTTON_SIZE),
 			sg.Button("empty", k="item8", size=EDITOR_BUTTON_SIZE),
 			sg.Button("empty", k="item9", size=EDITOR_BUTTON_SIZE),
-			sg.Sizer(sx, sy),
+			sg.Sizer(EDITOR_BUTTON_SIZE_X, 0),
 			sg.Text("Count:"),
 			sg.Input(size=EDITOR_BUTTON_SIZE, k="count"),
 		],
 		[sg.Sizer(0, 20)],
 		[sg.Ok(size=EDITOR_BUTTON_SIZE), sg.Cancel(size=EDITOR_BUTTON_SIZE)],
 	]
-	window = sg.Window("Create Shaped Recipe", layout)
+	window = sg.Window("Create Shaped Recipe", layout, icon=ICON_FILE)
 	recipe = {"@": "recipe", "recipe": "ShapedRecipe", "pattern": [], "items":[], "itemkeys":[], "result": "", "count": "1"}
 	while True:
 		event, values = window.read()
@@ -299,17 +238,26 @@ def CreateShapedRecipe(mfd):
 				continue
 			if len(values["count"]):
 				if not values["count"].isalnum() or "." in values["count"] or int(values["count"]) < 1:
-					ErrorWindow("Count must be a number greater than or equal to 1.")
+					ErrorWindow("Count must be an integer greater than or equal to 1.")
 					continue
 				recipe["count"] = values["count"]
 			for row in range(len(recipe["pattern"])):
 				recipe["pattern"][row] = '"'+"".join(recipe["pattern"][row])+'"'
-			window.close()
-			return recipe
+			yield recipe
+			break
 		elif event.startswith("item"):
 			item = ContentSelectWindow(mfd, ["block", "item"])
 			if event[4:] == "result":
 				recipe["result"] = item
+			elif event =="itemall":
+				recipe["pattern"] = ["AAA", "AAA", "AAA"]
+				recipe["items"] = [item]
+				recipe["itemkeys"] = ["A"]
+				for n in range(9):
+					if item is None:
+						window[f"item{n+1}"].update("empty")
+					else:
+						window[f"item{n+1}"].update(item)
 			else:
 				num = int(event[4])
 				row = num // 3
@@ -332,16 +280,200 @@ def CreateShapedRecipe(mfd):
 	window.close()
 
 def CreateShapelessRecipe(mfd):
-	pass
+	layout = [
+		[sg.Sizer(WIN_WIDTH, 0)],
+		[sg.Text("Ingredients"), sg.Button("Set All",k="itemall")],
+		([sg.Button("empty",k=f"item{n+1}",size=EDITOR_BUTTON_SIZE)] for n in range(9)),
+		[sg.Text("Result:"), sg.Button("empty",k="itemresult"),
+			sg.Text("Count:"), sg.Input(k="count", size=EDITOR_BUTTON_SIZE),],
+		[sg.Sizer(0, 20)],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE), sg.Cancel(size=EDITOR_BUTTON_SIZE)],
+	]
+	window = sg.Window("Create Shapeless Recipe", layout, icon=ICON_FILE)
+	recipe = {"@": "recipe", "recipe": "ShapelessRecipe", "result": "", "count": "1"}
+	while True:
+		event, values = window.read()
+		if event in (sg.WINDOW_CLOSED, 'Cancel'):
+			break
+		elif event == "Ok":
+			items = []
+			for n in range(9):
+				if f"item{n+1}" in recipe.keys():
+					if len(recipe[f"item{n+1}"]):
+						items.append(recipe[f"item{n+1}"])
+			if not len(items):
+				ErrorWindow("At least one ingredient must not be empty.")
+				continue
+			if not len(recipe["result"]):
+				ErrorWindow("Result must not be empty")
+				continue
+			if len(values["count"]):
+				if not values["count"].isalnum() or "." in values["count"] or int(values["count"]) < 1:
+					ErrorWindow("Count must be an integer greater than or equal to 1.")
+					continue
+				recipe["count"] = values["count"]
+			recipe["ingredients"] = items
+			for n in range(9):
+				if f"item{n+1}" in recipe.keys():
+					del recipe[f"item{n+1}"]
+			yield recipe
+			break
+		elif event.startswith("item"):
+			item = ContentSelectWindow(mfd, ["block", "item"])
+			if event == "itemresult":
+				recipe["result"] = item
+			elif event =="itemall":
+				for n in range(9):
+					if item is None:
+						if f"item{n+1}" in recipe.keys():
+							del recipe[f"item{n+1}"]
+						window[f"item{n+1}"].update("empty")
+					else:
+						recipe[f"item{n+1}"] = item
+						window[f"item{n+1}"].update(item)
+			else:
+				if item is None:
+					if event in recipe.keys():
+						del recipe[event]
+				else:
+					recipe[event] = item
+			if item is None:
+				window[event].update("empty")
+			else:
+				window[event].update(item)
+	window.close()
 
 def CreateSmeltingRecipe(mfd):
-	pass
+	layout = [
+		[sg.Sizer(WIN_WIDTH, 0)],
+		[sg.Text("Ingredient", size=EDITOR_BUTTON_SIZE_WIDE), sg.Text("Result", size=EDITOR_BUTTON_SIZE_WIDE)],
+		[sg.Button("empty", k="item1", size=EDITOR_BUTTON_SIZE),
+			sg.Sizer(EDITOR_BUTTON_SIZE_X, 0),
+			sg.Button("empty", k="itemresult", size=EDITOR_BUTTON_SIZE),
+		],
+		[sg.Checkbox("Smelting",k="smelting",size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Checkbox("Blasting",k="blasting",size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Checkbox("Smoking",k="smoking",size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Checkbox("Campfire",k="campfire",size=EDITOR_BUTTON_SIZE_THIN),
+		],
+		[sg.Sizer(0, 20)],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE), sg.Cancel(size=EDITOR_BUTTON_SIZE)],
+	]
+	window = sg.Window("Create Smelting Recipe", layout, icon=ICON_FILE)
+	result = ingredient = None
+	while True:
+		event, values = window.read()
+		if event in (sg.WINDOW_CLOSED, 'Cancel'):
+			break
+		elif event == "Ok":
+			if result is None or ingredient is None:
+				ErrorWindow("Ingredient and result must not be empty.");
+				continue
+
+			if values["smelting"]:
+				yield {"@": "recipe", "recipe": "SmeltingRecipe", "ingredient": ingredient,
+					"result": result, "count":values["count"], "time":values["time"],
+					"experience":values["experience"]}
+			if values["blasting"]:
+				yield {"@": "recipe", "recipe": "BlastingRecipe", "ingredient": ingredient,
+					"result": result, "count":values["count"], "time":values["time"]/2,
+					"experience":values["experience"]}
+			if values["smoking"]:
+				yield {"@": "recipe", "recipe": "SmokingRecipe", "ingredient": ingredient,
+					"result": result, "count":values["count"], "time":values["time"]/2,
+					"experience":values["experience"]}
+			if values["campfire"]:
+				yield {"@": "recipe", "recipe": "CampfireRecipe", "ingredient": ingredient,
+					"result": result, "count":values["count"], "time":values["time"]*3}
+			break
+
+		elif event.startswith("item"):
+			item = ContentSelectWindow(mfd, ["block", "item"])
+			if event == "itemresult":
+				result = item
+			elif event == "item1":
+				ingredient = item
+			if item is None:
+				window[event].update("empty")
+			else:
+				window[event].update(item)
+	window.close()
 
 def CreateStonecutterRecipe(mfd):
-	pass
+	layout = [
+		[sg.Sizer(WIN_WIDTH, 0)],
+		[sg.Text("Ingredient", size=EDITOR_BUTTON_SIZE_WIDE), sg.Text("Result", size=EDITOR_BUTTON_SIZE_WIDE)],
+		[sg.Button("empty", k="item1", size=EDITOR_BUTTON_SIZE),
+			sg.Sizer(EDITOR_BUTTON_SIZE_X, 0),
+			sg.Button("empty", k="itemresult", size=EDITOR_BUTTON_SIZE),
+		],
+		[sg.Sizer(0, 20)],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE), sg.Cancel(size=EDITOR_BUTTON_SIZE)],
+	]
+	window = sg.Window("Create Stonecutter Recipe", layout, icon=ICON_FILE)
+	recipe = {"@": "recipe", "recipe": "Stonecutting", "ingredient": "", "result": ""}
+	while True:
+		event, values = window.read()
+		if event in (sg.WINDOW_CLOSED, 'Cancel'):
+			break
+		elif event == "Ok":
+			if not len(recipe["ingredient"]) or not len(recipe["ingredient2"]) or not len(recipe["result"]):
+				ErrorWindow("Ingredient(s)/result must not be empty.");
+				continue
+			yield recipe
+			break
+
+		elif event.startswith("item"):
+			item = ContentSelectWindow(mfd, ["block", "item"])
+			if event == "itemresult":
+				recipe["result"] = item
+			elif event == "item1":
+				recipe["ingredient"] = item
+			if item is None:
+				window[event].update("empty")
+			else:
+				window[event].update(item)
+	window.close()
 
 def CreateSmithingRecipe(mfd):
-	pass
+	layout = [
+		[sg.Sizer(WIN_WIDTH, 0)],
+		[sg.Text("Ingredient 1", size=EDITOR_BUTTON_SIZE), sg.Text("Ingredient 2", size=EDITOR_BUTTON_SIZE_WIDE),
+			sg.Text("Result", size=EDITOR_BUTTON_SIZE),],
+		[sg.Button("empty", k="item1", size=EDITOR_BUTTON_SIZE),
+			sg.Button("empty", k="item2", size=EDITOR_BUTTON_SIZE),
+			sg.Sizer(EDITOR_BUTTON_SIZE_X, 0),
+			sg.Button("empty", k="itemresult", size=EDITOR_BUTTON_SIZE),
+		],
+		[sg.Sizer(0, 20)],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE), sg.Cancel(size=EDITOR_BUTTON_SIZE)],
+	]
+	window = sg.Window("Create Smithing Recipe", layout, icon=ICON_FILE)
+	recipe = {"@": "recipe", "recipe": "SmithingRecipe", "ingredient": "", "ingredient2": "", "result": ""}
+	while True:
+		event, values = window.read()
+		if event in (sg.WINDOW_CLOSED, 'Cancel'):
+			break
+		elif event == "Ok":
+			if not len(recipe["ingredient"]) or not len(recipe["ingredient2"]) or not len(recipe["result"]):
+				ErrorWindow("Ingredient(s)/result must not be empty.");
+				continue
+			yield recipe
+			break
+
+		elif event.startswith("item"):
+			item = ContentSelectWindow(mfd, ["block", "item"])
+			if event == "itemresult":
+				recipe["result"] = item
+			elif event == "item1":
+				recipe["ingredient"] = item
+			elif event == "item2":
+				recipe["ingredient2"] = item
+			if item is None:
+				window[event].update("empty")
+			else:
+				window[event].update(item)
+	window.close()
 
 def CreateBlock(mfd):
 	layout = [
@@ -359,19 +491,25 @@ def CreateBlock(mfd):
 			sg.Radio("Shovel", "tooltype", k="tooltypeshovel", size=EDITOR_BUTTON_SIZE_THIN),
 		],
 		[sg.Text("Tool level required to mine"),
+			sg.Radio("Wood", "toollevel", k="toollevelwood", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Stone", "toollevel", k="toollevelstone", size=EDITOR_BUTTON_SIZE_THIN, default=True),
 			sg.Radio("Iron", "toollevel", k="toolleveliron", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Diamond", "toollevel", k="toolleveldiamond", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("Netherite", "toollevel", k="toollevelnetherite", size=EDITOR_BUTTON_SIZE_THIN),
 		],
 		[sg.Text("(Ignored if tool type is set to None)")],
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Text("Block Drop Type")],
 		[sg.Radio("None", "droptype", k="dropnone", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Drops Self", "droptype", k="dropself", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("Drops Self", "droptype", k="dropself", size=EDITOR_BUTTON_SIZE_THIN, default=True),
 			sg.Radio("Fixed Drops", "droptype", k="dropfixed", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Radio("Ranged Drops", "droptype", k="droprange", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Fortunable", "droptype", k="dropfortunable", size=EDITOR_BUTTON_SIZE_THIN),
 		],
-		[sg.Button("Item to Drop", k="selectdropitem", size=EDITOR_BUTTON_SIZE_WIDE), sg.Text(k="dropitem"), sg.Text("Drop Count/Chances:"), sg.Input(k="dropcount")],
+		[sg.Button("Item to Drop", k="selectdropitem", size=EDITOR_BUTTON_SIZE_WIDE), sg.Text(k="dropitem"),
+			sg.Text("Drop Count/Chances:"), sg.Input(k="dropcount")],
+		[sg.Text("(Ranged Drops) Minimum Drop Count:"), sg.Input(k="dropcountmin"),
+			sg.Text("Maximum Drop Count:"), sg.Input(k="dropcountmax")],
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Text("Block Texture Layout")],
 		[sg.Radio("Single (Like dirt blocks)", "style", k="single", default=True, size=EDITOR_BUTTON_SIZE)],
@@ -407,7 +545,7 @@ def CreateBlock(mfd):
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
 	]
-	window = sg.Window("Create New Block", layout)
+	window = sg.Window("Create New Block", layout, icon=ICON_FILE)
 	dropitem = material = sound = None
 	while True:
 		event, values = window.read()
@@ -576,12 +714,16 @@ def CreateBlock(mfd):
 					d["toolclass"] = "PICKAXES"
 				elif values["tooltypeshovel"]:
 					d["toolclass"] = "SHOVELS"
-			if values["toollevelstone"]:
+			if values["toollevelwood"]:
+				d["toollevel"] = "WOOD"
+			elif values["toollevelstone"]:
 				d["toollevel"] = "STONE"
 			elif values["toolleveliron"]:
 				d["toollevel"] = "IRON"
 			elif values["toolleveldiamond"]:
 				d["toollevel"] = "DIAMOND"
+			elif values["toollevelnetherite"]:
+				d["toollevel"] = "NETHERITE"
 			mfd["mod.files"][f"block.{name}"] = fname
 			for tex in ["", "_top", "_side", "_bottom", "_front", "_back"]:
 				if f"texture{tex}" in d.keys():
@@ -601,11 +743,25 @@ def CreateBlock(mfd):
 				d["dropcount"] = values["dropcount"]
 			elif values["dropfortunable"]:
 				if not len(dropitem):
-					ErrorWindow("Item name must not be blank for fixed drop type.")
+					ErrorWindow("Item name must not be blank for fortuneable drop type.")
 					continue
 				d["droptype"] = "Fortunable"
 				d["drops"] = dropitem
 				d["dropchances"] = values["dropcount"]
+			elif values["droprange"]:
+				if not len(dropitem):
+					ErrorWindow("Item name must not be blank for ranged drop type.")
+					continue
+				if not len(values["dropmin"]):
+					ErrorWindow("Minimum Drop Count must not be blank for ranged drop type.")
+					continue
+				if not len(values["dropmax"]):
+					ErrorWindow("Maximum Drop Count must not be blank for ranged drop type.")
+					continue
+				d["droptype"] = "ItemRange"
+				d["drops"] = dropitem
+				d["dropmin"] = values["dropmin"]
+				d["dropmax"] = values["dropmax"]
 			else:
 				d["droptype"] = "None"
 
@@ -622,7 +778,7 @@ def CreateItem(mfd):
 		],
 		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
 	]
-	window = sg.Window("Create New Item", windowitems)
+	window = sg.Window("Create New Item", windowitems, icon=ICON_FILE)
 	while True:
 		event, values = window.read()
 		if event in (sg.WINDOW_CLOSED, 'Cancel'):
@@ -661,7 +817,7 @@ def CreateItem(mfd):
 
 
 def LoadProject(fname):
-	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment"]
+	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment", "recipetype"]
 
 	if not os.path.exists(fname):
 		ErrorWindow(f"Manifest file/directory \"{fname}\" not found!")
@@ -876,7 +1032,7 @@ def _ContentEditWindow(manifest_dict, content_type, skip, count):
 		[sg.Button(f"Next {count} {content_type}s", key="Next", size=EDITOR_BUTTON_SIZE)] if skip+count<len(contentnames) else [],
 		[sg.Button("Go Back", key="Back", size=EDITOR_BUTTON_SIZE)],
 	]
-	window = sg.Window(f"Mod {content_type} List", layout)
+	window = sg.Window(f"Mod {content_type} List", layout, icon=ICON_FILE)
 	while True:
 		event, values = window.read()
 		if event in ('Back', sg.WIN_CLOSED):
@@ -910,7 +1066,7 @@ def _ContentEditWindow(manifest_dict, content_type, skip, count):
 			event.split("_",maxsplit=1)[1]
 		elif event.startswith("remove_"):
 			name = event.split("_",maxsplit=1)[1]
-			event, values = sg.Window("Are you sure?", [[sg.Text(f"{name} will be deleted.")],[sg.Yes(),sg.Cancel()]]).read(close=True)
+			event, values = sg.Window("Are you sure?", [[sg.Text(f"{name} will be deleted.")],[sg.Yes(),sg.Cancel()]], icon=ICON_FILE).read(close=True)
 			if event in ('Yes',):
 				manifest_dict[f"mod.registry.{content_type}.names"].remove(name)
 				fname = manifest_dict["mod.files"][f"{content_type}.{name}"]
@@ -938,6 +1094,7 @@ def _ModEditor(manifest_dict, fname):
 			sg.Button("Set Mod Icon", key="SetIcon", size=EDITOR_BUTTON_SIZE),
 			sg.Button(manifest_dict["mod.title"], key="SetTitle", size=EDITOR_BUTTON_SIZE),
 			sg.Button(manifest_dict["mod.mcpath"], key="SetName", size=EDITOR_BUTTON_SIZE),
+			sg.Button(manifest_dict["mod.version"], key="SetVersion", size=EDITOR_BUTTON_SIZE),
 		],
 		[sg.Button("Build Project", key="Build", size=EDITOR_BUTTON_SIZE), sg.Button("Quit", key="Exit", size=EDITOR_BUTTON_SIZE)],
 		[sg.Text("Import Texture"), sg.Input(key="TextureImport"),
@@ -960,7 +1117,7 @@ def _ModEditor(manifest_dict, fname):
 			sg.Button("Edit Existing Recipes", key="EditRecipe", size=EDITOR_BUTTON_SIZE),
 		],
 	]
-	window = sg.Window("M3EC Mod Editor", layout)
+	window = sg.Window("M3EC Mod Editor", layout, icon=ICON_FILE)
 	while True:
 		event, values = window.read()
 		if event in ('Exit', sg.WIN_CLOSED):
@@ -968,11 +1125,16 @@ def _ModEditor(manifest_dict, fname):
 			break
 		elif event in ('Build',):
 			BuildMod(manifest_dict)
+		elif event in ('SetVersion',):
+			version = RenameValueWindow(manifest_dict["mod.version"], "Mod Version")
+			if version is None:
+				continue
+			manifest_dict["mod.version"] = version
 		elif event in ('SetIcon',):
 			item = ContentSelectWindow(manifest_dict, "item", vanillabutton=False)
 			if item is None:
 				continue
-			manifest_dict["mod.iconItem"] = item
+			manifest_dict["mod.iconItem"] = item.split(":", maxsplit=1)[1]
 			# print(manifest_dict["mod.iconItem"])
 			window.close()
 			return True
@@ -1042,14 +1204,18 @@ def BuildMod(d):
 		[sg.Cancel()],
 		[sg.Text("",k="building")]
 	]
-	window = sg.Window("Build Project", layout)
+	window = sg.Window("Build Project", layout, icon=ICON_FILE)
 	event, values = window.read(close=True)
 	if event not in ('Cancel', sg.WIN_CLOSED):
 		window["building"].update("Building Project...")
-		cmd = ["python", os.path.join(os.path.dirname(__file__), "m3ec.py"), d["project_path"], event]
+		cmd = [event]
 		if values["buildjar"]:
 			cmd.append("buildjar")
-		subprocess.Popen(cmd)
+		threading.Thread(target=_BuildMod,args=(d["project_path"], " ".join(cmd), )).start()
+
+def _BuildMod(path, modenv):
+	m3ec.build(path, modenv)
+	print("Build Complete")
 
 def MainMenuWindow():
 	windowitems = [
@@ -1060,7 +1226,7 @@ def MainMenuWindow():
 		[sg.Text("Recent Projects")],
 		([sg.Button(project, key=f"_open_{project}", size=EDITOR_BUTTON_SIZE), sg.Button("remove", key=f"_remove_{project}")] for project in sorted(saved_projects["titles"]))
 	]
-	window = sg.Window("M3EC Mod Creation Wizard", windowitems)
+	window = sg.Window("M3EC Mod Creation Wizard", windowitems, icon=ICON_FILE)
 	while True:
 		with open(os.path.join(os.path.dirname(__file__), "config", "projects.json"), "w") as f:
 			json.dump(saved_projects, f)
@@ -1075,7 +1241,7 @@ def MainMenuWindow():
 				[sg.Text("License"), sg.Input(default_text="All Rights Reserved")],
 				[sg.Text("Project Directory"), sg.Input(), sg.FolderBrowse()],
 				[sg.Submit(), sg.Cancel()],
-			])
+			], icon=ICON_FILE)
 			while True:
 				event, values = w.read()
 				if event in ('Cancel', sg.WIN_CLOSED):
@@ -1092,6 +1258,7 @@ def MainMenuWindow():
 						data = "\n".join([
 							"@: manifest",
 							"mod:",
+							".version: 0.1",
 							f".title: {values[0]}",
 							f".author: {values[1]}",
 							f".license: {values[2]}",
@@ -1121,7 +1288,7 @@ def MainMenuWindow():
 				[sg.Text("Select M3EC project manifest file")],
 				[sg.Input(), sg.FileBrowse(file_types=(("M3EC Manifest Files", "*.m3ec *.txt"), ("All Files", "*.* *")))],
 				[sg.Submit(), sg.Cancel()]
-			])
+			], icon=ICON_FILE)
 			manifest = None
 			while True:
 				event, values = w.read(close=True)
@@ -1164,7 +1331,7 @@ def MainMenuWindow():
 	return False
 
 def RenameValueWindow(old, valuetype="", parent=None):
-	window = sg.Window(f"Rename {valuetype}", [[sg.Text(f"Rename {old} to"), sg.Input()],[sg.Ok(), sg.Cancel()]])
+	window = sg.Window(f"Rename {valuetype}", [[sg.Text(f"Rename {old} to"), sg.Input()],[sg.Ok(), sg.Cancel()]], icon=ICON_FILE)
 	while True:
 		event, values = window.read()
 		if event in ('Cancel', sg.WIN_CLOSED):
@@ -1175,10 +1342,10 @@ def RenameValueWindow(old, valuetype="", parent=None):
 			return values[0]
 
 def ErrorWindow(text, title="Error", parent=None):
-	return sg.Window(title, [[sg.Text(text)],[sg.Ok()]]).read(close=True)
+	return sg.Window(title, [[sg.Text(text)],[sg.Ok()]], icon=ICON_FILE).read(close=True)
 
 def MissingValueWindow(title, longtitle="", default="", parent=None):
-	return sg.Window("Missing Value", [[sg.Text(f"{title} is not yet defined. Please define it below.")],[sg.Text(longtitle)],[sg.Input(default_text=default)],[sg.Submit(),sg.Cancel()]]).read(close=True)
+	return sg.Window("Missing Value", [[sg.Text(f"{title} is not yet defined. Please define it below.")],[sg.Text(longtitle)],[sg.Input(default_text=default)],[sg.Submit(),sg.Cancel()]], icon=ICON_FILE).read(close=True)
 
 def EnsureValueExistsWindow(d, key, title, longtitle="", default="", parent=None):
 	if key not in d.keys():
