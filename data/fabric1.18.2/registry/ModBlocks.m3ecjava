@@ -1,5 +1,8 @@
 package ${mod.package}.registry;
 
+---iter mod.registry.recipetype.names
+import ${mod.package}.blocks.${mod.recipetype.$%v.BlockClass};---end
+
 import ${mod.package}.${mod.class};
 import ${mod.package}.blocks.ModDoorBlock;
 import ${mod.package}.blocks.ModStairBlock;

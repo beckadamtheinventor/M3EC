@@ -173,12 +173,7 @@
 		{
 			"iterate": "mod.registry.recipetype.names",
 			"source": "recipetype/RecipeBlock.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.recipetype.${%v}.BlockClass}.java"
-		},
-		{
-			"iterate": "mod.registry.recipetype.names",
-			"source": "recipetype/RecipeJsonFormat.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}JsonFormat.java"
+			"dest": "src/main/java/${mod.packagedir}/blocks/${mod.recipetype.${%v}.BlockClass}.java"
 		},
 		{
 			"iterate": "mod.registry.recipetype.names",

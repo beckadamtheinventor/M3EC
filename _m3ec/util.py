@@ -53,29 +53,29 @@ def readDictString(data, d=None):
 					if len(name)>2:
 						k = f"{ns}.{name[2:]}"
 						if k not in d.keys():
-							d[f"{k}^list.0"] = v
+							d[f"{k}.list.0"] = v
 							d[k] = [v]
 						elif type(d[k]) is list:
 							n = len(d[k])
-							d[f"{k}^list.{n}"] = v
+							d[f"{k}.list.{n}"] = v
 							d[k].append(v)
 						else:
-							d[f"{k}^list.{n}"] = v
+							d[f"{k}.list.{n}"] = v
 							d[k] += v
 					else:
 						d[ns].append(v)
 				elif line.startswith("+"):
 					k = name[1:]
 					if k not in d.keys():
-						d[f"{k}^list.0"] = v
+						d[f"{k}.list.0"] = v
 						d[k] = [v]
 					elif type(d[k]) is list:
 						n = len(d[k])
-						d[f"{k}^list.{n}"] = v
+						d[f"{k}.list.{n}"] = v
 						d[k].append(v)
 					else:
 						n = len(d[k])
-						d[f"{k}^list.{n}"] = v
+						d[f"{k}.list.{n}"] = v
 						d[k] += v
 				elif line.startswith("."):
 					d[ns+name] = v
@@ -347,9 +347,12 @@ def readf(data, d):
 				key = data[i+6:n]
 			if " " in key:
 				key, tail = key.split(" ", maxsplit=1)
+				tail = tail.split(" ")
 			else:
 				tail = []
 			condtrue = False
+			key = readf(key, d)
+			# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
 			if "#contains" in tail:
 				if len(tail):
 					if all([w in key for w in tail[1:]]):

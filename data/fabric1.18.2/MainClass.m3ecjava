@@ -3,6 +3,7 @@ package ${mod.package};
 import ${mod.package}.registry.ModBlocks;
 import ${mod.package}.registry.ModItems;
 ---iter mod.registry.recipetype.names
+import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Serializer;
 import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Recipe;---end
 
 import net.fabricmc.api.ModInitializer;
@@ -100,6 +101,7 @@ public class ${mod.class} implements ModInitializer {
 	---fi
 ---end
 ---iter mod.registry.recipetype.names
+		Registry.register(Registry.RECIPE_SERIALIZER, ${mod.recipetype.$%v.class}Serializer.ID, ${mod.recipetype.$%v.class}Serializer.INSTANCE);
 		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);
 ---end
 

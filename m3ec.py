@@ -303,13 +303,36 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		for file in versionbuilder["copy"]:
 			shutil.copy(file["source"], file["dest"])
 
-	for customclass in manifest_dict["mod.customclasses"]:
-		if modloader == customclass["modloader"] and gameversion in customclass["gameversions"]:
+	if "mod.customclasses" in manifest_dict.keys():
+		for customclass in manifest_dict["mod.customclasses"]:
+			if "modloaders" in file.keys():
+				if modloader not in file["modloaders"]:
+					continue
+			if "gameversions" in file.keys():
+				if gameversion not in file["gameversions"]:
+					continue
 			fname = readf(customclass["file"], manifest_dict)
 			if not readf_copyfile(os.path.join(project_path, fname), os.path.join(build_path, "src", "main", "java", readf(customclass["class"], manifest_dict).replace(".", os.sep)+".java"), manifest_dict):
-				print(f"Error: Failed to read custom class file \"{fname}\"")
+				print(f"Error: Failed to copy custom class file \"{fname}\"")
 				return False
 
+	if "mod.customfiles" in manifest_dict.keys():
+		# print(manifest_dict["mod.customfiles"])
+		for file in manifest_dict["mod.customfiles"]:
+			# print(file)
+			source, dest = file.split(" ", maxsplit=1)
+			if " " in dest:
+				dest, ml = file.split(" ", maxsplit=1)
+				if " " in ml:
+					ml, gv = ml.split(" ", maxsplit=1)
+					if gameversion not in gv:
+						continue
+				if modloader not in ml:
+					continue
+			# print(source, "-->", dest)
+			if not readf_copyfile(os.path.join(project_path, source), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict):
+				print(f"Error: Failed to copy custom file \"{source}\"")
+				return False
 
 	if "postActions" in versionbuilder.keys():
 		execActions(versionbuilder["postActions"], manifest_dict)

@@ -1,4 +1,4 @@
-package ${mod.package}.registry;
+package ${mod.package}.blocks;
 
 import ${mod.package}.recipetype.*;
 
@@ -32,10 +32,10 @@ public class ${mod.recipetype.${%v}.BlockClass} extends Block {
 			Optional<${mod.recipetype.${%v}.class}Recipe> match = world.getRecipeManager().getFirstMatch(${mod.recipetype.${%v}.class}Recipe.Type.INSTANCE, inventory, world);
 
 			if (match.isPresent()) {
-				player.getInventory().offerOrDrop(match.get().getOutput().copy());
----if mod.recipetype.${%v}.remove #contains mainhand
-				player.getMainHandStack().decrement(1);---fi
----if mod.recipetype.${%v}.remove #contains offhand
+				player.getInventory().offerOrDrop(match.get().getOutput().copy());---if ${mod.recipetype.${%v}.damage} #contains mainhand
+				player.getMainHandStack().setDamage(player.getMainHandStack().getDamage() - 1);---fi---if ${mod.recipetype.${%v}.damage} #contains offhand
+				player.getOffHandStack().setDamage(player.getOffHandStack().getDamage() - 1);---fi---if ${mod.recipetype.${%v}.remove} #contains mainhand
+				player.getMainHandStack().decrement(1);---fi---if ${mod.recipetype.${%v}.remove} #contains offhand
 				player.getOffHandStack().decrement(1);---fi
 				return ActionResult.CONSUME;
 			} else {

@@ -20,7 +20,7 @@ public class ${mod.recipetype.${%v}.class}Serializer implements RecipeSerializer
     public static final ${mod.recipetype.${%v}.class}Serializer INSTANCE = new ${mod.recipetype.${%v}.class}Serializer();
 
     // This will be the "type" field in the json
-    public static final Identifier ID = new Identifier("${mod.mcpath}:${%v}");
+    public static final Identifier ID = new Identifier("${mod.mcpath}", "${%v}");
 
     @Override
     // Turns json into Recipe
@@ -60,4 +60,12 @@ public class ${mod.recipetype.${%v}.class}Serializer implements RecipeSerializer
         ItemStack output = packetData.readItemStack();
         return new ${mod.recipetype.${%v}.class}Recipe(inputA, inputB, output, id);
     }
+	
+	private class ${mod.recipetype.${%v}.class}JsonFormat {
+		JsonObject inputA;
+		JsonObject inputB;
+		String outputItem;
+		int outputAmount;
+	}
+	
 }
