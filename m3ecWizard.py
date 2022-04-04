@@ -183,10 +183,10 @@ def CreateRecipe(mfd):
 	for recipe in recipes:
 		if type(recipe) is dict:
 			n = 1
-			cid = recipe["result"].split(":", maxsplit=1)[1]
+			cid = ocid = recipe["result"].split(":")[-1]
 			while cid in mfd["mod.registry.recipe.names"]:
 				n += 1
-				cid = recipe["result"]+"_"+str(n)
+				cid = ocid+"_"+str(n)
 			recipe["contentid"] = cid
 
 			fname = os.path.join(mfd["project_path"], "recipes", cid+".m3ec")
@@ -417,7 +417,7 @@ def CreateStonecutterRecipe(mfd):
 		if event in (sg.WINDOW_CLOSED, 'Cancel'):
 			break
 		elif event == "Ok":
-			if not len(recipe["ingredient"]) or not len(recipe["ingredient2"]) or not len(recipe["result"]):
+			if not len(recipe["ingredient"]) or not len(recipe["result"]):
 				ErrorWindow("Ingredient(s)/result must not be empty.");
 				continue
 			yield recipe
