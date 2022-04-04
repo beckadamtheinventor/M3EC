@@ -350,6 +350,10 @@ def CreateSmeltingRecipe(mfd):
 		[sg.Button("empty", k="item1", size=EDITOR_BUTTON_SIZE),
 			sg.Sizer(EDITOR_BUTTON_SIZE_X, 0),
 			sg.Button("empty", k="itemresult", size=EDITOR_BUTTON_SIZE),
+			sg.Input(k="count",size=EDITOR_BUTTON_SIZE_THIN),
+		],
+		[sg.Text("Time (ticks)"), sg.Input(k="time"),
+			sg.Text("Experience Points"), sg.Input(k="experience"),
 		],
 		[sg.Checkbox("Smelting",k="smelting",size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Checkbox("Blasting",k="blasting",size=EDITOR_BUTTON_SIZE_THIN),
@@ -369,6 +373,10 @@ def CreateSmeltingRecipe(mfd):
 			if result is None or ingredient is None:
 				ErrorWindow("Ingredient and result must not be empty.");
 				continue
+			if not len(values["count"]):
+				values["count"] = "1"
+			if not len(values["experience"]):
+				values["experience"] = "0"
 
 			if values["smelting"]:
 				yield {"@": "recipe", "recipe": "SmeltingRecipe", "ingredient": ingredient,
@@ -980,7 +988,7 @@ def sgScaledImage(fdir, fname=None, d=None, k=None, size=(32, 32)):
 		if k in d.keys():
 			fname = d[k]
 		else:
-			fname = PLACEHOLDER_IMAGE_FILE
+			fname = "None"
 	if type(fname) is not str or not len(fname) or fname == "None":
 		fname = PLACEHOLDER_IMAGE_FILE
 	else:
