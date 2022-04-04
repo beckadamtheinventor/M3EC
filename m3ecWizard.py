@@ -859,6 +859,8 @@ def LoadProject(fname):
 		return None
 	if EnsureValueExistsWindow(manifest_dict, "mod.title", "Mod Title") is None:
 		return None
+	if EnsureValueExistsWindow(manifest_dict, "mod.version", "Mod Version") is None:
+		return None
 	if "mod.class" not in manifest_dict.keys():
 		manifest_dict["mod.class"] = manifest_dict["mod.title"].title().replace(" ","")
 	prefix, modauthor, modclass = (manifest_dict[k] for k in \
