@@ -119,8 +119,20 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 	manifest_dict[f"mod.registry.blockitem.names"] = []
 	manifest_dict["mod.customclasses"] = []
+	manifest_dict["mod.registry.classes"] = []
 	manifest_dict[f"mod.files"] = {}
 
+	for a in ["first", "pre", "post", "final"]:
+		if f"{a}ExecActions" not in manifest_dict.keys():
+			manifest_dict[f"{a}ExecActions"] = []
+
+	for file in manifest_dict["firstExecActions"]:
+		try:
+			with open(file) as f:
+				j = json.load(f)
+		except FileNotFoundError:
+			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
+		execActions(j, manifest_dict)
 
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(os.path.normpath(os.path.join(project_path, path))):
@@ -130,6 +142,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 					content_type = d["@"]
 					if content_type == "class":
 						manifest_dict["mod.customclasses"].append({"file":d["file"], "class":d["class"],"modloader":d["modloader"], "gameversions":d["gameversions"]})
+						manifest_dict["mod.registry.classes"].append(d["class"])
 						continue
 					elif content_type == "itemfactory":
 						for cid in d["items"]:
@@ -254,6 +267,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.18.2", modenv, manifest_dict)
 
+	for file in manifest_dict["finalExecActions"]:
+		try:
+			with open(file) as f:
+				j = json.load(f)
+		except FileNotFoundError:
+			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
+		execActions(j, manifest_dict)
 
 def build_mod(modloader, version, modenv, manifest_dict):
 	print(f"Building {modloader} {version} mod project")
@@ -262,6 +282,14 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	source_path = manifest_dict["source_path"]
 	project_path = manifest_dict["project_path"]
 	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
+
+	for file in manifest_dict["preExecActions"]:
+		try:
+			with open(file) as f:
+				j = json.load(f)
+		except FileNotFoundError:
+			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
+		execActions(j, manifest_dict)
 
 	try:
 		with open(os.path.join(source_path, f"{modloader}{version}", "m3ec_build.json")) as f:
@@ -305,11 +333,11 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	if "mod.customclasses" in manifest_dict.keys():
 		for customclass in manifest_dict["mod.customclasses"]:
-			if "modloaders" in file.keys():
-				if modloader not in file["modloaders"]:
+			if "modloaders" in customclass.keys():
+				if modloader not in customclass["modloaders"]:
 					continue
-			if "gameversions" in file.keys():
-				if gameversion not in file["gameversions"]:
+			if "gameversions" in customclass.keys():
+				if gameversion not in customclass["gameversions"]:
 					continue
 			fname = readf(customclass["file"], manifest_dict)
 			if not readf_copyfile(os.path.join(project_path, fname), os.path.join(build_path, "src", "main", "java", readf(customclass["class"], manifest_dict).replace(".", os.sep)+".java"), manifest_dict):
@@ -342,6 +370,14 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	if "finalActions" in versionbuilder.keys():
 		execActions(versionbuilder["finalActions"], manifest_dict)
+
+	for file in manifest_dict["postExecActions"]:
+		try:
+			with open(file) as f:
+				j = json.load(f)
+		except FileNotFoundError:
+			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
+		execActions(j, manifest_dict)
 
 	return True
 
@@ -430,7 +466,7 @@ def build_resources(project_path, builddir, manifest_dict):
 				if "." in manifest_dict["texture"]:
 					manifest_dict["texture"], ext = os.path.splitext(manifest_dict["texture"])
 
-			if content_type in ["item", "food", "armor", "tool", "fuel"]:
+			if content_type in ["item", "food", "armor", "tool"]:
 				copy_textures(content_type, cid, manifest_dict, project_path, item_textures_assets_dir)
 				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".m3ecjson"), manifest_dict))
 
@@ -488,17 +524,23 @@ def build_resources(project_path, builddir, manifest_dict):
 				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), manifest_dict))
 			if content_type in ["toolmaterial", "armormaterial"]:
 				manifest_dict[f"mod.{content_type}.{cid}.class"] = cid
-			if content_type in ["item", "block", "food", "fuel", "armor", "tool"]:
+			if content_type in ["item", "block", "food", "armor", "tool"]:
 				if "langs" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
 					for lang in manifest_dict[f"mod.{content_type}.{cid}.langs"]:
 						if lang not in langdict.keys():
 							langdict[lang] = {}
 						langdict[lang][f"{content_type}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.{lang}"]
-				if content_type in ["food", "fuel", "armor", "tool"]:
+				if content_type in ["food", "armor", "tool"]:
 					content_type_mc = "item"
 				else:
 					content_type_mc = content_type
 				langdict["en_us"][f"{content_type_mc}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.title"]
+
+			if "customclass" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cid}.customclass"] = manifest_dict["customclass"]
+			elif content_type in ["item", "food", "armor", "tool"]:
+				manifest_dict[f"mod.{content_type}.{cid}.customclass"] = "Item"
+
 
 	if "mod.langs" in manifest_dict.keys():
 		for lang in manifest_dict["mod.langs"]:

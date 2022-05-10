@@ -1,7 +1,7 @@
 {
     "type": "minecraft:smelting",
     "ingredient": {
-		"item": "${ingredient}
+		"item": "${ingredient}"
     },
     "result": "${result}",
     "experience": ${experience},

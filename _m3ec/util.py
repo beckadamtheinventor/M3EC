@@ -79,6 +79,8 @@ def readDictString(data, d=None):
 						d[k] += v
 				elif line.startswith("."):
 					d[ns+name] = v
+				elif line.startswith("[include]"):
+					readDictFile(line[len("[include]"):], d)
 				else:
 					ns = name
 					d[name] = v
@@ -296,15 +298,14 @@ def readf(data, d):
 			key = data[i+8:n]
 			if key in d.keys():
 				l = d[key]
-				j = data.find("---end",n)
+				j = data.find("---end", n)
 				block = data[n:j]
 				j += 6
 				if type(l) is list:
 					for i in range(len(l)):
 						data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
 			else:
-				print(f"Critical error! {key} not found in dictionary passed to readf!")
-				exit(1)
+				j = data.find("---end", n)+6
 		data2.append(data[j:])
 		data = "".join(data2)
 
@@ -327,8 +328,7 @@ def readf(data, d):
 						lst.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
 					data2.append(",".join(lst))
 			else:
-				print(f"Critical error! {key} not found in dictionary passed to readf!")
-				return None
+				j = data.find("---end", n)+6
 		data2.append(data[j:])
 		data = "".join(data2)
 

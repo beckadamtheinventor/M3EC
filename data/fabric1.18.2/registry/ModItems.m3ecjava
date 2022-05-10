@@ -26,7 +26,9 @@ public class ModItems {
 
     //Items
 ---iter mod.registry.item.names
-	public static final Item ${mod.item.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final Item ${mod.item.$%v.uppercased} = new ${mod.item.$%v.customclass}(---if mod.item.$%v.extraConstructorArgs
+${mod.item.$%v.extraConstructorArgs}, ---finew Item.Settings().group(${mod.class}.ITEM_GROUP)---if mod.item.$%v.extraItemSettings
+${mod.item.$%v.extraItemSettings}---fi);---end
 
 	//Food
 ---iter mod.registry.food.names
@@ -52,7 +54,6 @@ public class ModItems {
 ---iter mod.registry.blockitem.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.blockitem.$%v.uppercased});---end
 ---iter mod.registry.fuel.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.fuel.$%v.uppercased});
 		FuelRegistry.INSTANCE.add(${mod.fuel.$%v.uppercased}, ${mod.fuel.$%v.burntime});---end
 ---iter mod.registry.armor.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.armor.$%v.uppercased});---end

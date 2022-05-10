@@ -6,6 +6,10 @@ import ${mod.package}.registry.ModItems;
 import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Serializer;
 import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Recipe;---end
 
+---iter mainclass.imports
+import $%v;---end
+
+import net.minecraft.block.Blocks;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -25,7 +29,6 @@ import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
 import net.minecraft.world.gen.placementmodifier.SquarePlacementModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 
 
@@ -74,6 +77,8 @@ public class ${mod.class} implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+---iter mainclass.onInitialize.first
+		$%v---end
 		ModItems.RegisterItems();
 		ModBlocks.RegisterBlocks();
 ---iter mod.registry.ore.names
@@ -102,9 +107,8 @@ public class ${mod.class} implements ModInitializer {
 ---end
 ---iter mod.registry.recipetype.names
 		Registry.register(Registry.RECIPE_SERIALIZER, ${mod.recipetype.$%v.class}Serializer.ID, ${mod.recipetype.$%v.class}Serializer.INSTANCE);
-		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);
----end
-
-
+		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);---end
+---iter mainclass.onInitialize
+		$%v---end
 	}
 }

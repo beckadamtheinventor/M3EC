@@ -1,8 +1,17 @@
 {
-    "variants": {
-        "axis=y":    { "model": "${mod.mcpath}:block/${contentid}" },
-        "axis=z":     { "model": "${mod.mcpath}:block/${contentid}_side" },
-        "axis=x":     { "model": "${mod.mcpath}:block/${contentid}_side", "y": 90 },
-        "axis=none":   { "model": "${mod.mcpath}:block/${contentid}_side" }
-    }
+	"variants": {
+		"axis=y": {
+			"model": "${mod.mcpath}:block/${contentid}"
+		},
+		"axis=z": {
+			"model": "${mod.mcpath}:block/${contentid}_side"
+		},
+		"axis=x": {
+			"model": "${mod.mcpath}:block/${contentid}_side",
+			"y": 90
+		},
+		"axis=none": {
+			"model": "${mod.mcpath}:block/${contentid}_side"
+		}
+	}
 }
