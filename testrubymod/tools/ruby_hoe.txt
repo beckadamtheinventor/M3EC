@@ -4,6 +4,7 @@ contentid:    ruby_hoe
 class:        RubyHoe
 tooltype:     HoeItem
 material:     RubyToolMaterial
+tooltier:     ModTiers.RUBY
 attackspeed:  -2.4f
 attackdamage: 1
 title:        Ruby Hoe

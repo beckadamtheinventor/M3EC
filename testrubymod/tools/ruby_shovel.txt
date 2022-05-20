@@ -4,6 +4,7 @@ contentid:    ruby_shovel
 class:        RubyShovel
 tooltype:     ShovelItem
 material:     RubyToolMaterial
+tooltier:     ModTiers.RUBY
 attackspeed:  -2.4f
 attackdamage: 1
 title:        Ruby Shovel

@@ -1,209 +1,209 @@
 {
-	"variants": {
-		"facing=north,half=bottom,shape=outer_right": {
-			"uvlock": true,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=south,half=top,shape=inner_right": {
-			"uvlock": true,
-			"x": 180,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=north,half=top,shape=inner_right": {
-			"uvlock": true,
-			"x": 180,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=south,half=top,shape=inner_left": {
-			"uvlock": true,
-			"x": 180,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=north,half=bottom,shape=outer_left": {
-			"uvlock": true,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=east,half=top,shape=inner_right": {
-			"uvlock": true,
-			"x": 180,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=east,half=top,shape=inner_left": {
-			"uvlock": true,
-			"x": 180,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=west,half=bottom,shape=inner_right": {
-			"uvlock": true,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=west,half=top,shape=inner_right": {
-			"uvlock": true,
-			"x": 180,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=north,half=top,shape=inner_left": {
-			"uvlock": true,
-			"x": 180,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=east,half=bottom,shape=inner_left": {
-			"uvlock": true,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=west,half=bottom,shape=inner_left": {
-			"uvlock": true,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=east,half=bottom,shape=outer_right": {
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=north,half=top,shape=outer_left": {
-			"uvlock": true,
-			"x": 180,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=south,half=bottom,shape=straight": {
-			"uvlock": true,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=north,half=bottom,shape=inner_right": {
-			"uvlock": true,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=south,half=bottom,shape=inner_right": {
-			"uvlock": true,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=east,half=top,shape=outer_left": {
-			"uvlock": true,
-			"x": 180,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=west,half=bottom,shape=straight": {
-			"uvlock": true,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=north,half=top,shape=outer_right": {
-			"uvlock": true,
-			"x": 180,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=west,half=top,shape=inner_left": {
-			"uvlock": true,
-			"x": 180,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=west,half=top,shape=outer_right": {
-			"uvlock": true,
-			"x": 180,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=south,half=top,shape=outer_left": {
-			"uvlock": true,
-			"x": 180,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=east,half=top,shape=outer_right": {
-			"uvlock": true,
-			"x": 180,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=east,half=bottom,shape=inner_right": {
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=south,half=bottom,shape=inner_left": {
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=west,half=top,shape=straight": {
-			"uvlock": true,
-			"x": 180,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=west,half=top,shape=outer_left": {
-			"uvlock": true,
-			"x": 180,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=south,half=top,shape=straight": {
-			"uvlock": true,
-			"x": 180,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=east,half=top,shape=straight": {
-			"uvlock": true,
-			"x": 180,
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=west,half=bottom,shape=outer_right": {
-			"uvlock": true,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=south,half=top,shape=outer_right": {
-			"uvlock": true,
-			"x": 180,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=east,half=bottom,shape=straight": {
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=west,half=bottom,shape=outer_left": {
-			"uvlock": true,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=east,half=bottom,shape=outer_left": {
-			"uvlock": true,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=north,half=bottom,shape=straight": {
-			"uvlock": true,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=north,half=bottom,shape=inner_left": {
-			"uvlock": true,
-			"y": 180,
-			"model": "${mod.mcpath}:block/${contentid}_inner"
-		},
-		"facing=north,half=top,shape=straight": {
-			"uvlock": true,
-			"x": 180,
-			"y": 270,
-			"model": "${mod.mcpath}:block/${contentid}"
-		},
-		"facing=south,half=bottom,shape=outer_right": {
-			"uvlock": true,
-			"y": 90,
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		},
-		"facing=south,half=bottom,shape=outer_left": {
-			"model": "${mod.mcpath}:block/${contentid}_outer"
-		}
-	}
+  "variants": {
+    "facing=east,half=bottom,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=east,half=bottom,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner"
+    },
+    "facing=east,half=bottom,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=east,half=bottom,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer"
+    },
+    "facing=east,half=bottom,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}"
+    },
+    "facing=east,half=top,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "uvlock": true
+    },
+    "facing=east,half=top,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=east,half=top,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "uvlock": true
+    },
+    "facing=east,half=top,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=east,half=top,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}",
+      "x": 180,
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}",
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=north,half=top,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=north,half=top,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "uvlock": true
+    },
+    "facing=north,half=top,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=north,half=top,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "uvlock": true
+    },
+    "facing=north,half=top,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}",
+      "x": 180,
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=south,half=bottom,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner"
+    },
+    "facing=south,half=bottom,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south,half=bottom,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer"
+    },
+    "facing=south,half=bottom,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south,half=bottom,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south,half=top,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south,half=top,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=south,half=top,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south,half=top,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=south,half=top,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}",
+      "x": 180,
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=west,half=bottom,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=west,half=bottom,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west,half=bottom,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=west,half=bottom,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west,half=bottom,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west,half=top,shape=inner_left": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west,half=top,shape=inner_right": {
+      "model": "${mod.mcpath}:block/${contentid}_inner",
+      "x": 180,
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=west,half=top,shape=outer_left": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west,half=top,shape=outer_right": {
+      "model": "${mod.mcpath}:block/${contentid}_outer",
+      "x": 180,
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=west,half=top,shape=straight": {
+      "model": "${mod.mcpath}:block/${contentid}",
+      "x": 180,
+      "y": 180,
+      "uvlock": true
+    }
+  }
 }

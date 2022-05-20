@@ -19,6 +19,8 @@ EDITOR_BUTTON_SIZE_X = 140
 EDITOR_BUTTON_SIZE_THIN = (10,1)
 EDITOR_BUTTON_SIZE_WIDE = (36,1)
 
+TEMP_DIR = os.path.join(tempfile.gettempdir(), "m3ecWizard.ImageTemp")
+
 M3EC_DATA_ROOT = os.path.join(os.path.dirname(__file__), "data")
 WIZARD_DATA_ROOT = os.path.join(M3EC_DATA_ROOT, "wizard")
 
@@ -483,14 +485,14 @@ def CreateSmithingRecipe(mfd):
 				window[event].update(item)
 	window.close()
 
-def CreateBlock(mfd):
+def CreateBlock(mfd, contentid=None):
 	layout = [
 		[sg.Text("Block Name"), sg.Input(key="title")],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Sizer(WIN_WIDTH, 5)],
 		[sg.Text("Block Hardness"), sg.Input(key="hardness")],
 		[sg.Text("Block Resistance"), sg.Input(key="resistance")],
 		[sg.Text("(Note: you can input existing block names to copy)")],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Sizer(WIN_WIDTH, 5)],
 		[sg.Text("Tool type required to mine"),
 			sg.Radio("None", "tooltype", k="tooltypenone", size=EDITOR_BUTTON_SIZE_THIN, default=True),
 			sg.Radio("Axe", "tooltype", k="tooltypeaxe", size=EDITOR_BUTTON_SIZE_THIN),
@@ -506,7 +508,7 @@ def CreateBlock(mfd):
 			sg.Radio("Netherite", "toollevel", k="toollevelnetherite", size=EDITOR_BUTTON_SIZE_THIN),
 		],
 		[sg.Text("(Ignored if tool type is set to None)")],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Sizer(WIN_WIDTH, 5)],
 		[sg.Text("Block Drop Type")],
 		[sg.Radio("None", "droptype", k="dropnone", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Radio("Drops Self", "droptype", k="dropself", size=EDITOR_BUTTON_SIZE_THIN, default=True),
@@ -518,7 +520,7 @@ def CreateBlock(mfd):
 			sg.Text("Drop Count/Chances:"), sg.Input(k="dropcount")],
 		[sg.Text("(Ranged Drops) Minimum Drop Count:"), sg.Input(k="dropcountmin"),
 			sg.Text("Maximum Drop Count:"), sg.Input(k="dropcountmax")],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Sizer(WIN_WIDTH, 5)],
 		[sg.Text("Block Texture Layout")],
 		[sg.Radio("Single (Like dirt blocks)", "style", k="single", default=True, size=EDITOR_BUTTON_SIZE)],
 		[sg.Radio("Pillar (Like logs)", "style", k="pillar", size=EDITOR_BUTTON_SIZE)],
@@ -534,7 +536,7 @@ def CreateBlock(mfd):
 			sg.Checkbox("Stairs", k="genstairs", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Checkbox("Wall", k="genwall", size=EDITOR_BUTTON_SIZE_THIN)
 		],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Sizer(WIN_WIDTH, 5)],
 		[sg.Text("Main/Top Texture"), sg.Input(),
 			sg.FileBrowse(key="imgfilemain", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
 		],
@@ -547,10 +549,10 @@ def CreateBlock(mfd):
 		[sg.Text("Front Texture"), sg.Input(),
 			sg.FileBrowse(key="imgfilefront", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
 		],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Sizer(WIN_WIDTH, 5)],
 		[sg.Text("Sounds"), sg.Button("select", k="selectsounds", size=EDITOR_BUTTON_SIZE_WIDE)],
 		[sg.Text("Material"), sg.Button("select", k="selectmaterial", size=EDITOR_BUTTON_SIZE_WIDE)],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Sizer(WIN_WIDTH, 5)],
 		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
 	]
 	window = sg.Window("Create New Block", layout, icon=ICON_FILE)
@@ -994,7 +996,7 @@ def sgScaledImage(fdir, fname=None, d=None, k=None, size=(32, 32)):
 	else:
 		fname = os.path.join(fdir, fname)
 	if type(fname) is str:
-		td = os.path.join(tempfile.gettempdir(), "m3ecWizard.ImageTemp")
+		td = TEMP_DIR
 		if os.path.exists(td) and not os.path.isdir(td):
 			os.remove(td)
 		if not os.path.exists(td):
@@ -1008,7 +1010,7 @@ def sgScaledImage(fdir, fname=None, d=None, k=None, size=(32, 32)):
 				h = h.hexdigest()
 			tmp = os.path.join(td, h+".png")
 			if not os.path.exists(tmp):
-				Image.open(fname).resize(size, Image.NEAREST).save(tmp)
+				Image.open(fname).resize(size, Image.Resampling.NEAREST).save(tmp)
 			return sg.Image(tmp)
 	x, y = size
 	return sg.Sizer(x, y)
@@ -1172,8 +1174,8 @@ def _ModEditor(manifest_dict, fname):
 		elif event in ('ImportTexture',):
 			if "TextureImport" in values.keys():
 				fnames = values["TextureImport"]
-				if ";" in fnames:
-					fnames = fnames.split(";")
+				if os.pathsep in fnames:
+					fnames = fnames.split(os.pathsep)
 				else:
 					fnames = [fnames]
 				for fname in fnames:
@@ -1381,3 +1383,7 @@ if __name__=='__main__':
 		saved_projects = {"titles":[], "dirs":{}}
 	while MainMenuWindow():
 		pass
+	
+	d = TEMP_DIR
+	if os.path.exists(d):
+		shutil.rmtree(d)

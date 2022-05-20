@@ -206,7 +206,7 @@ def execActions(actions, d, accumulator=None):
 					if type(l) is str:
 						l = d[l]
 				else:
-					l = [""]
+					l = [action["source"]]
 				for i in range(len(l)):
 					d["%i"] = i
 					d["%v"] = l[i]

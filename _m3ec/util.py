@@ -79,8 +79,8 @@ def readDictString(data, d=None):
 						d[k] += v
 				elif line.startswith("."):
 					d[ns+name] = v
-				elif line.startswith("[include]"):
-					readDictFile(line[len("[include]"):], d)
+				elif line.startswith("@include "):
+					readDictFile(line[len("@include "):], d)
 				else:
 					ns = name
 					d[name] = v
@@ -283,97 +283,120 @@ def readf_file(path, d):
 		return None
 
 def readf(data, d):
+	NUM_ITERATOR_NUMBERS = 10
+
 	if type(data) is not str:
 		return data
 	if "$%f" in d.keys():
 		data = data.replace("$%f", d["$%f"])
 
-	if "---iter " in data:
-		data2 = []
-		j = 0
-		while "---iter " in data[j:]:
-			i = data.find("---iter ", j)
-			data2.append(data[j:i])
-			n = data.find("\n", i+8)
-			key = data[i+8:n]
-			if key in d.keys():
-				l = d[key]
-				j = data.find("---end", n)
-				block = data[n:j]
-				j += 6
-				if type(l) is list:
-					for i in range(len(l)):
-						data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
-			else:
-				j = data.find("---end", n)+6
-		data2.append(data[j:])
-		data = "".join(data2)
+	for itrn in range(NUM_ITERATOR_NUMBERS+1):
+		if itrn < NUM_ITERATOR_NUMBERS:
+			itr = f"---iter{itrn} "
+			itrend = f"---{itrn}end"
+		else:
+			itr = "---iter "
+			itrend = "---end"
+		if itr in data:
+			data2 = []
+			j = 0
+			while itr in data[j:]:
+				i = data.find(itr, j)
+				data2.append(data[j:i])
+				n = data.find("\n", i+len(itr))
+				key = data[i+len(itr):n]
+				if key in d.keys():
+					l = d[key]
+					j = data.find(itrend, n)
+					block = data[n:j]
+					j += len(itrend)
+					if type(l) is list:
+						for i in range(len(l)):
+							data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
+				else:
+					j = data.find(itrend, n)+len(itrend)
+			data2.append(data[j:])
+			data = "".join(data2)
 
-	if "---list " in data:
-		data2 = []
-		j = 0
-		while "---list " in data[j:]:
-			i = data.find("---list ", j)
-			data2.append(data[j:i])
-			n = data.find("\n", i+8)
-			key = data[i+8:n]
-			if key in d.keys():
-				l = d[key]
-				j = data.find("---end",n)
-				block = data[n:j]
-				j += 6
-				lst = []
-				if type(l) is list:
-					for i in range(len(l)):
-						lst.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
-					data2.append(",".join(lst))
-			else:
-				j = data.find("---end", n)+6
-		data2.append(data[j:])
-		data = "".join(data2)
+	for lstrn in range(NUM_ITERATOR_NUMBERS+1):
+		if lstrn < NUM_ITERATOR_NUMBERS:
+			lstr = f"---list{lstrn} "
+			lstrend = f"---{lstrn}end"
+		else:
+			lstr = "---list "
+			lstrend = "---end"
+		if lstr in data:
+			data2 = []
+			j = 0
+			while lstr in data[j:]:
+				i = data.find(lstr, j)
+				data2.append(data[j:i])
+				n = data.find("\n", i+len(lstr))
+				key = data[i+len(lstr):n]
+				if key in d.keys():
+					l = d[key]
+					j = data.find(lstrend,n)
+					block = data[n:j]
+					j += len(lstrend)
+					lst = []
+					if type(l) is list:
+						for i in range(len(l)):
+							lst.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
+						data2.append(",".join(lst))
+				else:
+					j = data.find(lstrend, n) + len(lstrend)
+			data2.append(data[j:])
+			data = "".join(data2)
 
-	if "---if " in data:
-		data2 = []
-		j = 0
-		while "---if " in data[j:]:
-			i = data.find("---if ", j)
-			data2.append(data[j:i])
-			n = data.find("\n", i+6)
-			if data[i+6] == '!':
-				inverted = True
-				key = data[i+7:n]
-			else:
-				inverted = False
-				key = data[i+6:n]
-			if " " in key:
-				key, tail = key.split(" ", maxsplit=1)
-				tail = tail.split(" ")
-			else:
-				tail = []
-			condtrue = False
-			key = readf(key, d)
-			# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
-			if "#contains" in tail:
-				if len(tail):
-					if all([w in key for w in tail[1:]]):
+	for istrn in range(NUM_ITERATOR_NUMBERS+1):
+		if istrn < NUM_ITERATOR_NUMBERS:
+			istr = f"---if{istrn} "
+			istrend = f"---{istrn}fi"
+		else:
+			istr = "---if "
+			istrend = f"---fi"
+		if istr in data:
+			data2 = []
+			j = 0
+			while istr in data[j:]:
+				i = data.find(istr, j)
+				data2.append(data[j:i])
+				n = data.find("\n", i+len(istr))
+				if data[i+len(istr)] == '!':
+					inverted = True
+					key = data[i+len(istr)+1:n]
+				else:
+					inverted = False
+					key = data[i+len(istr):n]
+				if " " in key:
+					key, tail = key.split(" ", maxsplit=1)
+					tail = tail.split(" ")
+				else:
+					tail = []
+				condtrue = False
+				key = readf(key, d)
+				# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
+				if "#contains" in tail:
+					if len(tail):
+						if all([w in key for w in tail[1:]]):
+							condtrue = True
+							for w in tail[1:]:
+								key = key.replace(w, "")
+					elif len(key):
 						condtrue = True
-						for w in tail[1:]:
-							key = key.replace(w, "")
-				elif len(key):
+				elif key in d.keys():
 					condtrue = True
-			elif key in d.keys():
-				condtrue = True
-			if inverted:
-				condtrue = not condtrue
-			# print(f"Checking if {key} is defined. ",end="")
-			j = data.find("---fi",n)
-			if condtrue:
-				# print("key found.")
-				data2.append(data[n:j])
-				# print(data2[-1])
-			j += 5
-		data2.append(data[j:])
-		data = "".join(data2)
+				if inverted:
+					condtrue = not condtrue
+				# print(f"Checking if {key} is defined. ",end="")
+				j = data.find(istrend, n)
+				if condtrue:
+					# print("key found.")
+					data2.append(data[n:j])
+					# print(data2[-1])
+				j += len(istrend)
+			data2.append(data[j:])
+			data = "".join(data2)
 
 	# just use some arbitrary number of iterations until I figure out a better algorithm
 	for j in range(8):
@@ -383,7 +406,7 @@ def readf(data, d):
 			rb = word.find("}")
 			if rb == -1:
 				# print(data)
-				print("Critical Error: Mismatched open bracket in data passed to readf!")
+				print("Critical Error: Mismatched closing bracket of \"${}\" key accessor in data passed to readf!")
 				return None
 			word, tail = word[:rb], word[rb+1:]
 			w = "${"+word+"}"

@@ -4,6 +4,7 @@ contentid:    ruby_pickaxe
 class:        RubyPickaxe
 tooltype:     PickaxeItem
 material:     RubyToolMaterial
+tooltier:     ModTiers.RUBY
 attackspeed:  -2.4f
 attackdamage: 1
 title:        Ruby Pickaxe

@@ -161,15 +161,19 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 					else:
 						if "contentid" in d.keys():
 							cid = d["contentid"]
-							if content_type == "block" and "BlockClass" not in d.keys():
-								d["BlockClass"] = "Block"
+							if content_type == "block":
+								if "blockstatetype" not in d.keys():
+									d["blockstatetype"] = "Single"
+								if "BlockClass" not in d.keys():
+									d["BlockClass"] = "Block"
+							# print(f"adding {content_type} {cid}", d)
 							add_content(cid, content_type, d, manifest_dict, fname)
 						if content_type == "block":
 							midcid = manifest_dict["mod.mcpath"]+":"+cid
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
 								d = readDictFile(fname)
 								d["title"] = d["title"]+" Slab"
-								d["contentid"] = cid+"_slab"
+								d["drops"] = d["contentid"] = cid+"_slab"
 								d["droptype"] = "Slab"
 								d["blockstatetype"] = "Slab"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
@@ -189,12 +193,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs"):
 								d = readDictFile(fname)
 								d["title"] = d["title"]+" Stairs"
-								d["contentid"] = cid+"_stairs"
+								d["drops"] = d["contentid"] = cid+"_stairs"
 								d["droptype"] = "Self"
 								d["blockstatetype"] = "Stair"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
 								d["BlockClass"] = "ModStairBlock"
 								d["BlockMaterialBlock"] = cid
+								d["BlockClass.isStair"] = "true"
 								add_content(cid+"_stairs", content_type, d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
 									add_content(cid+"_stairs", "recipe", {
@@ -215,7 +220,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
 								d = readDictFile(fname)
 								d["title"] = d["title"]+" Trapdoor"
-								d["contentid"] = cid+"_trapdoor"
+								d["drops"] = d["contentid"] = cid+"_trapdoor"
 								d["droptype"] = "Self"
 								d["blockstatetype"] = "Trapdoor"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
@@ -245,6 +250,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 	if "forge1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "forge" in modenv:
 		build_mod("forge", "1.18.1", modenv, manifest_dict)
+
+	if "forge1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.18.2", modenv, manifest_dict)
 
 	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
 		# build_mod("forge", "1.12.2", modenv, manifest_dict)

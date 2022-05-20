@@ -18,51 +18,44 @@
 #   in this example, com.yourname.testrubymod
 
 # Tell M3EC that this is a manifest file. Not really necessary, but here for consistency.
-@:            manifest
+@: manifest
 
 mod:
 #prefix of mod class namespace
-.prefix:	com
-
+.prefix: com
 #mod author
-.author:	YourName
-
+.author: BeckATI
 #mod main class name
-.class:	TestRubyMod
-
+.class: TestRubyMod
 #mod title
-.title:	Test Ruby Mod
-
+.title: Test Ruby Mod
 #mod version number
-.version: 1.0
-
+.version: 0.1
 #mod description
-.description: A test mod build with M3EC!
-
+.description: An example mod built with M3EC!
 #web url to your mod's homepage
 .homepage:
-
 #web url to your mod's sources
-.sources:
-
-#paths to mod items, blocks, recipes, etc
-+.paths:	items
-+.paths:	blocks
-+.paths:	recipes
-+.paths:	armor
-+.paths:	tools
-+.paths:	ores
+.sources: https://github.com/beckadamtheinventor/M3EC/tree/master/testrubymod
+#credits
+.credits:
 
 #path to mod textures directory.
 .textures: textures
 
-#icon to be displayed on the mod's creative tab, uppercased
-.iconItem: RUBY
-
 #project license. Change this and add a license file for your own project
 .license: Public Domain
 
-+.langs:  fr_ca
-+.langs:  fr_fr
-.fr_ca:   Tester Module Ruby
-.fr_fr:   Tester Module Ruby
+#paths to mod items, blocks, recipes, etc
++.paths: armor
++.paths: tools
++.paths: ores
++.paths: items
++.paths: blocks
++.paths: recipes
+
+#mod item to be displayed on the mod's creative tab, uppercased
+.iconItem: RUBY
+
+.+langs: fr_fr
+.fr_fr: Tester Module Ruby

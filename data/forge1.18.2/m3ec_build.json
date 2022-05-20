@@ -1,0 +1,190 @@
+{
+	"modloader": "forge",
+	"minecraftVersion": "1.18.2",
+	"javaVersion": "17.",
+	"firstActions": [
+		{
+			"if": [
+				"^OR",
+				"?mod.registry.armor.names #length nonzero",
+				"?mod.registry.armormaterial.names #length nonzero"
+			],
+			"action": "print",
+			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		},
+		{
+			"if": "?mod.registry.enchantment.names #length nonzero",
+			"action": "print",
+			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		}
+	],
+	"preActions": [
+		{
+			"action": "makedir",
+			"value": "src/main/java/${mod.packagedir}/block"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/java/${mod.packagedir}/item"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/META-INF"
+		},
+		{
+			"iterate": "mod.registry.block.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "if",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModStairBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.BlockClass",
+							"value": "StairBlock"
+						}
+					]
+				},
+				{
+					"action": "if",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModDoorBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.BlockClass",
+							"value": "DoorBlock"
+						}
+					]
+				},
+				{
+					"action": "if",
+					"condition": "?mod.block.${%v}.BlockClass #contains ModTrapdoorBlock",
+					"actions": [
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.BlockClass",
+							"value": "TrapdoorBlock"
+						}
+					]
+				}
+			]
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft/tags"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft/tags/blocks"
+		},
+		{
+			"action": "makedir",
+			"value": "src/main/resources/data/minecraft/tags/blocks/mineable"
+		},
+		{
+			"iterate": ["axe", "pickaxe", "shovel", "hoe", "wood", "stone", "iron", "diamond", "netherite"],
+			"action": "setdictkey",
+			"key": "mod.registry.requires_${%v}",
+			"value": null
+		},
+		{
+			"iterate": "mod.registry.block.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "if",
+					"condition": [
+						"keyexists mod.block.${%v}.toolclass",
+						"keyexists mod.block.${%v}.toollevel"
+					],
+					"actions": [
+						{
+							"action": "getdictkey",
+							"key": "mod.block.${%v}.toollevel",
+							"dict": {"-1": null, "0":"WOOD", "1":"STONE", "2":"IRON", "3":"DIAMOND", "4":"NETHERITE"},
+							"default": "${mod.block.${%v}.toollevel}",
+							"var": "toollevel"
+						},
+						{
+							"action": "getdictkey",
+							"key": "mod.block.${%v}.toolclass",
+							"dict": {"PICKAXES":"PICKAXE", "AXES":"AXE", "SHOVELS":"SHOVEL", "HOES": "HOE"},
+							"default": "${mod.block.${%v}.toolclass}",
+							"var": "toolclass"
+						},
+						{
+							"action": "setdictkey",
+							"key": "mod.block.${%v}.hastoolrequirements",
+							"value": true
+						},
+						{
+							"action": "appenddictkey",
+							"key": "mod.registry.requires_${toolclass^lower}",
+							"value": "${%v}"
+						},
+						{
+							"action": "appenddictkey",
+							"key": "mod.registry.requires_${toollevel^lower}",
+							"value": "${%v}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"iterate": ["axe", "pickaxe", "shovel", "hoe"],
+			"action": "copyf",
+			"source": "${source_path}/requires_${%v}.m3ecjson",
+			"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/mineable/${%v}.json"
+		},
+		{
+			"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
+			"action": "copyf",
+			"source": "${source_path}/requires_${%v}.m3ecjson",
+			"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/requires_${%v}_tool.json"
+		}
+	],
+	"postActions": [
+		{
+			"action": "copy",
+			"source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+		}
+	],
+	"sources": [
+		{
+			"source": "resources/pack.mcmeta",
+			"dest": "src/main/resources/pack.mcmeta"
+		},
+		{
+			"source": "resources/META-INF/mods.toml",
+			"dest": "src/main/resources/META-INF/mods.toml"
+		},
+		{
+			"source": "java/MainClass.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+		},
+		{
+			"source": "java/block/ModBlocks.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/block/ModBlocks.java"
+		},
+		{
+			"source": "java/item/ModItems.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/item/ModItems.java"
+		},
+		{
+			"source": "java/item/ModTiers.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/item/ModTiers.java"
+		},
+		{
+			"source": "java/item/ModCreativeModeTab.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/item/ModCreativeModeTab.java"
+		}
+	]
+	
+}

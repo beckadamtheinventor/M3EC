@@ -1,9 +1,11 @@
 @:               toolmaterial
 toolmaterial:    ToolMaterial
 contentid:       RubyToolMaterial
+tier:            RUBY
 durability:      1561
 enchantability:  20
 miningspeed:     9.0f
 mininglevel:     3
+miningtier:      IRON
 repairitem:      ModItems.RUBY
 attackdamage:    4.0f
