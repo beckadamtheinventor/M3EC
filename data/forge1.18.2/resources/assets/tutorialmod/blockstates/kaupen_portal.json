@@ -1,6 +1,0 @@
-{
-  "variants": {
-    "axis=z": { "model": "tutorialmod:block/kaupen_portal_ew" },
-    "axis=x": { "model": "tutorialmod:block/kaupen_portal_ns" }
-  }
-}
