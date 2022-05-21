@@ -1,15 +1,31 @@
 
 
-import os, sys, json, tempfile, hashlib, shutil, threading, m3ec
-from PIL import Image
+import os, sys, json, tempfile, hashlib, shutil, threading, subprocess, m3ec
+try:
+	from PIL import Image
+except ImportError:
+	print("Installing dependency PIL...")
+	subprocess.run(["python", "-m", "pip", "install", "--user", "--upgrade", "pillow"])
+	try:
+		from PIL import Image
+	except ImportError:
+		input("Failed to install dependency. Abort.")
+		exit(1)
+
 from _m3ec.util import *
 
 try:
 	import PySimpleGUI as sg
 except ImportError:
-	input("Python module \"PySimpleGUI\" not installed. Please install it with \"python -m pip install PySimpleGUI --user\"\n\
-Press enter to exit.")
-	exit()
+	print("Installing dependency PySimpleGUI...")
+	subprocess.run(["python", "-m", "pip", "install", "--user", "--upgrade", "PySimpleGUI"])
+	print("Installing dependency tk...")
+	subprocess.run(["python", "-m", "pip", "install", "--user", "--upgrade", "tk"])
+	try:
+		import PySimpleGUI as sg
+	except ImportError:
+		input("Failed to install dependency. Abort.")
+		exit(1)
 
 sg.theme("BrownBlue")
 
