@@ -1,0 +1,7 @@
+@:          armor
+armor:      SimpleItem
+contentid:  ruby_boots
+slot:       FEET
+texture:    ruby/ruby_boots.png
+title:      Ruby Boots
+material:   RubyArmorMaterial

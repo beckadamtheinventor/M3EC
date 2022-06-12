@@ -5,6 +5,14 @@ def load_resource(path, file, method=json.load):
 	with open(os.path.join(path, file)) as f:
 		return method(f)
 
+def dictDir(path, d={}):
+	for root,dirs,files in os.walk(path):
+		d[root] = {}
+		for dname in dirs:
+			dictDir(os.path.join(root, dname), d)
+		for fname in files:
+			d[fname] = None
+		break
 
 def walk(path):
 	found_names = []
@@ -21,6 +29,14 @@ def _walk(path):
 				yield fname
 		for fname in files:
 			yield os.path.join(root, fname)
+
+def listDir(path):
+	for root,dirs,files in os.walk(path):
+		for dname in dirs:
+			yield os.path.join(root, dname)
+		for fname in files:
+			yield os.path.join(root, fname)
+		break
 
 def getDictVal(d, k, fname):
 	try:

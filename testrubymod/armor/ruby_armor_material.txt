@@ -1,0 +1,18 @@
+@:              armormaterial
+armormaterial:  ArmorMaterial
+contentid:      RubyArmorMaterial
+protection:
+.helmet:        2
+.chestplate:    5
+.leggings:      7
+.boots:         2
+sound:          ITEM_ARMOR_EQUIP_DIAMOND
+durability:     400
+enchantability: 22
+repairitem:     ModItems.RUBY
+name:           ruby
+title:          Ruby Armor
+toughness:      1
+knockbackresistance: 0
+texture_layer_1: ruby/ruby_layer_1.png
+texture_layer_2: ruby/ruby_layer_2.png

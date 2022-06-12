@@ -1,0 +1,9 @@
+@:         recipe
+recipe:    ShapedRecipe
+contentid: ruby_helmet
++pattern:   "###"
++pattern:   "# #"
++itemkeys:  #
++items:     testrubymod:ruby
+result:     testrubymod:ruby_helmet
+count:      1

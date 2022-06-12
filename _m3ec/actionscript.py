@@ -5,7 +5,9 @@ def execScriptFile(fname, d):
 
 def execScript(data, d):
 	if type(data) is str:
-		return execActions(lexScript(data, d), d)
+		ld = lexScript(data, d)
+		if ld is not None:
+			return execActions(ld, d)
 	elif type(data) is list:
 		return execActions(data, d)
 	elif type(data) is dict:
@@ -13,25 +15,23 @@ def execScript(data, d):
 	else:
 		return None
 
-def lexScript(data, d);
+def lexScript(data, d):
 	ld = []
-	i = j = 0
-	while i < len(data):
-		if i == -1:
-			break
-		if data[i].isalnum():
-			j = nextWhiteSpace(data, i)
-			if j == -1:
-				word = data[i:]
-			else:
-				word = data[i:j]
-			
-			
-			i = j
-		else:
-			c = data[i]
-			i += 1
-	
+	i = 0
+	datalines = data.split("\n")
+	while line in datalines:
+		cmd, args = line.split("(", maxsplit=1)
+		args = args.strip(" \t")
+		if args.endswith(")"):
+			args = args[:-1]
+		args = [a.strip(" \t") for a in args.split(",")]
+		m = {"action": readf(cmd, d)}
+		for arg in args:
+			a,b = arg.split(":")
+			m[a.strip[" \t"]] = b.strip(" \t")
+		ld.append(m)
+		i += 1
+
 	return ld
 
 def nextWhiteSpace(data, i):

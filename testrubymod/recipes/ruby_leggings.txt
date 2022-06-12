@@ -1,0 +1,10 @@
+@:         recipe
+recipe:    ShapedRecipe
+contentid: ruby_leggings
++pattern:   "###"
++pattern:   "# #"
++pattern:   "# #"
++itemkeys:  #
++items:     testrubymod:ruby
+result:     testrubymod:ruby_leggings
+count:      1

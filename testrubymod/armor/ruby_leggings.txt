@@ -1,0 +1,7 @@
+@:          armor
+armor:      SimpleItem
+contentid:  ruby_leggings
+slot:       LEGS
+texture:    ruby/ruby_leggings.png
+title:      Ruby Leggings
+material:   RubyArmorMaterial

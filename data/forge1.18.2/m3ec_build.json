@@ -166,6 +166,10 @@
 			"dest": "src/main/resources/META-INF/mods.toml"
 		},
 		{
+			"source": "resources/pack.mcmeta",
+			"dest": "src/main/resources/pack.mcmeta"
+		},
+		{
 			"source": "java/MainClass.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
 		},

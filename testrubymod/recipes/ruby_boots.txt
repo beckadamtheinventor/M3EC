@@ -1,0 +1,9 @@
+@:         recipe
+recipe:    ShapedRecipe
+contentid: ruby_boots
++pattern:   "# #"
++pattern:   "# #"
++itemkeys:  #
++items:     testrubymod:ruby
+result:     testrubymod:ruby_boots
+count:      1
