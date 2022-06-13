@@ -1,0 +1,15 @@
+@:            food
+food:         SimpleItem
+contentid:    ruby_apple
+title:        Ruby Apple
+texture:      ruby_apple.png
+
+hunger:       4
+saturation:   8
+alwaysEdible: true
+snack:        true
+
++langs:  fr_ca
++langs:  fr_fr
+fr_ca:   Pomme Rubis
+fr_fr:   Pomme Rubis

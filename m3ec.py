@@ -277,6 +277,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.18.2", modenv, manifest_dict.copy())
 
+	if "fabric1.19" in modenv or "1.19" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.19", modenv, manifest_dict.copy())
+
 	for file in manifest_dict["finalExecActions"]:
 		try:
 			with open(file) as f:
@@ -286,7 +289,10 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		execActions(j, manifest_dict)
 
 def build_mod(modloader, version, modenv, manifest_dict):
-	print(f"Building {modloader} {version} mod project")
+	print(f"\n\
+\n\
+-----------------------------------------------\n\
+   Building {modloader} {version} mod project\n")
 	manifest_dict["modloader"] = modloader
 	manifest_dict["gameversion"] = gameversion = version
 	source_path = manifest_dict["source_path"]

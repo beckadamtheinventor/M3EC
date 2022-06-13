@@ -39,9 +39,11 @@ def listDir(path):
 		break
 
 def getDictVal(d, k, fname):
-	try:
+	if k in d.keys():
 		return d[k]
-	except KeyError:
+	elif type(k) is str and k.lower() in d.keys():
+		return d[k.lower()]
+	else:
 		print(f"Missing \"{k}\" in file \"{fname}\"!")
 
 def readDictFile(fname, d=None):
@@ -299,6 +301,7 @@ def readf_file(path, d):
 		return None
 
 def readf(data, d):
+	d = {k.lower():d[k] for k in d.keys()}
 	NUM_ITERATOR_NUMBERS = 10
 
 	if type(data) is not str:
@@ -320,7 +323,7 @@ def readf(data, d):
 				i = data.find(itr, j)
 				data2.append(data[j:i])
 				n = data.find("\n", i+len(itr))
-				key = data[i+len(itr):n]
+				key = data[i+len(itr):n].lower()
 				if key in d.keys():
 					l = d[key]
 					j = data.find(itrend, n)
@@ -348,7 +351,7 @@ def readf(data, d):
 				i = data.find(lstr, j)
 				data2.append(data[j:i])
 				n = data.find("\n", i+len(lstr))
-				key = data[i+len(lstr):n]
+				key = data[i+len(lstr):n].lower()
 				if key in d.keys():
 					l = d[key]
 					j = data.find(lstrend,n)
@@ -380,24 +383,24 @@ def readf(data, d):
 				n = data.find("\n", i+len(istr))
 				if data[i+len(istr)] == '!':
 					inverted = True
-					key = data[i+len(istr)+1:n]
+					key = data[i+len(istr)+1:n].lower()
 				else:
 					inverted = False
-					key = data[i+len(istr):n]
+					key = data[i+len(istr):n].lower()
 				if " " in key:
 					key, tail = key.split(" ", maxsplit=1)
 					tail = tail.split(" ")
 				else:
 					tail = []
 				condtrue = False
-				key = readf(key, d)
+				key = readf(key, d).lower()
 				# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
 				if "#contains" in tail:
 					if len(tail):
-						if all([w in key for w in tail[1:]]):
+						if all([w.lower() in key for w in tail[1:]]):
 							condtrue = True
 							for w in tail[1:]:
-								key = key.replace(w, "")
+								key = key.replace(w.lower(), "")
 					elif len(key):
 						condtrue = True
 				elif key in d.keys():
@@ -427,7 +430,7 @@ def readf(data, d):
 			word, tail = word[:rb], word[rb+1:]
 			w = "${"+word+"}"
 			if "^" in word:
-				w = word.split("^", maxsplit=1)[0]
+				w = word.split("^", maxsplit=1)[0].lower()
 				fns = word.split("^")[1:]
 				if w in d.keys():
 					w = d[w]
@@ -439,8 +442,8 @@ def readf(data, d):
 								w = w.lower()
 							elif fn.lower() == "capital":
 								w = w.capitalize()
-			elif word in d.keys():
-				w = d[word]
+			elif word.lower() in d.keys():
+				w = d[word.lower()]
 			data = head + str(w) + tail
 			i = data.find("${", i+2)
 

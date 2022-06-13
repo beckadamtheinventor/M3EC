@@ -1,11 +1,10 @@
 # M3EC
 
 ## Minecraft Multi Mod Environment Compiler
-Version 0.6
+Version 0.7
 
 This compiler/script operates on the mentality of "as few files as possible" to create a mod.
 Check out the `testrubymod` folder for usage examples.
-Currently it only supports a handful of Minecraft versions/modloaders.
 
 M3EC is Licensed under the GPL version 3.
 
@@ -27,7 +26,7 @@ M3EC supports building for a wide variety of modloaders and game versions from f
 ## Documentation
 Currently there isn't much documentation. It can be found in the `docs` folder of this repository.
 There is also a website: https://beckadamtheinventor.github.io/M3EC.
-However, there is an example mod (with most if not all features used) to help get you started.
+However, there is an example mod (with most if not all features included) to help get you started.
 
 ## Usage
 To build a project:
@@ -40,14 +39,16 @@ Example:
 - 1.16.5
 - 1.17.x
 - 1.18.x
+- 1.19
 
 ### Supported Versions (Forge)
 - 1.16.5
+- 1.18.1
+- 1.18.2
 
 ### Planned Versions (Forge)
 - 1.12.2
 - 1.17.x
-- 1.18.x
 
 Once the mod project is built, you can use your choice of java IDEs (such as IntelliJ) to build the mod's jar file, or build and/or test the mod from the terminal by appending to the end of the M3EC build command with the any of the following:
 - `buildjar` build the mod jar file.
@@ -56,25 +57,25 @@ Once the mod project is built, you can use your choice of java IDEs (such as Int
 Your mod's jar file will be in the build/libs directory of the built project.
 
 When building, the program may prompt for a Java jdk path for a specific jdk version.
-On Windows, Mac, and Linux M3EC should detect a JDK automatically. If it can't find the needed version it will prompt for a path to it.
+On Windows, Mac, and Linux M3EC should detect a JDK automatically. If it can't find the needed version you can enter the path manually.
 
 
 
 ## Features
 - simple items
-- foods without effect attributes
+- foods (without effect attributes)
 - simple single-texture blocks
 - grass-block-like 3-texture blocks
 - grass/flower-like single-texture cross blocks
-- fortune-able blocks (such as ores)
+- fortunable blocks (such as ores)
 - item dropping blocks (such as campfires)
-- recipes of all default vanilla types
-- as many languages as supplied
+- all vanilla recipe types
+- as many languages as you're willing to add
 - tools and tool materials
-
+- armor and armor materials
+- custom block/item behaviour (requires custom java class)
 
 ## Planned Features
-- armor and armor materials
 - multiple creative tabs
 - scriptable block/item behaviours
 - more generation options

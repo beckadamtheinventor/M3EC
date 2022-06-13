@@ -13,6 +13,13 @@
 			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
 		},
 		{
+			"if": [
+				"?mod.registry.food.names #length nonzero"
+			],
+			"action": "print",
+			"string": "Food is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		},
+		{
 			"if": "?mod.registry.enchantment.names #length nonzero",
 			"action": "print",
 			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."

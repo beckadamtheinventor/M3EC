@@ -33,7 +33,10 @@ public class ModItems {
 
 	//Food
 ---iter mod.registry.food.names
-	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})${mod.food.$%v.snack}${mod.food.$%v.alwaysEdible}${mod.food.$%v.statusEffects}));---end
+	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})---if mod.food.$%v.snack
+.snack()---fi---if mod.food.$%v.alwaysEdible
+.alwaysEdible()---fi---if mod.food.$%v.statusEffects
+${mod.food.$%v.statusEffects}---fi.build()));---end
 
     //Block Items
 ---iter mod.registry.blockitem.names

@@ -182,6 +182,10 @@
 			"dest": "src/main/java/${mod.packagedir}/item/ModItems.java"
 		},
 		{
+			"source": "java/item/ModFoods.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/item/ModFoods.java"
+		},
+		{
 			"source": "java/item/ModTiers.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/item/ModTiers.java"
 		},
