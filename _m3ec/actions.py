@@ -4,8 +4,16 @@ from .util import *
 
 def execActions(actions, d, accumulator=None):
 	for action in actions:
+		if type(action) is not dict:
+			continue
+
+		if "action" not in action.keys():
+			continue
+
 		if "if" in action.keys() and not checkActionConditions(action["if"], d):
 			continue
+
+
 		a = action["action"].lower()
 		# print(a)
 		if a == "var":
@@ -260,7 +268,11 @@ def execActions(actions, d, accumulator=None):
 						f.write(str(accumulator))
 
 		elif a in ("makedir", "make_dir"):
-			make_dir(os.path.join(d["build_path"], readf(action["value"], d)))
+			if type(action["value"]) is list:
+				for value in action["value"]:
+					make_dir(os.path.join(d["build_path"], readf(value, d)))
+			else:
+				make_dir(os.path.join(d["build_path"], readf(action["value"], d)))
 		
 		elif a in ("print", "display", "error"):
 			if "string" in action.keys():

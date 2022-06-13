@@ -2,6 +2,6 @@
 armor:      SimpleItem
 contentid:  ruby_helmet
 slot:       HEAD
-texture:    ruby/ruby_helmet.png
+texture:    ruby_helmet.png
 title:      Ruby Helmet
 material:   RubyArmorMaterial

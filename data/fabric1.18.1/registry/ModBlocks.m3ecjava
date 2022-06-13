@@ -23,7 +23,6 @@ public class ModBlocks {
 	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
 ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSettings
 		.of(Material.${mod.block.$%v.material})
-		.breakByTool(FabricToolTags.${mod.block.$%v.toolclass}, ${mod.block.$%v.toollevelint})
 		---if mod.block.$%v.requiresTool
 		.requiresTool()---fi
 		.strength(${mod.block.$%v.hardness}f,${mod.block.$%v.resistance}f)

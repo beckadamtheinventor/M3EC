@@ -14,5 +14,5 @@ name:           ruby
 title:          Ruby Armor
 toughness:      1
 knockbackresistance: 0
-texture_layer_1: ruby/ruby_layer_1.png
-texture_layer_2: ruby/ruby_layer_2.png
+texture_layer_1: ruby_layer_1.png
+texture_layer_2: ruby_layer_2.png

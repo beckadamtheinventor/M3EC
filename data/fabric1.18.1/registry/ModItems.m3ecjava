@@ -1,24 +1,11 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
----iter mod.registry.armormaterial.names
-import ${mod.package}.registry.$%v;---end
----iter mod.registry.toolmaterial.names
-import ${mod.package}.registry.$%v;---end
----iter mod.registry.tool.names
-import ${mod.package}.registry.${mod.tool.$%v.class};---end
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ToolMaterial;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ToolItem;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -34,7 +21,7 @@ public class ModItems {
 
 	//Armor items
 ---iter mod.registry.armor.names
-	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material}, EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(new ${mod.armor.$%v.material}(), EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
 	//Tool items
 ---iter mod.registry.tool.names

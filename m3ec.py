@@ -50,12 +50,14 @@ def build(project_path, modenv):
 
 	if not os.path.exists(project_path):
 		print(f"Manifest file \"{project_path}\" not found. Aborting.")
+		return False
 
 	manifest_file = os.path.join(project_path, "manifest.m3ec")
 	if not os.path.exists(manifest_file):
 		manifest_file = os.path.join(project_path, "manifest.txt")
 		if not os.path.exists(manifest_file):
 			print(f"Manifest file (manifest.m3ec/manifest.txt) not found in \"{project_path}\". Aborting.")
+			return False
 
 	if not os.path.isdir(project_path):
 		project_path = os.path.dirname(project_path)
@@ -131,7 +133,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			with open(file) as f:
 				j = json.load(f)
 		except FileNotFoundError:
-			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
+			print(f"Warning: file \"{file}\" listed in firstExecActions does not exist.")
 		execActions(j, manifest_dict)
 
 	for path in manifest_dict["mod.paths"]:
@@ -246,34 +248,34 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	path = project_path
 
 	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.16.5", modenv, manifest_dict)
+		build_mod("forge", "1.16.5", modenv, manifest_dict.copy())
 
 	if "forge1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.18.1", modenv, manifest_dict)
+		build_mod("forge", "1.18.1", modenv, manifest_dict.copy())
 
 	if "forge1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.18.2", modenv, manifest_dict)
+		build_mod("forge", "1.18.2", modenv, manifest_dict.copy())
 
 	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
-		# build_mod("forge", "1.12.2", modenv, manifest_dict)
+		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
 
 	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.16.5", modenv, manifest_dict)
+		build_mod("fabric", "1.16.5", modenv, manifest_dict.copy())
 
 	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17", modenv, manifest_dict)
+		build_mod("fabric", "1.17", modenv, manifest_dict.copy())
 
 	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17.1", modenv, manifest_dict)
+		build_mod("fabric", "1.17.1", modenv, manifest_dict.copy())
 
 	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18", modenv, manifest_dict)
+		build_mod("fabric", "1.18", modenv, manifest_dict.copy())
 
 	if "fabric1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18.1", modenv, manifest_dict)
+		build_mod("fabric", "1.18.1", modenv, manifest_dict.copy())
 
 	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18.2", modenv, manifest_dict)
+		build_mod("fabric", "1.18.2", modenv, manifest_dict.copy())
 
 	for file in manifest_dict["finalExecActions"]:
 		try:

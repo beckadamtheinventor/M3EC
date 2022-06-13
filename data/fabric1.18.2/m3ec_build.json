@@ -12,105 +12,18 @@
 	"preActions": [
 		{
 			"action": "makedir",
-			"value": "src/main/resources/data/minecraft"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/data/minecraft/tags"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/data/minecraft/tags/blocks"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/data/minecraft/tags/blocks/mineable"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/assets/minecraft"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/assets/minecraft/textures"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/assets/minecraft/textures/models"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/assets/minecraft/textures/models/armor"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/java/${mod.packagedir}/blocks"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/java/${mod.packagedir}/recipetype"
-		},
-		{
-			"iterate": ["axe", "pickaxe", "shovel", "hoe", "wood", "stone", "iron", "diamond", "netherite"],
-			"action": "setdictkey",
-			"key": "mod.registry.requires_${%v}",
-			"value": null
-		},
-		{
-			"iterate": "mod.registry.block.names",
-			"action": "execactions",
-			"actions": [
-				{
-					"action": "if",
-					"condition": [
-						"keyexists mod.block.${%v}.toolclass",
-						"keyexists mod.block.${%v}.toollevel"
-					],
-					"actions": [
-						{
-							"action": "getdictkey",
-							"key": "mod.block.${%v}.toollevel",
-							"dict": {"-1": null, "0":"WOOD", "1":"STONE", "2":"IRON", "3":"DIAMOND", "4":"NETHERITE"},
-							"default": "${mod.block.${%v}.toollevel}",
-							"var": "toollevel"
-						},
-						{
-							"action": "getdictkey",
-							"key": "mod.block.${%v}.toolclass",
-							"dict": {"PICKAXES":"PICKAXE", "AXES":"AXE", "SHOVELS":"SHOVEL", "HOES": "HOE"},
-							"default": "${mod.block.${%v}.toolclass}",
-							"var": "toolclass"
-						},
-						{
-							"action": "setdictkey",
-							"key": "mod.block.${%v}.hastoolrequirements",
-							"value": true
-						},
-						{
-							"action": "appenddictkey",
-							"key": "mod.registry.requires_${toolclass^lower}",
-							"value": "${%v}"
-						},
-						{
-							"action": "appenddictkey",
-							"key": "mod.registry.requires_${toollevel^lower}",
-							"value": "${%v}"
-						}
-					]
-				}
+			"value": [
+				"src/main/java/${mod.packagedir}/blocks",
+				"src/main/java/${mod.packagedir}/recipetype",
+				"src/main/resources/assets/minecraft",
+				"src/main/resources/assets/minecraft/textures",
+				"src/main/resources/assets/minecraft/textures/models",
+				"src/main/resources/assets/minecraft/textures/models/armor"
 			]
 		},
 		{
-			"iterate": ["axe", "pickaxe", "shovel", "hoe"],
-			"action": "copyf",
-			"source": "${source_path}/requires_${%v}.m3ecjson",
-			"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/mineable/${%v}.json"
-		},
-		{
-			"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
-			"action": "copyf",
-			"source": "${source_path}/requires_${%v}.m3ecjson",
-			"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/requires_${%v}_tool.json"
+			"action": "execactions",
+			"file": "${source_path}/common/actions/block_mining_requirements.json"
 		},
 		{
 			"iterate": "mod.registry.armormaterial.names",

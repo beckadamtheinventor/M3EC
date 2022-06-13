@@ -1,12 +1,6 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
----iter mod.registry.armormaterial.names
-import ${mod.package}.registry.$%v;---end
----iter mod.registry.toolmaterial.names
-import ${mod.package}.registry.$%v;---end
----iter mod.registry.tool.names
-import ${mod.package}.registry.${mod.tool.$%v.class};---end
 
 import net.minecraft.item.*;
 import net.minecraftforge.fml.RegistryObject;

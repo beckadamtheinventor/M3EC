@@ -1,8 +1,10 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
+/*
 ---iter mod.registry.armormaterial.names
 import ${mod.package}.registry.$%v;---end
+*/
 ---iter mod.registry.toolmaterial.names
 import ${mod.package}.registry.$%v;---end
 ---iter mod.registry.tool.names
@@ -37,9 +39,11 @@ public class ModItems {
 ---iter mod.registry.blockitem.names
 	public static final BlockItem ${mod.blockitem.$%v.uppercased} = new BlockItem(ModBlocks.${mod.blockitem.$%v.uppercased}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
+/*
 	//Armor items
 ---iter mod.registry.armor.names
 	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material}, EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+*/
 
 	//Tool items
 ---iter mod.registry.tool.names
@@ -55,8 +59,10 @@ public class ModItems {
 ---iter mod.registry.fuel.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.fuel.$%v.uppercased});
 		FuelRegistry.INSTANCE.add(${mod.fuel.$%v.uppercased}, ${mod.fuel.$%v.burntime});---end
+/*
 ---iter mod.registry.armor.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.armor.$%v.uppercased});---end
+*/
 ---iter mod.registry.tool.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
 

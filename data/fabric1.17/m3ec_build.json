@@ -3,7 +3,7 @@
 	"minecraftVersion": "1.17",
 	"javaVersion": "16.",
 	"firstActions": [
-		{
+				{
 			"if": [
 				"^OR",
 				"?mod.registry.armor.names #length nonzero",
@@ -44,16 +44,6 @@
 			"iterate": "mod.registry.tool.names",
 			"source": "registry/ToolItem.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.armormaterial.names",
-			"source": "registry/ArmorMaterial.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.armor.names",
-			"source": "registry/ArmorItem.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armor.${%v}.class}.java"
 		}
 
 	]

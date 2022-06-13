@@ -4,15 +4,6 @@
 	"javaVersion": "17.",
 	"firstActions": [
 		{
-			"if": [
-				"^OR",
-				"?mod.registry.armor.names #length nonzero",
-				"?mod.registry.armormaterial.names #length nonzero"
-			],
-			"action": "print",
-			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-		},
-		{
 			"if": "?mod.registry.enchantment.names #length nonzero",
 			"action": "print",
 			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
@@ -21,22 +12,30 @@
 	"preActions": [
 		{
 			"action": "makedir",
-			"value": "src/main/java/${mod.packagedir}/blocks"
+			"value": [
+				"src/main/java/${mod.packagedir}/blocks",
+				"src/main/java/${mod.packagedir}/recipetype",
+				"src/main/resources/assets/minecraft",
+				"src/main/resources/assets/minecraft/textures",
+				"src/main/resources/assets/minecraft/textures/models",
+				"src/main/resources/assets/minecraft/textures/models/armor"
+			]
 		},
 		{
-			"action": "copyf",
-			"source": "${source_path}/${modloader}${gameversion}/ModDoorBlock.m3ecjava",
-			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModDoorBlock.java"
-		},
-		{
-			"action": "copyf",
-			"source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
-			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
-		},
-		{
-			"action": "copyf",
-			"source": "${source_path}/${modloader}${gameversion}/ModTrapdoorBlock.m3ecjava",
-			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
+			"iterate": "mod.registry.armormaterial.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "copy",
+					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
+					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
+				},
+				{
+					"action": "copy",
+					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
+					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
+				}
+			]
 		}
 	],
 	"postActions": [
@@ -69,19 +68,26 @@
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
 		},
 		{
-			"iterate": "mod.registry.tool.names",
-			"source": "registry/ToolItem.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
-		},
-		{
 			"iterate": "mod.registry.armormaterial.names",
 			"source": "registry/ArmorMaterial.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
 		},
 		{
-			"iterate": "mod.registry.armor.names",
-			"source": "registry/ArmorItem.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armor.${%v}.class}.java"
+			"iterate": "mod.registry.tool.names",
+			"source": "registry/ToolItem.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+		},
+		{
+			"source": "ModDoorBlock.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/blocks/ModDoorBlock.java"
+		},
+		{
+			"source": "ModStairBlock.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
+		},
+		{
+			"source": "ModTrapdoorBlock.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
 		}
 	]
 	
