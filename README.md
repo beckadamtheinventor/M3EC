@@ -45,6 +45,7 @@ Example:
 - 1.16.5
 - 1.18.1
 - 1.18.2
+- 1.19
 
 ### Planned Versions (Forge)
 - 1.12.2
