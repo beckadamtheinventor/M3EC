@@ -1,0 +1,12 @@
+package ${mod.package}.item;
+
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.ForgeTier;
+
+public class ModTiers {
+---iter mod.registry.toolmaterial.names
+    public static final ForgeTier ${mod.toolmaterial.$%v.tier} = new ForgeTier(${mod.toolmaterial.$%v.mininglevel}, ${mod.toolmaterial.$%v.durability}, ${mod.toolmaterial.$%v.miningspeed},
+            ${mod.toolmaterial.$%v.attackdamage}, ${mod.toolmaterial.$%v.enchantability}, BlockTags.NEEDS_${mod.toolmaterial.$%v.miningtier}_TOOL,
+            () -> Ingredient.of(${mod.toolmaterial.$%v.repairitem}.get()));---end
+}

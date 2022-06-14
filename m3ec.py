@@ -247,6 +247,10 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
 	path = project_path
 
+
+	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
+		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
+
 	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
 		build_mod("forge", "1.16.5", modenv, manifest_dict.copy())
 
@@ -256,8 +260,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "forge1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "forge" in modenv:
 		build_mod("forge", "1.18.2", modenv, manifest_dict.copy())
 
-	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
-		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
+	if "forge1.19" in modenv or "1.19" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.19", modenv, manifest_dict.copy())
+
 
 	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.16.5", modenv, manifest_dict.copy())
@@ -279,6 +284,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 	if "fabric1.19" in modenv or "1.19" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.19", modenv, manifest_dict.copy())
+
 
 	for file in manifest_dict["finalExecActions"]:
 		try:
