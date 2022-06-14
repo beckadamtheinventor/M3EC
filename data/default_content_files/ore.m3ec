@@ -1,0 +1,17 @@
+@: ore
+ore:
+contentid:
+name:
+title:
+maxy:
+miny:
+vein:
+# .atbedrock: true
+# ModBlocks.BLOCK
+# Blocks.BLOCK
+.block:
+.size:
+.perchunk:
+OverworldOre:
+# NetherOre:
+# EndOre:

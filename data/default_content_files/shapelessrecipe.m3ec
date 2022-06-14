@@ -1,0 +1,6 @@
+@: recipe
+recipe: ShapelessRecipe
+contentid:
++ingredients:
+result:
+count:

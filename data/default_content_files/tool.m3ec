@@ -1,0 +1,11 @@
+@: tool
+tool: ToolItem
+contentid:
+class:
+tooltype:
+material:
+tooltier:
+attackspeed:
+attackdamage:
+title:
+texture:

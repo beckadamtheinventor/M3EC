@@ -1,0 +1,27 @@
+@: armormaterial
+armormaterial: ArmorMaterial
+contentid:
+protection:
+.helmet:        2
+.chestplate:    5
+.leggings:      7
+.boots:         2
+# LEATHER, CHAINMAIL, IRON, DIAMOND
+sound:          ITEM_ARMOR_EQUIP_DIAMOND
+durability:
+enchantability:
+# ModItems.ITEM
+# Items.ITEM
+repairitem:
+
+# name must be all lowercase with underscores instead of spaces
+name:
+title:
+toughness:
+
+# textures for the armor on-player
+texture_layer_1: ruby_layer_1.png
+texture_layer_2: ruby_layer_2.png
+
+# knockback resistance isn't yet implemented
+# knockbackresistance:

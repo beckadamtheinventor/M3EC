@@ -1,0 +1,8 @@
+@:            recipe
+recipe:       BlastingRecipe
+contentid:    ruby
+ingredient:   testrubymod:ruby_ore
+result:       testrubymod:ruby
+count:        1
+time:         100
+experience:   1

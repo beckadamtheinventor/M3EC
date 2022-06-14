@@ -1,0 +1,16 @@
+@: food
+food: SimpleItem
+contentid:
+title:
+texture:
+
+hunger:
+saturation:
+# true, false
+alwaysEdible: true
+# true, false
+snack:        false
+
+# customclass:
+# +langs: fr_ca
+# fr_ca:

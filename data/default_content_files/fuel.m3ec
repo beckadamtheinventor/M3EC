@@ -1,0 +1,10 @@
+@: fuel
+fuel: SimpleItem
+contentid:
+title:
+texture:
+# burn time, in ticks
+burntime:
+# customclass:
+# +langs: fr_ca
+# fr_ca:

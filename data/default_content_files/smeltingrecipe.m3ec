@@ -1,0 +1,11 @@
+@: recipe
+recipe: SmeltingRecipe
+# recipe: SmokingRecipe
+# recipe: BlastingRecipe
+# recipe: CampfireRecipe
+contentid:
+ingredient:
+result:
+count:
+time:
+experience:

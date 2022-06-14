@@ -6,32 +6,29 @@ from _m3ec.gradle import *
 from _m3ec.util import *
 
 def interpret_args(argv):
-	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment", "recipetype"]
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 	if argv[0].lower() == "help":
 		print("""Usage:
 project_path all|fabric|forge[gameversion]|fabric[gameversion]
-gen|generate item|food|fuel|block|ore|recipe|armor[material]|tool[material] content_id|Title [output_file] [key:value...]
+gen|generate item|food|fuel|block|ore|(shaped|shapeless|smelting|stonecutting|smithing)recipe|armor[material]|tool[material] [output_file]
 """)
 	elif len(argv) > 1:
 		if argv[0].lower() in ("generate", "gen"):
-			if argv[1] in content_types_list:
+			fname = os.path.join(source_path, "default_content_files", argv[1]+".m3ec")
+			if os.path.exists(fname):
+				with open(fname) as f:
+					data = f.read()
+
 				if len(argv) > 2:
-					title, cid, upper = ParseContentTitle(argv[2])
-				else:
-					title = cid = upper = ""
-				d = {"cid": cid, "title": title, "upper": upper}
-				if len(argv) > 4:
-					for a in argv[4:]:
-						if ":" in a:
-							k, v = a.split(":", maxsplit=1)
-							d[k] = v
-						else:
-							d[a] = "yes"
-				data = getDictString(d)
-				if len(argv) > 3:
+					if "." in argv[2]:
+						name = argv[2]
+					else:
+						name = argv[2]+".m3ec"
+					if os.path.exists(name):
+						if "n" in input("File exists. Replace? (y/n) ").lower():
+							return
 					try:
-						with open(argv[3], "w") as f:
+						with open(name, "w") as f:
 							f.write(data)
 					except IOError:
 						print(f"Failed to write destination file: {argv[3]}")
@@ -589,7 +586,7 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 if __name__=='__main__':
 	if len(sys.argv) < 2:
 		print("""
-Minecraft Multiple Mod Environment Compiler v0.6
+Minecraft Multiple Mod Environment Compiler v0.7
 Usage:
 	python m3ec.py path modenv
 where modenv can be any combination of:
@@ -600,6 +597,12 @@ where modenv can be any combination of:
 + 1.18
 + 1.18.1
 + 1.18.2
++ 1.19
++ forge
++ forge1.16.5
++ forge1.18.1
++ forge1.18.2
++ forge1.19
 + fabric
 + fabric1.16.5
 + fabric1.17
@@ -607,8 +610,6 @@ where modenv can be any combination of:
 + fabric1.18
 + fabric1.18.1
 + fabric1.18.2
-+ forge
-+ forge1.16.5
 
 Note: Not all the game versions/modloaders listed are implemented to the same degree.
       If a feature is present in your mod that is not yet supported by the version/modloader implementation,
@@ -620,9 +621,9 @@ Additionally, modenv may be appended with any combination of:
 + runserver (launches an offline server with the mod installed)
 
 ---------------------------------------------------------------------
---  interactive build prompt
---  input "quit" to quit, "help" for help.
---  usage: path modenv
+--  interactive build prompt                                       --
+--  input "quit" to quit, "help" for help.                         --
+--  usage: path modenv                                             --
 ---------------------------------------------------------------------
 """)
 		while True:

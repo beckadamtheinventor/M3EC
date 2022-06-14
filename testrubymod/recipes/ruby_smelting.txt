@@ -1,0 +1,8 @@
+@:            recipe
+recipe:       SmeltingRecipe
+contentid:    ruby
+ingredient:   testrubymod:ruby_ore
+result:       testrubymod:ruby
+count:        1
+time:         200
+experience:   1

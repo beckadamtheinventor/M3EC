@@ -1,0 +1,9 @@
+@: armor
+armor: SimpleItem
+contentid:
+# FEET, LEGS, CHEST, HEAD
+slot:
+texture:
+title:
+# armor material contentid
+material: RubyArmorMaterial

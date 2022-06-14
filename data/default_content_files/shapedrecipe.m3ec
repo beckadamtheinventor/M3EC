@@ -1,0 +1,7 @@
+@: recipe
+recipe: ShapedRecipe
++pattern: "#"
++items:
++itemkeys: #
+result:
+count:

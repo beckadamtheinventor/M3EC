@@ -1,0 +1,13 @@
+@: toolmaterial
+toolmaterial: ToolMaterial
+contentid:
+tier:
+durability:
+enchantability:
+miningspeed:
+mininglevel:
+miningtier:
+repairitem:
+# ModItems.ITEM
+# Items.ITEM
+attackdamage:

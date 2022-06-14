@@ -1,0 +1,58 @@
+@: block
+block: SimpleBlock
+# block: ColumnBlock
+# block: CrossBlock
+# block: GroundBlock
+# block: ThreeTextureBlock
+blockstatetype: Single
+# blockstatetype: 3Axis
+# blockstatetype: Slab
+# blockstatetype: Stair
+# blockstatetype: Trapdoor
+contentid:
+title:
+texture:
+# texture_top:
+# texture_bottom:
+# texture_side:
+
+droptype: Self
+# droptype: Fortunable
+# droptype: Item
+# droptype: ItemRange
+# droptype: None
+# droptype: Slab
+# drops:
+# dropcount:
+# dropmin:
+# dropmax:
+
+hardness: ${mc.diamond_block.hardness}
+resistance: ${mc.diamond_block.resistance}
+
+material: METAL
+# AGGREGATE, AIR, AMETHYST, BAMBOO_SAPLING, BAMBOO, BARRIER, BUBBLE+COLUMN, CACTUS, CAKE, CARPET, COBWEB, DECORATION, DENSE_ICE, EGG, FIRE, GLASS, GOURD, ICE, LAVA, LEAVES, METAL, MOSS_BLOCK, NETHER_SHOOTS, NETHER_WOOD, ORGANIC_PRODUCT, PISTON, PLANT, PORTAL, POWDER_SNOW, REDSTONE_LAMP, REPAIR_STATION, REPLACEABLE_NETHER_PLANT, REPLACEABLE_PLANT, SCULK, SHULKER_BOX, SNOW_BLOCK, SNOW_LAYER, SOIL, SOLID+ORGANIC, SPONGE, STONE, STRUCTURE_VOID, TNT, UNDERWATER_PLANT, WATER, WOOD, WOOL
+
+sounds: METAL
+# AMETHYST_BLOCK, AMETHYST_CLUSTER, ANCIENT_DEBRIS, ANVIL, AZALEA_LEAVES, AZALEA, BAMBOO_SAPLING, BAMBOO, BASALT, BIG_DRIPLEAF, BONE, CALCITE, CANDLE, CAVE_VINES, CHAIN, COAL, COPPER, CROP, DEEPSLATE_BRICKS, DEEPSLATE_TILES, DEEPSLATE, DRIPSTONE_BLOCK, FLOWERING_AZALEA, FUNGUS, GILDED_BLACKSTONE, GLASS, GLOW_LICHEN, GRASS, GRAVEL, HANGING_ROOTS, HONEY, LADDER, LANTERN, LARGE_AMETHYST_BUD, LILY_PAD, LODESTONE, MEDIUM_AMETHYST_BUD, METAL, MOSS_BLOCK, MOSS_CARPET, NETHER_BRICKS, NETHER_GOLD_ORE, NETHER_ORE, NETHER_SPROUTS, NETHER_STEM, NETHER_WART, NETHERITE, NETHERRACK, NYLIUM, POINTED_DRIPSTONE, POLISHED_DEEPSLATE, POWDER_SNOW, ROOTED_DIRT, ROOTS, SAND, SCAFFOLDING, SCULK_SENSOR, SHROOMLIGHT, SLIME, SMALL_AMETHYST_BUD, SMALL_DRIPLEAF, SNOW, SOUL_SAND, SOUL_SOIL, SPORE_BLOSSOM, STEM, STONE, SWEET_BERRY_BUSH, TUFF, VINE, WART_BLOCK, WEEPING_VINES_LOW_PITCH, WEEPING_VINES, WET_GRASS, WOOD, WOOL
+
+toolclass: PICKAXES
+# AXES, HOES, PICKAXES, SHOVELS
+
+toollevel: IRON
+# WOOD, STONE, IRON, DIAMOND, NETHERITE
+
+requiresTool: yes
+# yes, no
+
+# +langs: fr_ca
+# fr_ca:
+
+# automatic generation of stairs and slabs
+# autogenerate:
+# .slab: yes
+# .slab.recipe: yes
+# .slab.stonecuttingrecipe: yes
+# .stairs: yes
+# .stairs.recipe: yes
+# .stairs.stonecuttingrecipe: yes
