@@ -255,8 +255,12 @@ def checkDictKeyTrue(d, key):
 def make_dir(path):
 	try:
 		os.mkdir(path)
+		return True
 	except FileExistsError:
-		pass
+		return True
+	except:
+		print(f"Warning: Failed to make directory \"{path}\"")
+		return False
 
 
 def copy_file(src, dest):

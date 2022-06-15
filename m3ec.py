@@ -102,7 +102,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 ------------------------------------------------\n")
 		manifest_dict["mod.license"] = "All Rights Reserved"
 
-	if "mod.iconItem" not in manifest_dict.keys():
+	if "mod.iconitem" not in manifest_dict.keys():
 		print("Warning: Icon item for custom creative tab unspecified. Defaulting to first item registered.")
 
 	# TODO: build stuff that needs to be in MainClass.java here
@@ -122,15 +122,16 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	manifest_dict[f"mod.files"] = {}
 
 	for a in ["first", "pre", "post", "final"]:
-		if f"{a}ExecActions" not in manifest_dict.keys():
-			manifest_dict[f"{a}ExecActions"] = []
+		if f"{a}execactions" not in manifest_dict.keys():
+			manifest_dict[f"{a}execactions"] = []
 
-	for file in manifest_dict["firstExecActions"]:
+	for file in manifest_dict["firstexecactions"]:
+		file = readf(file, manifest_dict)
 		try:
 			with open(file) as f:
 				j = json.load(f)
 		except FileNotFoundError:
-			print(f"Warning: file \"{file}\" listed in firstExecActions does not exist.")
+			print(f"Warning: file \"{file}\" listed in firstexecactions does not exist.")
 		execActions(j, manifest_dict)
 
 	for path in manifest_dict["mod.paths"]:
@@ -283,12 +284,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		build_mod("fabric", "1.19", modenv, manifest_dict.copy())
 
 
-	for file in manifest_dict["finalExecActions"]:
+	for file in manifest_dict["finalexecactions"]:
+		file = readf(file, manifest_dict)
 		try:
 			with open(file) as f:
 				j = json.load(f)
 		except FileNotFoundError:
-			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
+			print(f"Warning: file \"{file}\" listed in finalexecactions does not exist.")
 		execActions(j, manifest_dict)
 
 def build_mod(modloader, version, modenv, manifest_dict):
@@ -302,12 +304,18 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	project_path = manifest_dict["project_path"]
 	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
 
-	for file in manifest_dict["preExecActions"]:
+	# clean up old built files if they exist
+	if os.path.exists(os.path.join(build_path, "src")):
+		shutil.rmtree(os.path.join(build_path, "src"))
+
+
+	for file in manifest_dict["preexecactions"]:
+		file = readf(file, manifest_dict)
 		try:
 			with open(file) as f:
 				j = json.load(f)
 		except FileNotFoundError:
-			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
+			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
 		execActions(j, manifest_dict)
 
 	try:
@@ -384,19 +392,20 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	if "postActions" in versionbuilder.keys():
 		execActions(versionbuilder["postActions"], manifest_dict)
 
+	for file in manifest_dict["postexecactions"]:
+		file = readf(file, manifest_dict)
+		try:
+			with open(file) as f:
+				j = json.load(f)
+		except FileNotFoundError:
+			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
+		execActions(j, manifest_dict)
+
 	if "javaVersion" in versionbuilder.keys():
 		maybe_run_gradle(os.path.join(project_path, f"{modloader}{version}_build"), modenv, versionbuilder["javaVersion"])
 
 	if "finalActions" in versionbuilder.keys():
 		execActions(versionbuilder["finalActions"], manifest_dict)
-
-	for file in manifest_dict["postExecActions"]:
-		try:
-			with open(file) as f:
-				j = json.load(f)
-		except FileNotFoundError:
-			print(f"Warning: file \"{file}\" listed in preExecActions does not exist.")
-		execActions(j, manifest_dict)
 
 	return True
 
@@ -417,10 +426,6 @@ def build_resources(project_path, builddir, manifest_dict):
 	lang_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "lang")
 	block_loot_table_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks")
 	recipes_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes")
-
-	# clean up old source files in case of deletions
-	if os.path.exists(os.path.join(builddir, "src")):
-		shutil.rmtree(os.path.join(builddir, "src"))
 
 	make_dir(dest)
 	make_dir(os.path.join(dest, "gradle"))

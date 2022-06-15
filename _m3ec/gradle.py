@@ -15,15 +15,15 @@ def maybe_run_gradle(path, modenv, javaver):
 		else:
 			fname = "gradlew"
 
-	if "buildjar" in modenv:
+	if "buildjar" in modenvlow or "build" in modenvlow:
 		subprocess.Popen([os.path.join(path, fname), "build", "jar", javapath], cwd=path).wait()
 		jd = os.path.join(os.path.dirname(path), "built_mod_jars")
 		make_dir(jd)
 		for f in walk(os.path.join(path, "build", "libs")):
 			shutil.copy(f, os.path.join(jd, os.path.basename(f)))
-	if "runClient" in modenv:
+	if "runclient" in modenvlow:
 		subprocess.Popen([os.path.join(path, fname), "runClient", javapath], cwd=path).wait()
-	if "runServer" in modenv:
+	if "runserver" in modenvlow:
 		subprocess.Popen([os.path.join(path, fname), "runServer", javapath], cwd=path).wait()
 
 

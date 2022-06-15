@@ -1,10 +1,6 @@
+# makes a block/item usable as fuel
 @: fuel
-fuel: SimpleItem
+fuel:
 contentid:
-title:
-texture:
 # burn time, in ticks
 burntime:
-# customclass:
-# +langs: fr_ca
-# fr_ca:
