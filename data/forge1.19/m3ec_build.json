@@ -37,33 +37,33 @@
 			"actions": [
 				{
 					"action": "if",
-					"condition": "?mod.block.${%v}.BlockClass #contains ModStairBlock",
+					"condition": "?mod.block.${%v}.blockclass #contains ModStairBlock",
 					"actions": [
 						{
 							"action": "setdictkey",
-							"key": "mod.block.${%v}.BlockClass",
+							"key": "mod.block.${%v}.blockclass",
 							"value": "StairBlock"
 						}
 					]
 				},
 				{
 					"action": "if",
-					"condition": "?mod.block.${%v}.BlockClass #contains ModDoorBlock",
+					"condition": "?mod.block.${%v}.blockclass #contains ModDoorBlock",
 					"actions": [
 						{
 							"action": "setdictkey",
-							"key": "mod.block.${%v}.BlockClass",
+							"key": "mod.block.${%v}.blockclass",
 							"value": "DoorBlock"
 						}
 					]
 				},
 				{
 					"action": "if",
-					"condition": "?mod.block.${%v}.BlockClass #contains ModTrapdoorBlock",
+					"condition": "?mod.block.${%v}.blockclass #contains ModTrapdoorBlock",
 					"actions": [
 						{
 							"action": "setdictkey",
-							"key": "mod.block.${%v}.BlockClass",
+							"key": "mod.block.${%v}.blockclass",
 							"value": "TrapdoorBlock"
 						}
 					]

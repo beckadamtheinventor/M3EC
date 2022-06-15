@@ -66,6 +66,7 @@ def readDictString(data, d=None):
 		if len(line) and not line.startswith("#"):
 			if ":" in line:
 				name, value = line.split(":",maxsplit=1)
+				name = name.lower()
 				v = value.lstrip(" \t")
 				if line.startswith("+.") or line.startswith(".+"):
 					if len(name)>2:
@@ -204,8 +205,8 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 	manifest_dict[f"mod.{content_type}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
 	manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
 	manifest_dict[f"mod.files"][f"{content_type}.{cid}"] = fname
-	if content_type == "item" and "mod.iconItem" not in manifest_dict.keys():
-		manifest_dict["mod.iconItem"] = cid
+	if content_type == "item" and "mod.iconitem" not in manifest_dict.keys():
+		manifest_dict["mod.iconitem"] = cid
 	if content_type == "recipe":
 		manifest_dict[f"mod.{content_type}.{cid}.texture"] = d["result"]
 	else:
@@ -243,8 +244,8 @@ def texture_pathify(d, tex, ct, cid):
 	return tex
 
 def checkDictKeyTrue(d, key):
-	if key in d.keys():
-		if type(d[key]) is str:
+	if key.lower() in d.keys():
+		if type(d[key.lower()]) is str:
 			if d[key].lower() in ["true", "yes", "1"]:
 				return True
 		else:
@@ -301,7 +302,6 @@ def readf_file(path, d):
 		return None
 
 def readf(data, d):
-	d = {k.lower():d[k] for k in d.keys()}
 	NUM_ITERATOR_NUMBERS = 10
 
 	if type(data) is not str:
@@ -383,17 +383,17 @@ def readf(data, d):
 				n = data.find("\n", i+len(istr))
 				if data[i+len(istr)] == '!':
 					inverted = True
-					key = data[i+len(istr)+1:n].lower()
+					key = data[i+len(istr)+1:n]
 				else:
 					inverted = False
-					key = data[i+len(istr):n].lower()
+					key = data[i+len(istr):n]
 				if " " in key:
 					key, tail = key.split(" ", maxsplit=1)
-					tail = tail.split(" ")
+					tail = tail.lower().split(" ")
 				else:
 					tail = []
 				condtrue = False
-				key = readf(key, d).lower()
+				key = readf(key.lower(), d).lower()
 				# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
 				if "#contains" in tail:
 					if len(tail):

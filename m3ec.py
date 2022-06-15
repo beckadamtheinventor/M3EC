@@ -46,7 +46,7 @@ def build(project_path, modenv):
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 
 	if not os.path.exists(project_path):
-		print(f"Manifest file \"{project_path}\" not found. Aborting.")
+		print(f"\"{project_path}\" not found. Aborting.")
 		return False
 
 	manifest_file = os.path.join(project_path, "manifest.m3ec")
@@ -163,8 +163,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 							if content_type == "block":
 								if "blockstatetype" not in d.keys():
 									d["blockstatetype"] = "Single"
-								if "BlockClass" not in d.keys():
-									d["BlockClass"] = "Block"
+								if "blockclass" not in d.keys():
+									d["blockclass"] = "Block"
 							# print(f"adding {content_type} {cid}", d)
 							add_content(cid, content_type, d, manifest_dict, fname)
 						if content_type == "block":
@@ -176,7 +176,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 								d["droptype"] = "Slab"
 								d["blockstatetype"] = "Slab"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["BlockClass"] = "SlabBlock"
+								d["blockclass"] = "SlabBlock"
 								add_content(cid+"_slab", content_type, d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
 									add_content(cid+"_slab", "recipe", {
@@ -196,9 +196,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 								d["droptype"] = "Self"
 								d["blockstatetype"] = "Stair"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["BlockClass"] = "ModStairBlock"
-								d["BlockMaterialBlock"] = cid
-								d["BlockClass.isStair"] = "true"
+								d["blockclass"] = "ModStairBlock"
+								d["blockmaterialblock"] = cid
+								d["blockclass.isstair"] = "true"
 								add_content(cid+"_stairs", content_type, d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
 									add_content(cid+"_stairs", "recipe", {
@@ -223,7 +223,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 								d["droptype"] = "Self"
 								d["blockstatetype"] = "Trapdoor"
 								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["BlockClass"] = "ModTrapdoorBlock"
+								d["blockclass"] = "ModTrapdoorBlock"
 								add_content(cid+"_trapdoor", content_type, d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
 									add_content(cid+"_trapdoor", "recipe", {
