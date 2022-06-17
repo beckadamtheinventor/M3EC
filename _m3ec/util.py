@@ -52,24 +52,28 @@ def readDictFile(fname, d=None):
 	try:
 		# print("Reading Dictionary File: ", fname)
 		with open(fname) as f:
-			return readDictString(f.read(), d)
+			return readDictString(f.read(), d, fname)
 	except FileNotFoundError:
 		return None
 
-def readDictString(data, d=None):
+def readDictString(data, d=None, f=None):
 	if d is None:
 		d = {}
 	ns = ""
 	lineno = 1
-	d["#comments"] = {}
+	if f is not None:
+		if "#data" not in d.keys():
+			d["#data"] = {}
+		d["#data"][f] = data
+		# print(f, data)
 	for line in data.splitlines():
 		if len(line) and not line.startswith("#"):
 			if ":" in line:
-				name, value = line.split(":",maxsplit=1)
+				name, value = line.split(":", maxsplit=1)
 				name = name.lower()
 				v = value.lstrip(" \t")
 				if line.startswith("+.") or line.startswith(".+"):
-					if len(name)>2:
+					if len(name) > 2:
 						k = f"{ns}.{name[2:]}"
 						if k not in d.keys():
 							d[f"{k}.list.0"] = v
@@ -103,86 +107,88 @@ def readDictString(data, d=None):
 				else:
 					ns = name
 					d[name] = v
-		else:
-			d["#comments"][lineno] = line
 		lineno += 1
 	return d
 
 
-def getDictVal(d, k, fname):
+def getDictVal(d, k, fname=None):
 	try:
 		return d[k]
 	except KeyError:
-		print(f"Missing \"{k}\" in file \"{fname}\"!")
+		if fname is not None:
+			print(f"Missing key \"{k}\" in file \"{fname}\"!")
+		else:
+			print(f"Missing key \"{k}\"")
 
 def writeDictFile(fname, d):
+	# print(fname)
 	try:
+		data = getDictString(d, fname)
+		# print(data)
 		# print("Writing Dictionary File: ", fname)
 		with open(fname, "w") as f:
-			f.write(getDictString(d))
+			f.write(data)
 	except IOError:
 		return False
 	return True
 
-def getDictString(d):
+def getDictString(d, f=None):
 	o = []
-	if "#comments" in d.keys():
-		comments = d["#comments"]
-	else:
-		comments = {}
-	if "__Generated" not in d.keys():
-		o.append("__Generated:")
-
-	d2 = {}
-	for key in d.keys():
-		if "^list." not in key and "^keys" not in key:
-			if "." in key:
-				keys = key.split(".", maxsplit=1)
-				for i in range(len(keys)-1):
-					keys[i] = keys[i]+"."
-				a = d2
-				for k in keys[:-1]:
-					if k not in a.keys():
-						a[k] = {}
-					a = a[k]
-				a[keys[-1]] = d[key]
+	if "#data" in d.keys() and f in d["#data"].keys():
+		# print(f"Updating existing dict file \"{f}\"")
+		oldd = readDictString(d["#data"][f])
+		ns = ""
+		for line in d["#data"][f].split("\n"):
+			if len(line) and not line.startswith("#"):
+				if ":" in line:
+					k, value = line.split(":", maxsplit=1)
+					k = k.lower()
+					value = value.lstrip(" \t")
+					# print(k, value)
+					if line.startswith("+.") or line.startswith(".+"):
+						if ns in d.keys() and ns+'.'+k[2:] in d.keys():
+							o.append(f"{k}: {d[ns+'.'+k[2:]].pop(0)}")
+					elif line.startswith("+"):
+						if k[1:] in d.keys():
+							o.append(f"{k}: {d[k[1:]].pop(0)}")
+					elif line.startswith("."):
+						if ns in d.keys() and ns+'.'+k[1:] in d.keys():
+							o.append(f"{k}: {d[ns+'.'+k[1:]]}")
+					elif line.startswith("@include "):
+						pass
+					else:
+						if k in d.keys():
+							ns = k
+							o.append(f"{k}: {d[k]}")
 			else:
-				d2[key] = d[key]
+				o.append(line)
+	else:
+		oldd = {}
 
-	line = 1
-	for key in sorted(d2.keys()):
-		for val in _getDictStrings(d2, key):
-			if line in comments.keys():
-				o.append(comments[line])
-				del comments[line]
-			elif key != "#comments":
-				# print(val)
-				o.append(val)
-			line += 1
+	for key in d.keys():
+		if not key.startswith("#") and key not in oldd.keys():
+			o.append("\n".join([s for s in _getDictString(d, key)]))
+
 	return "\n".join(o)
 
-def _getDictStrings(d, key, nest=None):
-	if type(key) is str:
-		k = key.rstrip(".")
-	else:
-		k = key
+def _getDictString(d, key, nest=None):
 	if type(d[key]) is list:
 		for item in d[key]:
-			yield f"+{k}: {item}"
+			yield f"+{key}: {item}"
 	elif type(d[key]) is dict:
-		if not (key.endswith(".") and k in d.keys()):
+		if not (key.endswith(".") and key in d.keys()):
 			if nest is None:
-				yield f"{k}:"
+				yield f"{key}:"
 			else:
-				yield f"{nest}.{k}:"
+				yield f"{nest}.{key}:"
 		for s in sorted(d[key].keys()):
-			for val in _getDictStrings(d[key], s, nest=k):
+			for val in _getDictString(d[key], s, nest=key):
 				if nest is None:
 					yield "."+val
 				else:
 					yield val
 	else:
-		yield f"{k}: {d[key]}"
+		yield f"{key}: {d[key]}"
 
 def add_content(cid, content_type, d, manifest_dict, fname=None):
 	# print(f"registering {content_type} {cid}.")

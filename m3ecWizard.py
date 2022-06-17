@@ -916,14 +916,12 @@ def LoadProject(fname):
 		manifest_dict["mod.paths"] = ["armor", "blocks", "items", "ores", "recipes", "tools"]
 
 	manifest_dict[f"mod.files"] = {}
-	manifest_dict["#comments"] = {}
 	for path in manifest_dict["mod.paths"]:
 		d = os.path.join(project_path, path)
 		if os.path.exists(d):
 			for fname in walk(os.path.normpath(d)):
 				if fname.endswith(".txt") or fname.endswith(".m3ec"):
 					d = readDictFile(fname)
-					manifest_dict["#comments"][fname] = d["#comments"]
 					if "@" in d.keys():
 						content_type = d["@"]
 						if content_type == "itemfactory":
@@ -946,12 +944,12 @@ def LoadProject(fname):
 	if not os.path.exists(d):
 		os.mkdir(d)
 
-	if "mod.iconItem" in manifest_dict.keys() and not VerifyMCName(manifest_dict["mod.iconItem"]):
-		item = manifest_dict["mod.iconItem"]
+	if "mod.iconitem" in manifest_dict.keys() and not VerifyMCName(manifest_dict["mod.iconitem"]):
+		item = manifest_dict["mod.iconitem"]
 		if VerifyMCName(os.path.basename(item)):
-			manifest_dict["mod.iconItem"] = os.path.basename(item)
+			manifest_dict["mod.iconitem"] = os.path.basename(item)
 		else:
-			manifest_dict["mod.iconItem"] = None
+			manifest_dict["mod.iconitem"] = None
 
 	return manifest_dict
 
@@ -971,7 +969,7 @@ def SaveProject(fname, manifest_dict):
 		d = {}
 	for k in [
 			"mod.package", "mod.prefix", "mod.author", "mod.class", "mod.title", "mod.credits", "mod.description",
-			"mod.license", "mod.textures", "mod.paths", "mod.homepage", "mod.sources", "mod", "mod.iconItem",
+			"mod.license", "mod.textures", "mod.paths", "mod.homepage", "mod.sources", "mod", "mod.iconitem",
 			]:
 		if k in manifest_dict.keys():
 			d[k] = manifest_dict[k]
@@ -1114,11 +1112,11 @@ def ModEditor(fname):
 
 def _ModEditor(manifest_dict, fname):
 	# global WIN_WIDTH, EDITOR_BUTTON_SIZE
-	if "mod.iconItem" not in manifest_dict.keys():
-		manifest_dict["mod.iconItem"] = None
+	if "mod.iconitem" not in manifest_dict.keys():
+		manifest_dict["mod.iconitem"] = None
 	layout = [
 		[sg.Sizer(WIN_WIDTH,0)],
-		[sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), d=manifest_dict, k=f"mod.item.{manifest_dict['mod.iconItem']}.texture"),
+		[sgScaledImage(os.path.join(manifest_dict["project_path"], manifest_dict["mod.textures"]), d=manifest_dict, k=f"mod.item.{manifest_dict['mod.iconitem']}.texture"),
 			sg.Button("Set Mod Icon", key="SetIcon", size=EDITOR_BUTTON_SIZE),
 			sg.Button(manifest_dict["mod.title"], key="SetTitle", size=EDITOR_BUTTON_SIZE),
 			sg.Button(manifest_dict["mod.mcpath"], key="SetName", size=EDITOR_BUTTON_SIZE),
@@ -1162,8 +1160,8 @@ def _ModEditor(manifest_dict, fname):
 			item = ContentSelectWindow(manifest_dict, "item", vanillabutton=False)
 			if item is None:
 				continue
-			manifest_dict["mod.iconItem"] = item.split(":", maxsplit=1)[1]
-			# print(manifest_dict["mod.iconItem"])
+			manifest_dict["mod.iconitem"] = item.split(":", maxsplit=1)[1]
+			# print(manifest_dict["mod.iconitem"])
 			window.close()
 			return True
 		elif event in ('SetTitle',):
