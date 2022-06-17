@@ -1,6 +1,6 @@
 
-
 import os, sys, json, tempfile, hashlib, shutil, threading, subprocess, m3ec
+
 try:
 	from PIL import Image
 except ImportError:
@@ -54,6 +54,11 @@ if not os.path.exists(ICON_FILE):
 SOUND_TYPES = load_resource(WIZARD_DATA_ROOT, "sound_types.json")
 MATERIAL_TYPES = load_resource(WIZARD_DATA_ROOT, "material_types.json")
 
+TOOL_TYPES_LIST = ["None", "Axes", "Hoes", "Pickaxes", "Shovels"]
+TOOL_LEVELS_LIST = ["Wood", "Stone", "Iron", "Diamond", "Netherite"]
+TEXTURE_LAYOUTS_LIST = ["Single", "Ground", "Pillar", "Cross", "3 Axis Pillar"]
+DROP_TYPES_LIST = ["Self", "Item", "ItemRange", "Fortunable", "None"]
+
 def ContentSelectWindow(manifest_dict, content_type, skip=0, count=16, vanillabutton=True):
 	while True:
 		e = _ContentSelectWindow(manifest_dict, content_type, skip, count, vanillabutton)
@@ -66,6 +71,9 @@ def ContentSelectWindow(manifest_dict, content_type, skip=0, count=16, vanillabu
 			elif e == "Next":
 				if content_type == "vanilla":
 					if skip+count < len(manifest_dict["mc.names"]):
+						skip += count
+				elif type(content_type) is list:
+					if skip+count < sum([len(manifest_dict[f"mod.registry.{ct}.names"]) for ct in content_type]):
 						skip += count
 				else:
 					if skip+count < len(manifest_dict[f"mod.registry.{content_type}.names"]):
@@ -505,71 +513,76 @@ def CreateBlock(mfd, contentid=None):
 	layout = [
 		[sg.Text("Block Name"), sg.Input(key="title")],
 		[sg.Sizer(WIN_WIDTH, 5)],
-		[sg.Text("Block Hardness"), sg.Input(key="hardness")],
-		[sg.Text("Block Resistance"), sg.Input(key="resistance")],
+		[
+			sg.Text("Block Hardness"),
+			sg.Input(key="hardness"),
+			sg.Text("Block Resistance"),
+			sg.Input(key="resistance"),
+		],
 		[sg.Text("(Note: you can input existing block names to copy)")],
-		[sg.Sizer(WIN_WIDTH, 5)],
-		[sg.Text("Tool type required to mine"),
-			sg.Radio("None", "tooltype", k="tooltypenone", size=EDITOR_BUTTON_SIZE_THIN, default=True),
-			sg.Radio("Axe", "tooltype", k="tooltypeaxe", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Hoe", "tooltype", k="tooltypehoe", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Pickaxe", "tooltype", k="tooltypepickaxe", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Shovel", "tooltype", k="tooltypeshovel", size=EDITOR_BUTTON_SIZE_THIN),
+		[
+			sg.Text("Tool type required to mine"),
+			sg.Combo(TOOL_TYPES_LIST, TOOL_TYPES_LIST[0], k="tooltype", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Text("Tool level"),
+			sg.Combo(TOOL_LEVELS_LIST, TOOL_LEVELS_LIST[0], k="toollevel", size=EDITOR_BUTTON_SIZE_THIN),
 		],
-		[sg.Text("Tool level required to mine"),
-			sg.Radio("Wood", "toollevel", k="toollevelwood", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Stone", "toollevel", k="toollevelstone", size=EDITOR_BUTTON_SIZE_THIN, default=True),
-			sg.Radio("Iron", "toollevel", k="toolleveliron", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Diamond", "toollevel", k="toolleveldiamond", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Netherite", "toollevel", k="toollevelnetherite", size=EDITOR_BUTTON_SIZE_THIN),
+		[
+			sg.Text("Block Drop Type"),
+			sg.Combo(DROP_TYPES_LIST, DROP_TYPES_LIST[0], k="droptype", size=EDITOR_BUTTON_SIZE_THIN),
 		],
-		[sg.Text("(Ignored if tool type is set to None)")],
-		[sg.Sizer(WIN_WIDTH, 5)],
-		[sg.Text("Block Drop Type")],
-		[sg.Radio("None", "droptype", k="dropnone", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Drops Self", "droptype", k="dropself", size=EDITOR_BUTTON_SIZE_THIN, default=True),
-			sg.Radio("Fixed Drops", "droptype", k="dropfixed", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Ranged Drops", "droptype", k="droprange", size=EDITOR_BUTTON_SIZE_THIN),
-			sg.Radio("Fortunable", "droptype", k="dropfortunable", size=EDITOR_BUTTON_SIZE_THIN),
+		[
+			sg.Button("Item to Drop", k="selectdropitem", size=EDITOR_BUTTON_SIZE_WIDE),
+			sg.Text(k="dropitem"),
 		],
-		[sg.Button("Item to Drop", k="selectdropitem", size=EDITOR_BUTTON_SIZE_WIDE), sg.Text(k="dropitem"),
-			sg.Text("Drop Count/Chances:"), sg.Input(k="dropcount")],
-		[sg.Text("(Ranged Drops) Minimum Drop Count:"), sg.Input(k="dropcountmin"),
-			sg.Text("Maximum Drop Count:"), sg.Input(k="dropcountmax")],
-		[sg.Sizer(WIN_WIDTH, 5)],
-		[sg.Text("Block Texture Layout")],
-		[sg.Radio("Single (Like dirt blocks)", "style", k="single", default=True, size=EDITOR_BUTTON_SIZE)],
-		[sg.Radio("Pillar (Like logs)", "style", k="pillar", size=EDITOR_BUTTON_SIZE)],
-		[sg.Radio("Ground (Like grass blocks)", "style", k="ground", size=EDITOR_BUTTON_SIZE)],
-		[sg.Radio("Rotatable (Like furnaces)", "style", k="rotatable", size=EDITOR_BUTTON_SIZE)],
-		[sg.Text("Auto-generate")],
-		[sg.Checkbox("All", k="genall", size=EDITOR_BUTTON_SIZE_THIN),
+		[
+			sg.Text("Drop Count", k="dropcountlabel"),
+			sg.Input(k="dropcount", size=EDITOR_BUTTON_SIZE_THIN),
+		],
+		[
+			sg.Text("Drop Count Minimum ", k="dropcountminlabel"),
+			sg.Input(k="dropcountmin", size=EDITOR_BUTTON_SIZE_THIN),
+			sg.Text("Maximum", k="dropcountmaxlabel"),
+			sg.Input(k="dropcountmax", size=EDITOR_BUTTON_SIZE_THIN),
+		],
+		[
+			sg.Text("Block Texture Layout"),
+			sg.Combo(TEXTURE_LAYOUTS_LIST, TEXTURE_LAYOUTS_LIST[0], enable_events=True, k="texturetype"),
+		],
+		[
+			sg.Text("Main/Top Texture"),
+			sg.Input(),
+			sg.FileBrowse(key="imgfilemain", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
+		],
+		[
+			sg.Text("Side Texture"), sg.Input(),
+			sg.FileBrowse(key="imgfileside", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
+		],
+		[
+			sg.Text("Bottom Texture"), sg.Input(),
+			sg.FileBrowse(key="imgfilebottom", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
+		],
+		[
+			sg.Text("Front Texture"), sg.Input(),
+			sg.FileBrowse(key="imgfilefront", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
+		],
+		[sg.Text("Sounds"), sg.Button("select", k="selectsounds", size=EDITOR_BUTTON_SIZE_WIDE)],
+		[sg.Text("Material"), sg.Button("select", k="selectmaterial", size=EDITOR_BUTTON_SIZE_WIDE)],
+[
+			sg.Text("Auto-generate"),
+			sg.Checkbox("All", k="genall", size=EDITOR_BUTTON_SIZE_THIN),
+		],
+		[
 			sg.Checkbox("Button", k="genbutton", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Checkbox("Fence", k="genfence", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Checkbox("Fence Gate", k="genfencegate", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Checkbox("Pressure Plate", k="genplate", size=EDITOR_BUTTON_SIZE_THIN),
+		],
+		[
 			sg.Checkbox("Slab", k="genslab", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Checkbox("Stairs", k="genstairs", size=EDITOR_BUTTON_SIZE_THIN),
 			sg.Checkbox("Wall", k="genwall", size=EDITOR_BUTTON_SIZE_THIN)
 		],
-		[sg.Sizer(WIN_WIDTH, 5)],
-		[sg.Text("Main/Top Texture"), sg.Input(),
-			sg.FileBrowse(key="imgfilemain", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
-		],
-		[sg.Text("Side Texture"), sg.Input(),
-			sg.FileBrowse(key="imgfileside", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
-		],
-		[sg.Text("Bottom Texture"), sg.Input(),
-			sg.FileBrowse(key="imgfilebottom", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
-		],
-		[sg.Text("Front Texture"), sg.Input(),
-			sg.FileBrowse(key="imgfilefront", file_types=(("PNG Files", "*.png"), ("All Files", "*.* *")), initial_folder=os.path.join(mfd["project_path"], mfd["mod.textures"]))
-		],
-		[sg.Sizer(WIN_WIDTH, 5)],
-		[sg.Text("Sounds"), sg.Button("select", k="selectsounds", size=EDITOR_BUTTON_SIZE_WIDE)],
-		[sg.Text("Material"), sg.Button("select", k="selectmaterial", size=EDITOR_BUTTON_SIZE_WIDE)],
-		[sg.Sizer(WIN_WIDTH, 5)],
-		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
+		[sg.Ok(size=EDITOR_BUTTON_SIZE_WIDE, bind_return_key=True), sg.Cancel(size=EDITOR_BUTTON_SIZE_WIDE)],
 	]
 	window = sg.Window("Create New Block", layout, icon=ICON_FILE)
 	dropitem = material = sound = None
@@ -616,7 +629,7 @@ def CreateBlock(mfd, contentid=None):
 				continue
 			d["sounds"] = sound.upper().replace(" ","_")
 			d["material"] = material.upper().replace(" ","_")
-			if values["single"]:
+			if values["texturetype"] == "Single":
 				imgmain = values["imgfilemain"]
 				if not len(imgmain):
 					ErrorWindow("Main texture must be defined.", parent=window)
@@ -625,7 +638,18 @@ def CreateBlock(mfd, contentid=None):
 				if imgmain is None:
 					continue
 				d["texture"] = imgmain
-			elif values["pillar"]:
+			elif values["texturetype"] == "Cross":
+				d["block"] = "CrossBlock"
+				imgmain = values["imgfilemain"]
+				if not len(imgmain):
+					ErrorWindow("Main texture must be defined.", parent=window)
+					continue
+				imgmain = GetImageAsPNG(imgmain, mfd)
+				if imgmain is None:
+					continue
+				d["texture"] = imgmain
+			elif values["texturetype"] == "Pillar":
+				d["block"] = "PillarBlock"
 				imgtop = values["imgfilemain"]
 				if not len(imgtop):
 					ErrorWindow("Top texture must be defined for pillar blocks.", parent=window)
@@ -642,7 +666,7 @@ def CreateBlock(mfd, contentid=None):
 					continue
 				d["texture_top"] = imgmain
 				d["texture_side"] = imgside
-			elif values["ground"]:
+			elif values["texturetype"] == "Ground":
 				imgtop = values["imgfilemain"]
 				if not len(imgtop):
 					ErrorWindow("Top texture must be defined for ground-like blocks.", parent=window)
@@ -667,20 +691,14 @@ def CreateBlock(mfd, contentid=None):
 				d["texture_bottom"] = imgbottom
 				d["texture_side"] = imgside
 				d["texture_top"] = imgtop
-			elif values["rotatable"]:
+			elif values["texturetype"] == "3 Axis Pillar":
+				d["BlockStateType"] = "3Axis"
 				imgtop = values["imgfilemain"]
 				if not len(imgtop):
 					ErrorWindow("Top texture must be defined for ground-like blocks.", parent=window)
 					continue
 				imgtop = GetImageAsPNG(imgtop, mfd)
 				if imgtop is None:
-					continue
-				imgside = values["imgfileside"]
-				if not len(imgside):
-					ErrorWindow("Side texture must be defined for rotatable blocks.", parent=window)
-					continue
-				imgside = GetImageAsPNG(imgside, mfd)
-				if imgside is None:
 					continue
 				imgbottom = values["imgfilebottom"]
 				if not len(imgbottom):
@@ -689,17 +707,49 @@ def CreateBlock(mfd, contentid=None):
 				imgbottom = GetImageAsPNG(imgbottom, mfd)
 				if imgbottom is None:
 					continue
-				imgfront = values["imgfilefront"]
-				if not len(imgfront):
-					ErrorWindow("Front texture must be defined for ground-like blocks.", parent=window)
+				imgside = values["imgfileside"]
+				if not len(imgside):
+					ErrorWindow("Side texture must be defined for ground-like blocks.", parent=window)
 					continue
-				imgfront = GetImageAsPNG(imgfront, mfd)
-				if imgfront is None:
+				imgside = GetImageAsPNG(imgside, mfd)
+				if imgside is None:
 					continue
 				d["texture_bottom"] = imgbottom
-				d["texture_front"] = imgfront
 				d["texture_side"] = imgside
 				d["texture_top"] = imgtop
+			# elif values["rotatable"]:
+				# imgtop = values["imgfilemain"]
+				# if not len(imgtop):
+					# ErrorWindow("Top texture must be defined for ground-like blocks.", parent=window)
+					# continue
+				# imgtop = GetImageAsPNG(imgtop, mfd)
+				# if imgtop is None:
+					# continue
+				# imgside = values["imgfileside"]
+				# if not len(imgside):
+					# ErrorWindow("Side texture must be defined for rotatable blocks.", parent=window)
+					# continue
+				# imgside = GetImageAsPNG(imgside, mfd)
+				# if imgside is None:
+					# continue
+				# imgbottom = values["imgfilebottom"]
+				# if not len(imgbottom):
+					# ErrorWindow("Bottom texture must be defined for ground-like blocks.", parent=window)
+					# continue
+				# imgbottom = GetImageAsPNG(imgbottom, mfd)
+				# if imgbottom is None:
+					# continue
+				# imgfront = values["imgfilefront"]
+				# if not len(imgfront):
+					# ErrorWindow("Front texture must be defined for ground-like blocks.", parent=window)
+					# continue
+				# imgfront = GetImageAsPNG(imgfront, mfd)
+				# if imgfront is None:
+					# continue
+				# d["texture_bottom"] = imgbottom
+				# d["texture_front"] = imgfront
+				# d["texture_side"] = imgside
+				# d["texture_top"] = imgtop
 			else:
 				continue
 			hardness = values["hardness"]
@@ -728,28 +778,13 @@ def CreateBlock(mfd, contentid=None):
 					resistance = resistance+".0"
 			d["hardness"] = mfd[f"mod.block.{name}.hardness"] = hardness
 			d["resistance"] = mfd[f"mod.block.{name}.resistance"] = resistance
-			if values["tooltypenone"]:
+			if values["tooltype"] == "None":
 				d["requiresTool"] = "no"
+				d["toolclass"] = "NONE"
 			else:
 				d["requiresTool"] = "yes"
-				if values["tooltypeaxe"]:
-					d["toolclass"] = "AXES"
-				elif values["tooltypehoe"]:
-					d["toolclass"] = "HOES"
-				elif values["tooltypepickaxe"]:
-					d["toolclass"] = "PICKAXES"
-				elif values["tooltypeshovel"]:
-					d["toolclass"] = "SHOVELS"
-			if values["toollevelwood"]:
-				d["toollevel"] = "WOOD"
-			elif values["toollevelstone"]:
-				d["toollevel"] = "STONE"
-			elif values["toolleveliron"]:
-				d["toollevel"] = "IRON"
-			elif values["toolleveldiamond"]:
-				d["toollevel"] = "DIAMOND"
-			elif values["toollevelnetherite"]:
-				d["toollevel"] = "NETHERITE"
+				d["toolclass"] = values["tooltype"].upper()
+				d["toollevel"] = values["toollevel"].upper()
 			mfd["mod.files"][f"block.{name}"] = fname
 			for tex in ["", "_top", "_side", "_bottom", "_front", "_back"]:
 				if f"texture{tex}" in d.keys():
@@ -758,31 +793,25 @@ def CreateBlock(mfd, contentid=None):
 					# print(f"Relative texture{tex} path:", d[f"texture{tex}"])
 			if not len(values["dropcount"]):
 				values["dropcount"] = "1"
-			if values["dropself"]:
+			if values["droptype"] =="Self":
 				d["droptype"] = "Self"
-			elif values["dropfixed"]:
+			elif values["droptype"] == "Item":
 				if not len(dropitem):
-					ErrorWindow("Item name must not be blank for fixed drop type.")
+					ErrorWindow("Item name must not be blank for Item drop type.")
 					continue
 				d["droptype"] = "Item"
 				d["drops"] = dropitem
 				d["dropcount"] = values["dropcount"]
-			elif values["dropfortunable"]:
+			elif values["droptype"] == "Fortunable":
 				if not len(dropitem):
-					ErrorWindow("Item name must not be blank for fortuneable drop type.")
+					ErrorWindow("Item name must not be blank for Fortunable drop type.")
 					continue
 				d["droptype"] = "Fortunable"
 				d["drops"] = dropitem
 				d["dropchances"] = values["dropcount"]
-			elif values["droprange"]:
-				if not len(dropitem):
-					ErrorWindow("Item name must not be blank for ranged drop type.")
-					continue
-				if not len(values["dropmin"]):
-					ErrorWindow("Minimum Drop Count must not be blank for ranged drop type.")
-					continue
-				if not len(values["dropmax"]):
-					ErrorWindow("Maximum Drop Count must not be blank for ranged drop type.")
+			elif values["droptype"] == "ItemRange":
+				if not len(dropitem) or not len(values["dropmin"]) or not len(values["dropmax"]):
+					ErrorWindow("Item name must not be blank for ItemRange drop type.")
 					continue
 				d["droptype"] = "ItemRange"
 				d["drops"] = dropitem
@@ -790,6 +819,41 @@ def CreateBlock(mfd, contentid=None):
 				d["dropmax"] = values["dropmax"]
 			else:
 				d["droptype"] = "None"
+
+			if values["genbutton"] or values["genall"]:
+				d["autogenerate.button"] = "yes"
+				d["autogenerate.button.recipe"] = "yes"
+				d["autogenerate.button.stonecuttingrecipe"] = "yes"
+
+			if values["genfence"] or values["genall"]:
+				d["autogenerate.fence"] = "yes"
+				d["autogenerate.fence.recipe"] = "yes"
+				d["autogenerate.fence.stonecuttingrecipe"] = "yes"
+
+			if values["genfencegate"] or values["genall"]:
+				d["autogenerate.fencegate"] = "yes"
+				d["autogenerate.fencegate.recipe"] = "yes"
+				d["autogenerate.fencegate.stonecuttingrecipe"] = "yes"
+
+			if values["genplate"] or values["genall"]:
+				d["autogenerate.pressureplate"] = "yes"
+				d["autogenerate.pressureplate.recipe"] = "yes"
+				d["autogenerate.pressureplate.stonecuttingrecipe"] = "yes"
+
+			if values["genstairs"] or values["genall"]:
+				d["autogenerate.stairs"] = "yes"
+				d["autogenerate.stairs.recipe"] = "yes"
+				d["autogenerate.stairs.stonecuttingrecipe"] = "yes"
+
+			if values["genslab"] or values["genall"]:
+				d["autogenerate.slab"] = "yes"
+				d["autogenerate.slab.recipe"] = "yes"
+				d["autogenerate.slab.stonecuttingrecipe"] = "yes"
+
+			if values["genwall"] or values["genall"]:
+				d["autogenerate.wall"] = "yes"
+				d["autogenerate.wall.recipe"] = "yes"
+				d["autogenerate.wall.stonecuttingrecipe"] = "yes"
 
 			window.close()
 			writeDictFile(fname, d)

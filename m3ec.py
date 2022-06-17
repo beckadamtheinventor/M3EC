@@ -170,6 +170,26 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 							add_content(cid, content_type, d, manifest_dict, fname)
 						if content_type == "block":
 							midcid = manifest_dict["mod.mcpath"]+":"+cid
+							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall"):
+								d = readDictFile(fname)
+								d["title"] = d["title"]+" Wall"
+								d["drops"] = d["contentid"] = cid+"_wall"
+								d["droptype"] = "Self"
+								d["blockstatetype"] = "Wall"
+								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
+								d["blockclass"] = "WallBlock"
+								add_content(cid+"_wall", content_type, d, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.recipe"):
+									add_content(cid+"_wall", "recipe", {
+										"@": "recipe", "recipe": "ShapedRecipe",
+										"pattern": ['"###"','"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+										"result": midcid+"_wall", "count": "6",
+									}, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.stonecuttingrecipe"):
+									add_content(cid+"_wall_stonecutter", "recipe", {
+										"@": "recipe", "recipe": "StoneCuttingRecipe",
+										"ingredient": midcid, "result": midcid+"_wall", "count": "1",
+									}, manifest_dict)
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
 								d = readDictFile(fname)
 								d["title"] = d["title"]+" Slab"
@@ -514,6 +534,11 @@ def build_resources(project_path, builddir, manifest_dict):
 					create_file(os.path.join(block_models_assets_dir, cid+"_double.json"), readf_file(os.path.join(commons_path, "block_models", "SimpleBlock.m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", statename+".m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_top.m3ecjson"), manifest_dict))
+				elif statename == "Wall":
+					create_file(os.path.join(block_models_assets_dir, cid+"_inventory.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_inventory.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_post.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_post.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_side_tall.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side_tall.m3ecjson"), manifest_dict))
 				elif statename == "Stair":
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", "Stair.m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+"_inner.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_inner.m3ecjson"), manifest_dict))
