@@ -14,28 +14,12 @@
 			"action": "makedir",
 			"value": [
 				"src/main/java/${mod.packagedir}/blocks",
-				"src/main/java/${mod.packagedir}/recipetype",
-				"src/main/resources/assets/minecraft",
-				"src/main/resources/assets/minecraft/textures",
-				"src/main/resources/assets/minecraft/textures/models",
-				"src/main/resources/assets/minecraft/textures/models/armor"
+				"src/main/java/${mod.packagedir}/recipetype"
 			]
 		},
 		{
-			"iterate": "mod.registry.armormaterial.names",
 			"action": "execactions",
-			"actions": [
-				{
-					"action": "copy",
-					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
-					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
-				},
-				{
-					"action": "copy",
-					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
-					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
-				}
-			]
+			"file": "${source_path}/common/actions/armor_layers.json"
 		}
 	],
 	"postActions": [
@@ -64,12 +48,12 @@
 		},
 		{
 			"iterate": "mod.registry.toolmaterial.names",
-			"source": "registry/ToolMaterial.m3ecjava",
+			"source": "../fabric_common/ToolMaterial.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
 		},
 		{
 			"iterate": "mod.registry.armormaterial.names",
-			"source": "registry/ArmorMaterial.m3ecjava",
+			"source": "../fabric_common/ArmorMaterial.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
 		},
 		{

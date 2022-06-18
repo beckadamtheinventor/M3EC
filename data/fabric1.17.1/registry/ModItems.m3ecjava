@@ -1,14 +1,7 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
-/*
----iter mod.registry.armormaterial.names
-import ${mod.package}.registry.$%v;---end
-*/
----iter mod.registry.toolmaterial.names
-import ${mod.package}.registry.$%v;---end
----iter mod.registry.tool.names
-import ${mod.package}.registry.${mod.tool.$%v.class};---end
+
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ToolMaterial;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
@@ -23,6 +16,8 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+---iter moditems.imports
+	import $%v;---end
 
 public class ModItems {
 
@@ -51,6 +46,9 @@ ${mod.food.$%v.statusEffects}---fi.build()));---end
 ---iter mod.registry.tool.names
 	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
+---iter moditems.extra
+	$%v---end
+
     public static void RegisterItems() {
 ---iter mod.registry.item.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.item.$%v.uppercased});---end
@@ -68,6 +66,10 @@ ${mod.food.$%v.statusEffects}---fi.build()));---end
 ---iter mod.registry.tool.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
 
+---iter moditems.registeritems.extra
+		$%v---end
+
     }
+
 }
 

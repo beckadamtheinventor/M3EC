@@ -1,12 +1,11 @@
 
 package ${mod.package}.registry;
 
-import net.fabricmc.yarn.constants.MiningLevels;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 
-public class ${%v} implements ToolMaterial {
-	public static final ${%v} INSTANCE = new ${%v}();
+public class ${mod.toolmaterial.${%v}.class} implements ToolMaterial {
+	public static final ${mod.toolmaterial.${%v}.class} INSTANCE = new ${mod.toolmaterial.${%v}.class}();
 	@Override
 	public int getDurability() {
 		return ${mod.toolmaterial.${%v}.durability};

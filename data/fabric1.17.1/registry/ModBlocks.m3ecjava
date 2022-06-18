@@ -8,21 +8,29 @@ import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+---iter modblocks.imports
+	import $%v;---end
 
 public class ModBlocks {
 ---iter mod.registry.block.names
-	public static final Block ${mod.block.$%v.uppercased} = new Block(FabricBlockSettings
+	public static final Block ${mod.block.$%v^upper} = new Block(FabricBlockSettings
 		.of(Material.${mod.block.$%v.material})
-		.breakByTool(FabricToolTags.${mod.block.$%v.toolclass},${mod.block.$%v.toollevelint})
-		---if mod.block.$%v.requiresTool
+		.breakByTool(FabricToolTags.${mod.block.$%v.toolclass}, ${mod.block.$%v.toollevelint^int})
+---if mod.block.$%v.requiresTool
 		.requiresTool()---fi
-		.strength(${mod.block.$%v.hardness}f,${mod.block.$%v.resistance}f)
+		.strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
 		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
+
+---iter modblocks.extra
+	$%v---end
 
     public static void RegisterBlocks() {
 ---iter mod.registry.block.names
-		Registry.register(Registry.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v.uppercased});---end
-    }
+		Registry.register(Registry.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v^upper});---end
 
+---iter modblocks.registerblocks.extra
+		$%v---end
+
+    }
 }
 

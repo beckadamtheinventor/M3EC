@@ -46,17 +46,37 @@ def getDictVal(d, k, fname):
 	else:
 		print(f"Missing \"{k}\" in file \"{fname}\"!")
 
-def readDictFile(fname, d=None):
+def readDictFile(fname, d=None, md=None):
 	if d is None:
 		d = {}
 	try:
 		# print("Reading Dictionary File: ", fname)
 		with open(fname) as f:
-			return readDictString(f.read(), d, fname)
+			return readDictString(f.read(), d, fname, md)
 	except FileNotFoundError:
 		return None
 
-def readDictString(data, d=None, f=None):
+def readDictString(data, d=None, f=None, md=None):
+	if md is not None:
+		isthisapplicable = True
+		hasversionselector = False
+		for line in data.splitlines():
+			if len(line) and ":" in line and not line.startswith("#"):
+				key, value = line.split(":", maxsplit=1)
+				value = value.lstrip(" \t")
+				key = key.lower().strip(" \t")
+				if key == ("@gameversion", "@version"):
+					hasversionselector = True
+					if md["gameversion"] != value.lower():
+						isthisapplicable = False
+				elif key in ("@modloader", "@loader"):
+					hasversionselector = True
+					if md["modloader"] != value.lower():
+						isthisapplicable = False
+
+		if hasversionselector and not isthisapplicable:
+			return False
+
 	if d is None:
 		d = {}
 	ns = ""
@@ -70,7 +90,7 @@ def readDictString(data, d=None, f=None):
 		if len(line) and not line.startswith("#"):
 			if ":" in line:
 				name, value = line.split(":", maxsplit=1)
-				name = name.lower()
+				name = name.lower().strip(" \t")
 				v = value.lstrip(" \t")
 				if line.startswith("+.") or line.startswith(".+"):
 					if len(name) > 2:
@@ -192,41 +212,50 @@ def _getDictString(d, key, nest=None):
 
 def add_content(cid, content_type, d, manifest_dict, fname=None):
 	# print(f"registering {content_type} {cid}.")
-	if cid in manifest_dict[f"mod.registry.{content_type}.names"]:
+	if cid.lower() in manifest_dict[f"mod.registry.{content_type}.names"]:
 		original = cid
 		n = 2
-		while cid in manifest_dict[f"mod.registry.{content_type}.names"]:
+		while cid.lower() in manifest_dict[f"mod.registry.{content_type}.names"]:
 			cid = f"{original}_{n}"
 			n += 1
-			
-	manifest_dict[f"mod.registry.{content_type}.names"].append(cid)
-	manifest_dict[f"mod.{content_type}.{cid}.keys"] = list(d.keys())
+		
+	cidlow = cid.lower()
+	manifest_dict[f"mod.registry.{content_type}.names"].append(cidlow)
+	manifest_dict[f"mod.{content_type}.{cidlow}.keys"] = list(d.keys())
 	for key in d.keys():
 		# print(f"mod.{content_type}.{cid}.{key} = {d[key]}")
 		v = d[key]
 		if type(v) is str:
 			v = readf(v, manifest_dict)
-		manifest_dict[f"mod.{content_type}.{cid}.{key}"] = v
-	manifest_dict[f"mod.{content_type}.{cid}.uppercased"] = cid.upper()
-	manifest_dict[f"mod.{content_type}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.mcpath"] = cid.lower()
-	manifest_dict[f"mod.{content_type}.{cid}.class"] = "".join([word.capitalize() for word in cid.split("_")])
-	manifest_dict[f"mod.files"][f"{content_type}.{cid}"] = fname
+		manifest_dict[f"mod.{content_type}.{cidlow}.{key}"] = v
+	# print(cid)
+	manifest_dict[f"mod.{content_type}.{cidlow}.uppercased"] = cid.upper()
+	manifest_dict[f"mod.{content_type}.{cidlow}"] = manifest_dict[f"mod.{content_type}.{cidlow}.mcpath"] = cidlow
+	if "_" in cidlow:
+		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = "".join([word.capitalize() for word in cidlow.split("_")])
+	else:
+		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = cid
+
+	# if f"mod.{content_type}.{cidlow}.class" in manifest_dict.keys():
+		# print(manifest_dict[f"mod.{content_type}.{cidlow}.class"])
+
+	manifest_dict[f"mod.files"][f"{content_type}.{cidlow}"] = fname
 	if content_type == "item" and "mod.iconitem" not in manifest_dict.keys():
 		manifest_dict["mod.iconitem"] = cid
 	if content_type == "recipe":
-		manifest_dict[f"mod.{content_type}.{cid}.texture"] = d["result"]
+		manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = d["result"]
 	else:
-		if f"mod.{content_type}.{cid}.texture" not in manifest_dict.keys():
-			if f"mod.{content_type}.{cid}.texture_top" in manifest_dict.keys():
-				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_top"]
-			elif f"mod.{content_type}.{cid}.texture_side" in manifest_dict.keys():
-				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_side"]
-			elif f"mod.{content_type}.{cid}.texture_bottom" in manifest_dict.keys():
-				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_bottom"]
-			elif f"mod.{content_type}.{cid}.texture_front" in manifest_dict.keys():
-				manifest_dict[f"mod.{content_type}.{cid}.texture"] = manifest_dict[f"mod.{content_type}.{cid}.texture_front"]
+		if f"mod.{content_type}.{cidlow}.texture" not in manifest_dict.keys():
+			if f"mod.{content_type}.{cidlow}.texture_top" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = manifest_dict[f"mod.{content_type}.{cidlow}.texture_top"]
+			elif f"mod.{content_type}.{cidlow}.texture_side" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = manifest_dict[f"mod.{content_type}.{cidlow}.texture_side"]
+			elif f"mod.{content_type}.{cidlow}.texture_bottom" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = manifest_dict[f"mod.{content_type}.{cidlow}.texture_bottom"]
+			elif f"mod.{content_type}.{cidlow}.texture_front" in manifest_dict.keys():
+				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = manifest_dict[f"mod.{content_type}.{cidlow}.texture_front"]
 			else:
-				manifest_dict[f"mod.{content_type}.{cid}.texture"] = None
+				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = None
 
 	return True
 
@@ -427,15 +456,27 @@ def readf(data, d):
 			data2.append(data[j:])
 			data = "".join(data2)
 
+
 	# just use some arbitrary number of iterations until I figure out a better algorithm
 	for j in range(8):
+		# i = data.find("$@{")
+		# while i != -1:
+			# head, word = data[:i], data[i+3:]
+			# rb = word.find("}{")
+			# if rb == -1:
+				# print("Error: Mismatched closing bracket of \"$@{}{}\" section declarator in data passed to readf!")
+				# return None
+			# word, tail = word[:rb], word[rb+2:]
+			# bodyend = tail.find("}")
+			# body, tail = tail[:bodyend], tail[bodyend+1:]
+			
 		i = data.find("${")
 		while i != -1:
 			head, word = data[:i], data[i+2:]
 			rb = word.find("}")
 			if rb == -1:
 				# print(data)
-				print("Critical Error: Mismatched closing bracket of \"${}\" key accessor in data passed to readf!")
+				print("Error: Mismatched closing bracket of \"${}\" key accessor in data passed to readf!")
 				return None
 			word, tail = word[:rb], word[rb+1:]
 			w = "${"+word+"}"
@@ -446,12 +487,33 @@ def readf(data, d):
 					w = d[w]
 					if type(w) is str:
 						for fn in fns:
+							# if fn.startswith("("):
+								# if fn.endswith(")"):
+									# try:
+										# w = w(args)
+									# except:
+										# print(f"Attempted to call non-function key: \"{w}\"")
+								# else:
+									# print(f"Malformed function key call: \"{fn}\"")
 							if fn.lower() == "upper":
 								w = w.upper()
 							elif fn.lower() == "lower":
 								w = w.lower()
 							elif fn.lower() == "capital":
 								w = w.capitalize()
+							elif fn.lower() == "float":
+								if type(w) is str:
+									if not w.endswith("f"):
+										w = w+"f"
+								else:
+									w = str(float(w))+"f"
+							elif fn.lower() == "int":
+								if type(w) is str:
+									if w.endswith("f"):
+										w = w[:-1]
+									w = int(float(w))
+								else:
+									w = int(w)
 			elif word.lower() in d.keys():
 				w = d[word.lower()]
 			data = head + str(w) + tail

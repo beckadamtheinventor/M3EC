@@ -137,7 +137,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(os.path.normpath(os.path.join(project_path, path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec"):
-				d = readDictFile(fname)
+				d = readDictFile(fname, md=manifest_dict)
 				if "@" in d.keys():
 					content_type = d["@"]
 					if content_type == "class":
@@ -166,19 +166,19 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 									d["blockstatetype"] = "Single"
 								if "blockclass" not in d.keys():
 									d["blockclass"] = "Block"
-							# print(f"adding {content_type} {cid}", d)
+							# print(f"adding {content_type} {cid}")
 							add_content(cid, content_type, d, manifest_dict, fname)
+						copied_d = d.copy()
 						if content_type == "block":
 							midcid = manifest_dict["mod.mcpath"]+":"+cid
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall"):
-								d = readDictFile(fname)
-								d["title"] = d["title"]+" Wall"
-								d["drops"] = d["contentid"] = cid+"_wall"
-								d["droptype"] = "Self"
-								d["blockstatetype"] = "Wall"
-								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["blockclass"] = "WallBlock"
-								add_content(cid+"_wall", content_type, d, manifest_dict)
+								copied_d["title"] = d["title"]+" Wall"
+								copied_d["drops"] = copied_d["contentid"] = cid+"_wall"
+								copied_d["droptype"] = "Self"
+								copied_d["blockstatetype"] = "Wall"
+								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+								copied_d["blockclass"] = "WallBlock"
+								add_content(cid+"_wall", content_type, copied_d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.recipe"):
 									add_content(cid+"_wall", "recipe", {
 										"@": "recipe", "recipe": "ShapedRecipe",
@@ -191,14 +191,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 										"ingredient": midcid, "result": midcid+"_wall", "count": "1",
 									}, manifest_dict)
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
-								d = readDictFile(fname)
-								d["title"] = d["title"]+" Slab"
-								d["drops"] = d["contentid"] = cid+"_slab"
-								d["droptype"] = "Slab"
-								d["blockstatetype"] = "Slab"
-								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["blockclass"] = "SlabBlock"
-								add_content(cid+"_slab", content_type, d, manifest_dict)
+								copied_d["title"] = d["title"]+" Slab"
+								copied_d["drops"] = copied_d["contentid"] = cid+"_slab"
+								copied_d["droptype"] = "Slab"
+								copied_d["blockstatetype"] = "Slab"
+								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+								copied_d["blockclass"] = "SlabBlock"
+								add_content(cid+"_slab", content_type, copied_d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
 									add_content(cid+"_slab", "recipe", {
 										"@": "recipe", "recipe": "ShapedRecipe",
@@ -211,16 +210,15 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 										"ingredient": midcid, "result": midcid+"_slab", "count": "2",
 									}, manifest_dict)
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs"):
-								d = readDictFile(fname)
-								d["title"] = d["title"]+" Stairs"
-								d["drops"] = d["contentid"] = cid+"_stairs"
-								d["droptype"] = "Self"
-								d["blockstatetype"] = "Stair"
-								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["blockclass"] = "ModStairBlock"
-								d["blockmaterialblock"] = cid
-								d["blockclass.isstair"] = "true"
-								add_content(cid+"_stairs", content_type, d, manifest_dict)
+								copied_d["title"] = d["title"]+" Stairs"
+								copied_d["drops"] = copied_d["contentid"] = cid+"_stairs"
+								copied_d["droptype"] = "Self"
+								copied_d["blockstatetype"] = "Stair"
+								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+								copied_d["blockclass"] = "ModStairBlock"
+								copied_d["blockmaterialblock"] = cid
+								copied_d["blockclass.isstair"] = "true"
+								add_content(cid+"_stairs", content_type, copied_d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
 									add_content(cid+"_stairs", "recipe", {
 										"@": "recipe", "recipe": "ShapedRecipe",
@@ -238,14 +236,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 										"ingredient": midcid, "result": midcid+"_stairs", "count": "1",
 									}, manifest_dict)
 							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
-								d = readDictFile(fname)
-								d["title"] = d["title"]+" Trapdoor"
-								d["drops"] = d["contentid"] = cid+"_trapdoor"
-								d["droptype"] = "Self"
-								d["blockstatetype"] = "Trapdoor"
-								d["texture_bottom"] = d["texture_top"] = d["texture_side"] = d["texture"]
-								d["blockclass"] = "ModTrapdoorBlock"
-								add_content(cid+"_trapdoor", content_type, d, manifest_dict)
+								copied_d["title"] = d["title"]+" Trapdoor"
+								copied_d["drops"] = copied_d["contentid"] = cid+"_trapdoor"
+								copied_d["droptype"] = "Self"
+								copied_d["blockstatetype"] = "Trapdoor"
+								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+								copied_d["blockclass"] = "ModTrapdoorBlock"
+								add_content(cid+"_trapdoor", content_type, copied_d, manifest_dict)
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
 									add_content(cid+"_trapdoor", "recipe", {
 										"@": "recipe", "recipe": "ShapedRecipe",
@@ -358,18 +355,19 @@ def build_mod(modloader, version, modenv, manifest_dict):
 			source, dest = file["source"], file["dest"]
 			mandatory = True
 			if "optional" in file.keys():
-				if file["optional"] is True:
+				if file["optional"]:
 					mandatory = False
 			if "iterate" in file.keys():
 				for i in range(len(manifest_dict[file["iterate"]])):
 					manifest_dict["%i"] = i
 					manifest_dict["%v"] = manifest_dict[file["iterate"]][i]
-					rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", source), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
+					
+					rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", readf(source, manifest_dict)), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
 					if mandatory and not rv:
 						print(f"Error: Failed to read source file \"{modloader}{version}/{source}\"")
 						return False
 			else:
-				rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", source), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
+				rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", readf(source, manifest_dict)), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
 				if mandatory and not rv:
 					print(f"Error: Failed to read source file \"{modloader}{version}/{source}\"")
 					return False
@@ -430,7 +428,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	return True
 
 def build_resources(project_path, builddir, manifest_dict):
-	source_path = os.path.join(os.path.dirname(__file__),"data")
+	source_path = os.path.join(os.path.dirname(__file__), "data")
 	src = os.path.join(source_path, builddir, "gradle")
 	dest = os.path.join(project_path, builddir+"_build")
 	commons_path = os.path.join(source_path, "common")
@@ -571,8 +569,6 @@ def build_resources(project_path, builddir, manifest_dict):
 
 			if content_type == "recipe":
 				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), manifest_dict))
-			if content_type in ["toolmaterial", "armormaterial"]:
-				manifest_dict[f"mod.{content_type}.{cid}.class"] = cid
 			if content_type in ["item", "block", "food", "armor", "tool"]:
 				if "langs" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
 					for lang in manifest_dict[f"mod.{content_type}.{cid}.langs"]:

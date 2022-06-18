@@ -19,6 +19,8 @@ import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+---iter mainclass.imports
+	import $%v;---end
 
 public class ${mod.class} implements ModInitializer {
 	public static final String MOD_ID = "${mod.mcpath}";
@@ -43,6 +45,10 @@ public class ${mod.class} implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+
+---iter mainclass.oninitialize.preinit
+		$%v---end
+
 		ModItems.RegisterItems();
 		ModBlocks.RegisterBlocks();
 ---iter mod.registry.ore.names
@@ -50,5 +56,13 @@ public class ${mod.class} implements ModInitializer {
 				new Identifier("${mod.mcpath}", "$%v"));
 		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.ore.$%v.uppercased});
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v.uppercased}_GEN);---end
+		
+---iter mainclass.oninitialize.extra
+		$%v---end
+		
 	}
+
+---iter mainclass.extra
+	$%v---end
+
 }

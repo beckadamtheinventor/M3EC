@@ -3,19 +3,16 @@
 	"minecraftVersion": "1.17",
 	"javaVersion": "16.",
 	"firstActions": [
-				{
-			"if": [
-				"^OR",
-				"?mod.registry.armor.names #length nonzero",
-				"?mod.registry.armormaterial.names #length nonzero"
-			],
-			"action": "print",
-			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-		},
 		{
 			"if": "?mod.registry.enchantment.names #length nonzero",
 			"action": "print",
 			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+		}
+	],
+	"preactions": [
+		{
+			"action": "execactions",
+			"file": "${source_path}/common/actions/armor_layers.json"
 		}
 	],
 	"sources": [
@@ -37,8 +34,13 @@
 		},
 		{
 			"iterate": "mod.registry.toolmaterial.names",
-			"source": "registry/ToolMaterial.m3ecjava",
+			"source": "../fabric_common/ToolMaterial.m3ecjava",
 			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.armormaterial.names",
+			"source": "../fabric_common/ArmorMaterial.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
 		},
 		{
 			"iterate": "mod.registry.tool.names",

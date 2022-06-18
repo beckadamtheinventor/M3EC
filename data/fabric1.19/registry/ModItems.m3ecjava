@@ -1,12 +1,7 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
----iter mod.registry.armormaterial.names
-import ${mod.package}.registry.$%v;---end
----iter mod.registry.toolmaterial.names
-import ${mod.package}.registry.$%v;---end
----iter mod.registry.tool.names
-import ${mod.package}.registry.${mod.tool.$%v.class};---end
+
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ToolMaterial;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
@@ -21,14 +16,14 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+---iter moditems.imports
+	import $%v;---end
 
 public class ModItems {
 
     //Items
 ---iter mod.registry.item.names
-	public static final Item ${mod.item.$%v.uppercased} = new ${mod.item.$%v.customclass}(---if mod.item.$%v.extraConstructorArgs
-${mod.item.$%v.extraConstructorArgs}, ---finew Item.Settings().group(${mod.class}.ITEM_GROUP)---if mod.item.$%v.extraItemSettings
-${mod.item.$%v.extraItemSettings}---fi);---end
+	public static final Item ${mod.item.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
 	//Food
 ---iter mod.registry.food.names
@@ -49,9 +44,13 @@ ${mod.food.$%v.statusEffects}---fi.build()));---end
 ---iter mod.registry.armor.names
 	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material^upper}, EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
+
 	//Tool items
 ---iter mod.registry.tool.names
 	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+
+---iter moditems.extra
+	$%v---end
 
     public static void RegisterItems() {
 ---iter mod.registry.item.names
@@ -67,6 +66,8 @@ ${mod.food.$%v.statusEffects}---fi.build()));---end
 ---iter mod.registry.tool.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
 
+---iter moditems.registeritems.extra
+		$%v---end
     }
-}
 
+}
