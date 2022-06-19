@@ -1284,6 +1284,8 @@ def BuildMod(d):
 		[sg.Button("All supported modloaders and game versions", k="all")],
 		[sg.Button("All supported Forge versions", k="forge")],
 		[sg.Button("Forge 1.16.5", k="forge1.16.5", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Forge 1.18.2", k="forge1.18.2", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Forge 1.19", k="forge1.19", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("All supported Fabric versions", k="fabric")],
 		[sg.Button("Fabric 1.16.5", k="fabric1.16.5", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.17", k="fabric1.17", size=EDITOR_BUTTON_SIZE)],
@@ -1291,6 +1293,7 @@ def BuildMod(d):
 		[sg.Button("Fabric 1.18", k="fabric1.18", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.18.1", k="fabric1.18.1", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.18.2", k="fabric1.18.2", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Fabric 1.19", k="fabric1.19", size=EDITOR_BUTTON_SIZE)],
 		[sg.Cancel()],
 		[sg.Text("",k="building")]
 	]
