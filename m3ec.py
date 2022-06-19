@@ -130,9 +130,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		try:
 			with open(file) as f:
 				j = json.load(f)
+			execActions(j, manifest_dict)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in firstexecactions does not exist.")
-		execActions(j, manifest_dict)
 
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(os.path.normpath(os.path.join(project_path, path))):
@@ -306,9 +306,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		try:
 			with open(file) as f:
 				j = json.load(f)
+			execActions(j, manifest_dict)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in finalexecactions does not exist.")
-		execActions(j, manifest_dict)
 
 def build_mod(modloader, version, modenv, manifest_dict):
 	print(f"\n\
@@ -331,9 +331,9 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		try:
 			with open(file) as f:
 				j = json.load(f)
+			execActions(j, manifest_dict)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
-		execActions(j, manifest_dict)
 
 	try:
 		with open(os.path.join(source_path, f"{modloader}{version}", "m3ec_build.json")) as f:
@@ -415,9 +415,9 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		try:
 			with open(file) as f:
 				j = json.load(f)
+			execActions(j, manifest_dict)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
-		execActions(j, manifest_dict)
 
 	if "javaVersion" in versionbuilder.keys():
 		maybe_run_gradle(os.path.join(project_path, f"{modloader}{version}_build"), modenv, versionbuilder["javaVersion"])
@@ -636,6 +636,7 @@ where modenv can be any combination of:
 + fabric1.18
 + fabric1.18.1
 + fabric1.18.2
++ fabric1.19
 
 Note: Not all the game versions/modloaders listed are implemented to the same degree.
       If a feature is present in your mod that is not yet supported by the version/modloader implementation,
