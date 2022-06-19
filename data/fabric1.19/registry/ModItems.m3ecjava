@@ -23,7 +23,8 @@ public class ModItems {
 
     //Items
 ---iter mod.registry.item.names
-	public static final Item ${mod.item.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final Item ${mod.item.$%v.uppercased} = new ${mod.item.$%v.customclass}(new Item.Settings().group(${mod.class}.ITEM_GROUP)---if mod.item.$%v.extraItemSettings
+mod.item.$%v.extraItemSettings---fi);---end
 
 	//Food
 ---iter mod.registry.food.names
