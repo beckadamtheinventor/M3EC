@@ -15,7 +15,7 @@ public class ModItems {
 
 //		Items
 ---iter mod.registry.item.names
-		public static final RegistryObject<Item> ${mod.item.$%v^UPPER} = ITEMS.register("$%v", () -> new Item(new Item.Properties().tab(${mod.class}.TAB)));---end
+		public static final RegistryObject<Item> ${mod.item.$%v^UPPER} = ITEMS.register("$%v", () -> new ${mod.item.$%v.customclass}(new Item.Properties().tab(${mod.class}.TAB)));---end
 
 //		BlockItems
 ---iter mod.registry.block.names
