@@ -86,6 +86,10 @@ def readDictString(data, d=None, f=None, md=None):
 			d["#data"] = {}
 		d["#data"][f] = data
 		# print(f, data)
+	iteratorvalues = None
+	if md is not None:
+		if "%v" in md.keys():
+			del md["%v"]
 	for line in data.splitlines():
 		if len(line) and not line.startswith("#"):
 			if ":" in line:
@@ -122,12 +126,28 @@ def readDictString(data, d=None, f=None, md=None):
 						d[k] += v
 				elif line.startswith("."):
 					d[ns+name] = v
-				elif line.startswith("@include "):
-					readDictFile(line[len("@include "):], d)
 				else:
 					ns = name
 					d[name] = v
-		lineno += 1
+			elif line.startswith("@include "):
+				if readDictFile(line[9:], d) is None:
+					print("Failed to read dictionary file:", line[9:])
+					lineno += 1
+			elif line.startswith("@iterate "):
+				if line[9:] in d.keys():
+					iteratorvalues = d[line[9:]]
+				elif md is not None and line[9:] in md.keys():
+					iteratorvalues = md[line[9:]]
+				else:
+					print("Warning: iterator key", line[9:], "is not defined.")
+	if iteratorvalues is not None:
+		values = []
+		if md is None:
+			md = d
+		for value in iteratorvalues:
+			md["%v"] = value
+			values.append(readf(d, md))
+		return {"@iterate": values}
 	return d
 
 
@@ -343,6 +363,10 @@ def readf_file(path, d):
 def readf(data, d):
 	NUM_ITERATOR_NUMBERS = 10
 
+	if type(data) is list:
+		return [readf(i, d) for i in data]
+	if type(data) is dict:
+		return {k:readf(data[k], d) for k in data.keys()}
 	if type(data) is not str:
 		return data
 	if "$%f" in d.keys():

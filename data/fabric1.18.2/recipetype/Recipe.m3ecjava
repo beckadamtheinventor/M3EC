@@ -17,45 +17,28 @@ public class ${mod.recipetype.${%v}.class}Recipe implements Recipe<SimpleInvento
 	private final ItemStack result;
 	private final Identifier id;
 
-	public ${mod.recipetype.${%v}.class}Recipe(Ingredient inputA, Ingredient inputB, ItemStack result, Identifier id) {
-		this.inputA = inputA;
-		this.inputB = inputB;
-		this.result = result;
+	public ${mod.recipetype.${%v}.class}Recipe(Identifier id, ItemStack output, DefaultedList<Ingredient> recipeItems) {
 		this.id = id;
+		this.output = output;
+		this.recipeItems = recipeItems;
 	}
-
-	public Ingredient getInputA() {
-		return this.inputA;
-	}
- 
-	public Ingredient getInputB() {
-		return this.inputB;
-	}
- 
-	@Override
-	public ItemStack getOutput() {
-		return this.result;
-	}
- 
-	@Override
-	public Identifier getId() {
-		return this.id;
-	}
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return ${mod.recipetype.${%v}.class}Serializer.INSTANCE;
-    }
 
 	@Override
 	public boolean matches(SimpleInventory inventory, World world) {
-		if (inventory.size() < 2) return false;
-		return inputA.test(inventory.getStack(0)) && inputB.test(inventory.getStack(1));
+		if (world.isClient()) {
+			return false;
+		}
+
+		if (recipeItems.get(0).test(inventory.getStack(1))) {
+            return recipeItems.get(1).test(inventory.getStack(2));
+        }
+
+		return false;
 	}
 
 	@Override
 	public ItemStack craft(SimpleInventory inventory) {
-		return this.getOutput().copy();
+		return output;
 	}
 
 	@Override
@@ -64,15 +47,72 @@ public class ${mod.recipetype.${%v}.class}Recipe implements Recipe<SimpleInvento
 	}
 
 
+	@Override
+	public ItemStack getOutput() {
+		return output.copy();
+	}
+ 
+	@Override
+	public Identifier getId() {
+		return id;
+	}
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return ${mod.recipetype.${%v}.class}Serializer.INSTANCE;
+    }
+
+    @Override
+    public RecipeType<?> getType() {
+        return Type.INSTANCE;
+    }
+
 	public static class Type implements RecipeType<${mod.recipetype.${%v}.class}Recipe> {
         // Define ${mod.recipetype.${%v}.class}.Type as a singleton by making its constructor private and exposing an instance.
         private Type() {}
         public static final Type INSTANCE = new Type();
         public static final String ID = "${%v}";
     }
-    @Override
-    public RecipeType<?> getType() {
-        return Type.INSTANCE;
+
+	public static class Serializer implements RecipeSerializer<${mod.recipetype.${%v}.class}Recipe> {
+        public static final Serializer INSTANCE = new Serializer();
+        public static final String ID = "${%v}";
+        // this is the name given in the json file
+
+        @Override
+        public ${mod.recipetype.${%v}.class}Recipe read(Identifier id, JsonObject json) {
+            ItemStack output = ShapedRecipe.outputFromJson(JsonHelper.getObject(json, "output"));
+
+            JsonArray ingredients = JsonHelper.getArray(json, "ingredients");
+            DefaultedList<Ingredient> inputs = DefaultedList.ofSize(2, Ingredient.EMPTY);
+
+            for (int i = 0; i < inputs.size(); i++) {
+                inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
+            }
+
+            return new ${mod.recipetype.${%v}.class}Recipe(id, output, inputs);
+        }
+
+        @Override
+        public ${mod.recipetype.${%v}.class}Recipe read(Identifier id, PacketByteBuf buf) {
+            DefaultedList<Ingredient> inputs = DefaultedList.ofSize(buf.readInt(), Ingredient.EMPTY);
+
+            for (int i = 0; i < inputs.size(); i++) {
+                inputs.set(i, Ingredient.fromPacket(buf));
+            }
+
+            ItemStack output = buf.readItemStack();
+            return new ${mod.recipetype.${%v}.class}Recipe(id, output, inputs);
+        }
+
+        @Override
+        public void write(PacketByteBuf buf, ${mod.recipetype.${%v}.class}Recipe recipe) {
+            buf.writeInt(recipe.getIngredients().size());
+            for (Ingredient ing : recipe.getIngredients()) {
+                ing.write(buf);
+            }
+            buf.writeItemStack(recipe.getOutput());
+        }
     }
 
 }

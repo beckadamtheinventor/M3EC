@@ -17,6 +17,9 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+---iter modblocks.imports
+import $%v;---end
+
 public class ModBlocks {
 ---iter mod.registry.block.names
 	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock

@@ -121,7 +121,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	manifest_dict["mod.registry.classes"] = []
 	manifest_dict[f"mod.files"] = {}
 
-	for a in ["first", "pre", "post", "final"]:
+	for a in ["first", "pre", "resource", "post", "final"]:
 		if f"{a}execactions" not in manifest_dict.keys():
 			manifest_dict[f"{a}execactions"] = []
 
@@ -137,125 +137,128 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(os.path.normpath(os.path.join(project_path, path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec"):
-				d = readDictFile(fname, md=manifest_dict)
-				if "@" in d.keys():
-					content_type = d["@"]
-					if content_type == "class":
-						manifest_dict["mod.customclasses"].append({"file":d["file"], "class":d["class"],"modloader":d["modloader"], "gameversions":d["gameversions"]})
-						manifest_dict["mod.registry.classes"].append(d["class"])
-						continue
-					elif content_type == "itemfactory":
-						for cid in d["items"]:
-							dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":cid+".png"}
-							add_content(cid, "item", dictinst, manifest_dict, fname)
-						continue
-					if "contentid" not in d.keys():
-						print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
-						continue
-					if content_type == "recipe":
-						if "contentid" in d.keys():
-							cid = d["contentid"]
-						else:
-							cid = os.path.splitext(os.path.split(fname)[-1])[0]
-						add_content(cid, content_type, d, manifest_dict, fname)
-					else:
-						if "contentid" in d.keys():
-							cid = d["contentid"]
-							if content_type == "block":
-								if "blockstatetype" not in d.keys():
-									d["blockstatetype"] = "Single"
-								if "blockclass" not in d.keys():
-									d["blockclass"] = "Block"
-							# print(f"adding {content_type} {cid}")
+				dlist = readDictFile(fname, md=manifest_dict)
+				if "@iterate" not in dlist.keys():
+					dlist = {"@iterate": [dlist]}
+				for d in dlist["@iterate"]:
+					if "@" in d.keys():
+						content_type = d["@"]
+						if content_type == "class":
+							manifest_dict["mod.customclasses"].append({"file":d["file"], "class":d["class"],"modloader":d["modloader"], "gameversions":d["gameversions"]})
+							manifest_dict["mod.registry.classes"].append(d["class"])
+							continue
+						elif content_type == "itemfactory":
+							for cid in d["items"]:
+								dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":cid+".png"}
+								add_content(cid, "item", dictinst, manifest_dict, fname)
+							continue
+						if "contentid" not in d.keys():
+							print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
+							continue
+						if content_type == "recipe":
+							if "contentid" in d.keys():
+								cid = d["contentid"]
+							else:
+								cid = os.path.splitext(os.path.split(fname)[-1])[0]
 							add_content(cid, content_type, d, manifest_dict, fname)
-						copied_d = d.copy()
-						if content_type == "block":
-							midcid = manifest_dict["mod.mcpath"]+":"+cid
-							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall"):
-								copied_d["title"] = d["title"]+" Wall"
-								copied_d["drops"] = copied_d["contentid"] = cid+"_wall"
-								copied_d["droptype"] = "Self"
-								copied_d["blockstatetype"] = "Wall"
-								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
-								copied_d["blockclass"] = "WallBlock"
-								add_content(cid+"_wall", content_type, copied_d, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.recipe"):
-									add_content(cid+"_wall", "recipe", {
-										"@": "recipe", "recipe": "ShapedRecipe",
-										"pattern": ['"###"','"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
-										"result": midcid+"_wall", "count": "6",
-									}, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.stonecuttingrecipe"):
-									add_content(cid+"_wall_stonecutter", "recipe", {
-										"@": "recipe", "recipe": "StoneCuttingRecipe",
-										"ingredient": midcid, "result": midcid+"_wall", "count": "1",
-									}, manifest_dict)
-							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
-								copied_d["title"] = d["title"]+" Slab"
-								copied_d["drops"] = copied_d["contentid"] = cid+"_slab"
-								copied_d["droptype"] = "Slab"
-								copied_d["blockstatetype"] = "Slab"
-								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
-								copied_d["blockclass"] = "SlabBlock"
-								add_content(cid+"_slab", content_type, copied_d, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
-									add_content(cid+"_slab", "recipe", {
-										"@": "recipe", "recipe": "ShapedRecipe",
-										"pattern": ['"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
-										"result": midcid+"_slab", "count": "6",
-									}, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.stonecuttingrecipe"):
-									add_content(cid+"_slab_stonecutter", "recipe", {
-										"@": "recipe", "recipe": "StoneCuttingRecipe",
-										"ingredient": midcid, "result": midcid+"_slab", "count": "2",
-									}, manifest_dict)
-							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs"):
-								copied_d["title"] = d["title"]+" Stairs"
-								copied_d["drops"] = copied_d["contentid"] = cid+"_stairs"
-								copied_d["droptype"] = "Self"
-								copied_d["blockstatetype"] = "Stair"
-								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
-								copied_d["blockclass"] = "ModStairBlock"
-								copied_d["blockmaterialblock"] = cid
-								copied_d["blockclass.isstair"] = "true"
-								add_content(cid+"_stairs", content_type, copied_d, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
-									add_content(cid+"_stairs", "recipe", {
-										"@": "recipe", "recipe": "ShapedRecipe",
-										"pattern": ['"#  "', '"## "', '"###"'], "items": [midcid], "itemkeys": ["#"],"itemkeys.list.0": "#",
-										"result": midcid+"_stairs", "count": "4",
-									}, manifest_dict)
-									add_content(cid+"_stairs_reversed", "recipe", {
-										"@": "recipe", "recipe": "ShapedRecipe",
-										"pattern": ['"  #"', '" ##"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
-										"result": midcid+"_stairs", "count": "4",
-									}, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.stonecuttingrecipe"):
-									add_content(cid+"_stairs_stonecutter", "recipe", {
-										"@": "recipe", "recipe": "StoneCuttingRecipe",
-										"ingredient": midcid, "result": midcid+"_stairs", "count": "1",
-									}, manifest_dict)
-							if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
-								copied_d["title"] = d["title"]+" Trapdoor"
-								copied_d["drops"] = copied_d["contentid"] = cid+"_trapdoor"
-								copied_d["droptype"] = "Self"
-								copied_d["blockstatetype"] = "Trapdoor"
-								copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
-								copied_d["blockclass"] = "ModTrapdoorBlock"
-								add_content(cid+"_trapdoor", content_type, copied_d, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
-									add_content(cid+"_trapdoor", "recipe", {
-										"@": "recipe", "recipe": "ShapedRecipe",
-										"pattern": ['"###"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
-										"result": midcid+"_trapdoor", "count": "2",
-									}, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.stonecuttingrecipe"):
-									add_content(cid+"_slab_stonecutter", "recipe", {
-										"@": "recipe", "recipe": "StoneCuttingRecipe",
-										"ingredient": midcid, "result": midcid+"_trapdoor", "count": "1",
-									}, manifest_dict)
-				else:
-					print(f"Warning: Skipping file \"{fname}\" due to missing content type.")
+						else:
+							if "contentid" in d.keys():
+								cid = d["contentid"]
+								if content_type == "block":
+									if "blockstatetype" not in d.keys():
+										d["blockstatetype"] = "Single"
+									if "blockclass" not in d.keys():
+										d["blockclass"] = "Block"
+								# print(f"adding {content_type} {cid}")
+								add_content(cid, content_type, d, manifest_dict, fname)
+							copied_d = d.copy()
+							if content_type == "block":
+								midcid = manifest_dict["mod.mcpath"]+":"+cid
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall"):
+									copied_d["title"] = d["title"]+" Wall"
+									copied_d["drops"] = copied_d["contentid"] = cid+"_wall"
+									copied_d["droptype"] = "Self"
+									copied_d["blockstatetype"] = "Wall"
+									copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+									copied_d["blockclass"] = "WallBlock"
+									add_content(cid+"_wall", content_type, copied_d, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.recipe"):
+										add_content(cid+"_wall", "recipe", {
+											"@": "recipe", "recipe": "ShapedRecipe",
+											"pattern": ['"###"','"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+											"result": midcid+"_wall", "count": "6",
+										}, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.stonecuttingrecipe"):
+										add_content(cid+"_wall_stonecutter", "recipe", {
+											"@": "recipe", "recipe": "StoneCuttingRecipe",
+											"ingredient": midcid, "result": midcid+"_wall", "count": "1",
+										}, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
+									copied_d["title"] = d["title"]+" Slab"
+									copied_d["drops"] = copied_d["contentid"] = cid+"_slab"
+									copied_d["droptype"] = "Slab"
+									copied_d["blockstatetype"] = "Slab"
+									copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+									copied_d["blockclass"] = "SlabBlock"
+									add_content(cid+"_slab", content_type, copied_d, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
+										add_content(cid+"_slab", "recipe", {
+											"@": "recipe", "recipe": "ShapedRecipe",
+											"pattern": ['"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+											"result": midcid+"_slab", "count": "6",
+										}, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.stonecuttingrecipe"):
+										add_content(cid+"_slab_stonecutter", "recipe", {
+											"@": "recipe", "recipe": "StoneCuttingRecipe",
+											"ingredient": midcid, "result": midcid+"_slab", "count": "2",
+										}, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs"):
+									copied_d["title"] = d["title"]+" Stairs"
+									copied_d["drops"] = copied_d["contentid"] = cid+"_stairs"
+									copied_d["droptype"] = "Self"
+									copied_d["blockstatetype"] = "Stair"
+									copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+									copied_d["blockclass"] = "ModStairBlock"
+									copied_d["blockmaterialblock"] = cid
+									copied_d["blockclass.isstair"] = "true"
+									add_content(cid+"_stairs", content_type, copied_d, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
+										add_content(cid+"_stairs", "recipe", {
+											"@": "recipe", "recipe": "ShapedRecipe",
+											"pattern": ['"#  "', '"## "', '"###"'], "items": [midcid], "itemkeys": ["#"],"itemkeys.list.0": "#",
+											"result": midcid+"_stairs", "count": "4",
+										}, manifest_dict)
+										add_content(cid+"_stairs_reversed", "recipe", {
+											"@": "recipe", "recipe": "ShapedRecipe",
+											"pattern": ['"  #"', '" ##"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+											"result": midcid+"_stairs", "count": "4",
+										}, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.stonecuttingrecipe"):
+										add_content(cid+"_stairs_stonecutter", "recipe", {
+											"@": "recipe", "recipe": "StoneCuttingRecipe",
+											"ingredient": midcid, "result": midcid+"_stairs", "count": "1",
+										}, manifest_dict)
+								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
+									copied_d["title"] = d["title"]+" Trapdoor"
+									copied_d["drops"] = copied_d["contentid"] = cid+"_trapdoor"
+									copied_d["droptype"] = "Self"
+									copied_d["blockstatetype"] = "Trapdoor"
+									copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
+									copied_d["blockclass"] = "ModTrapdoorBlock"
+									add_content(cid+"_trapdoor", content_type, copied_d, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
+										add_content(cid+"_trapdoor", "recipe", {
+											"@": "recipe", "recipe": "ShapedRecipe",
+											"pattern": ['"###"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
+											"result": midcid+"_trapdoor", "count": "2",
+										}, manifest_dict)
+									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.stonecuttingrecipe"):
+										add_content(cid+"_slab_stonecutter", "recipe", {
+											"@": "recipe", "recipe": "StoneCuttingRecipe",
+											"ingredient": midcid, "result": midcid+"_trapdoor", "count": "1",
+										}, manifest_dict)
+					else:
+						print(f"Warning: Skipping file \"{fname}\" due to missing content type.")
 
 		# print(f"{key}: {manifest_dict[key]}")
 
@@ -346,6 +349,15 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		execActions(versionbuilder["firstActions"], manifest_dict)
 
 	build_resources(project_path, f"{modloader}{version}", manifest_dict)
+
+	for file in manifest_dict["resourceexecactions"]:
+		file = readf(file, manifest_dict)
+		try:
+			with open(file) as f:
+				j = json.load(f)
+			execActions(j, manifest_dict)
+		except FileNotFoundError:
+			print(f"Warning: file \"{file}\" listed in resourceexecactions does not exist.")
 
 	if "preActions" in versionbuilder.keys():
 		execActions(versionbuilder["preActions"], manifest_dict)

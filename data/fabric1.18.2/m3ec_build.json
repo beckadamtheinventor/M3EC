@@ -15,6 +15,7 @@
 			"value": [
 				"src/main/java/${mod.packagedir}/blocks",
 				"src/main/java/${mod.packagedir}/recipetype",
+				"src/main/java/${mod.packagedir}/inventory",
 				"src/main/resources/assets/minecraft",
 				"src/main/resources/assets/minecraft/textures",
 				"src/main/resources/assets/minecraft/textures/models",
@@ -50,6 +51,12 @@
 			"action": "copy",
 			"source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
 			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+		},
+		{
+			"if": "?mod.registry.recipetype.names #length nonzero",
+			"action": "copyf",
+			"source": "registry/ImplementedInventory.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/inventory/ImplementedInventory.java"
 		}
 	],
 	"sources": [

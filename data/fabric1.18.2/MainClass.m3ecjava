@@ -74,6 +74,9 @@ public class ${mod.class} implements ModInitializer {
             new ${mod.enchantment.$%v.name^CAPITAL}Enchantment()
     );
 ---end
+---iter mod.registry.recipetype.names
+    public static BlockEntityType<${mod.recipetype.$%v.class}BlockEntity> ${mod.recipetype.$%v^UPPER};---end
+
 
 	@Override
 	public void onInitialize() {
@@ -105,10 +108,19 @@ public class ${mod.class} implements ModInitializer {
 			RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier("${mod.mcpath}", "end_$%v")));
 	---fi
 ---end
+
 ---iter mod.registry.recipetype.names
-		Registry.register(Registry.RECIPE_SERIALIZER, ${mod.recipetype.$%v.class}Serializer.ID, ${mod.recipetype.$%v.class}Serializer.INSTANCE);
-		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);---end
+	${mod.recipetype.$%v^UPPER} = Registry.register(Registry.BLOCK_ENTITY_TYPE,
+			new Identifier(TutorialMod.MOD_ID, "$%v"),
+			FabricBlockEntityTypeBuilder.create(${mod.recipetype.$%v.class}BlockEntity::new,
+					ModBlocks.$%v).build(null));---end
+
+---iter mod.registry.recipetype.names
+	${mod.recipetype.$%v^UPPER}_SCREEN_HANDLER =
+			ScreenHandlerRegistry.registerSimple(new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}ScreenHandler::new);---end
+
 ---iter mainclass.onInitialize
 		$%v---end
+
 	}
 }
