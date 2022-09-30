@@ -77,6 +77,8 @@ public class ${mod.class} implements ModInitializer {
 ---iter mod.registry.recipetype.names
     public static BlockEntityType<${mod.recipetype.$%v.class}BlockEntity> ${mod.recipetype.$%v^UPPER};---end
 
+---iter mod.registry.recipetype.names
+	public static ScreenHandlerType<${mod.recipetype.$%v.class}ScreenHandler> ${mod.recipetype.$%v^UPPER}_SCREEN_HANDLER;---end
 
 	@Override
 	public void onInitialize() {

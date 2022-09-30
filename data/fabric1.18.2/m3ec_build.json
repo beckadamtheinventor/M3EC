@@ -16,6 +16,7 @@
 				"src/main/java/${mod.packagedir}/blocks",
 				"src/main/java/${mod.packagedir}/recipetype",
 				"src/main/java/${mod.packagedir}/inventory",
+				"src/main/java/${mod.packagedir}/screen",
 				"src/main/resources/assets/minecraft",
 				"src/main/resources/assets/minecraft/textures",
 				"src/main/resources/assets/minecraft/textures/models",
