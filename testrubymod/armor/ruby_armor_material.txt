@@ -3,8 +3,8 @@ armormaterial:  ArmorMaterial
 contentid:      RubyArmorMaterial
 protection:
 .helmet:        2
-.chestplate:    5
-.leggings:      7
+.chestplate:    7
+.leggings:      5
 .boots:         2
 sound:          ITEM_ARMOR_EQUIP_DIAMOND
 durability:     400

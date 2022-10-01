@@ -18,7 +18,16 @@
 				M3EC manifest files are formatted using a <b>key: value</b> system.<br>
 			</p>
 		</div><br>
-		<div class="quarterwidth"><h3>M3EC Manifest File Syntax</h3></div><br>
+		<br>
+		<div class="quarterwidth"><h2>Example Projects</h2></div>
+		<div class="threequarterwidth">
+			<dl>
+				<dt>Test Ruby Mod</dt>
+					<dd>A simple M3EC test mod. <a href="https://github.com/beckadamtheinventor/M3EC/tree/master/testrubymod" target="_blank" rel="noreferrer noopener">GitHub link</a></dd>
+			</dl>
+		</div>
+		<br>
+		<div class="quarterwidth"><h2>M3EC Manifest File Syntax</h2></div><br>
 		<div class="threequarterwidth">
 			<dl>
 				<dt>#comment</dt><dd>A comment. Not processed by the compiler.</dd>
@@ -30,53 +39,92 @@
 				<dt>+.key: value</dt><dd>Appends list <i>.key</i> with <i>value</i> within the previously defined dictionary.</dd>
 			</dl>
 		</div><br>
-		<div class="quarterwidth"><h3>Content Types</h3></div>
+		<div class="quarterwidth"><h2>Content Types</h2></div>
+		<!-- <div class="threequarterwidth"> -->
+			<!-- <dl> -->
+				<!-- <dt>item</dt><dd>A simple item. See item subtypes for more information.</dd> -->
+				<!-- <dt>block</dt><dd>A block. See block subtypes for more information.</dd> -->
+			<!-- </dl> -->
+		<!-- </div> -->
+		<!-- <br> -->
+		<!-- <div class="quarterwidth"><h2>Item Subtypes</h2></div> -->
 		<div class="threequarterwidth">
 			<dl>
-				<dt>item</dt><dd>A simple item. See item subtypes for more information.</dd>
-				<dt>block</dt><dd>A block. See block subtypes for more information.</dd>
-			</dl>
-		</div>
-		<br>
-		<div class="quarterwidth"><h3>Item Subtypes</h3></div>
-		<div class="threequarterwidth">
-			<dl>
-				<dt>armor</dt><dd>An armor item. Not yet implemented.</dd>
+				<dt>armor</dt><dd>An armor item. Requires an armor material.<br>
+					<dl>
+						<dt>@: armor</dt><dd>Tells M3EC that this is an armor item manifest.</dd>
+						<dt>armor: SimpleItem</dt><dd>Tells M3EC that this armor item is a single textured item.</dd>
+						<dt>contentid: item_id</dt><dd>Item ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>title</dt><dd>Item name to be displayed in-game.</dd>
+						<dt>slot: ARMOR_SLOT</dt><dd>Slot that this armor can be applied to. Must be <i>HEAD</i>, <i>CHEST</i>, <i>LEGS</i>, or <i>FEET</i>.</dd>
+						<dt>texture</dt><dd>File name (without extension) in mod textures folder to use for this item.</dd>
+						<dt>material</dt><dd>Material name this armor item is made from. Must match the contentid of an armor material.</dd>
+					</dl>
+				</dd><br><br>
+				<dt>armor material</dt><dd>An armor material for armor items.<br>
+					<dl>
+						<dt>@: armormaterial</dt><dd>Tells M3EC that this is an armor material manifest.</dd>
+						<dt>armormaterial: ArmorMaterial</dt><dd>Tells M3EC that this armor material is a basic armor material.</dd>
+						<dt>contentid: MaterialClass</dt><dd>Material class name. Must be unique, there cannot be any other classes with the same name. Should be CamelCase.</dd>
+						<dt>protection.helmet: 2</dt><dd>Protection value for any helmet of this material.</dd>
+						<dt>protection.chestplate: 7</dt><dd>Protection value for any chestplate of this material.</dd>
+						<dt>protection.leggings: 5</dt><dd>Protection value for any leggings of this material.</dd>
+						<dt>protection.boots: 2</dt><dd>Protection value for any boots of this material.</dd>
+						<dt>sound</dt><dd>Sound ID to be played when this armor is equipped. Vanilla values:<br>
+						<ul>
+							<li><i>ITEM_ARMOR_EQUIP_LEATHER</i></li>
+							<li><i>ITEM_ARMOR_EQUIP_IRON</i></li>
+							<li><i>ITEM_ARMOR_EQUIP_GOLD</i></li>
+							<li><i>ITEM_ARMOR_EQUIP_DIAMOND</i></li>
+							<li><i>ITEM_ARMOR_EQUIP_NETHERITE</i> (when building for 1.16 or later)</li>
+						</ul>
+						</dd>
+						<dt>durability</dt><dd>Base durability of armor items of this material. Multiplied by a different value per armor piece type.</dd>
+						<dt>enchantability</dt><dd>Enchantability of the armor items of this material. Iron for example has a value of 9, whereas gold has a value of 25.</dd>
+						<dt>repairitem</dt><dd>Defines the item that this armor can be repaired with. Must be formatted like <i>ModItems.ITEM_ID</i> where the item name is uppercase.<br>
+						Vanilla items can be used by replacing <i>ModItems</i> with <i>Items</i>.</dd>
+						<dt>name</dt><dd>Internal name of this armor material.</dd>
+						<dt>title</dt><dd>Display name of this armor material.</dd>
+						<dt>toughness</dt><dd>Toughness value for armor items of this material.</dd>
+						<dt>knockbackresistance</dt><dd>Knockback resistance for armor items of this material. (NOT YET IMPLEMENTED)</dd>
+						<dt>texture_layer_1</dt><dd>Texture layer 1 for this armor material. From the example mod:<br>
+						<a href="../testrubymod/textures/ruby_layer_1.png"><img height="80px" src="../testrubymod/textures/ruby_layer_1.png" alt="ruby_layer_1.png" title="ruby_layer_1.png"/></a>
+						</dd>
+						<dt>texture_layer_2</dt><dd>Texture layer 2 for this armor material. From the example mod:<br>
+						<a href="../testrubymod/textures/ruby_layer_2.png"><img height="80px" src="../testrubymod/textures/ruby_layer_2.png" alt="ruby_layer_2.png" title="ruby_layer_2.png"/></a>
+						</dd>
+					</dl>
+				</dd><br><br>
 				<dt>food</dt><dd>An edible food item.<br>
 					<dl>
 						<dt>@: food</dt><dd>Tells M3EC that this is a food item manifest.</dd>
-						<dt>food: SimpleItem</dt><dd>Tells M3EC that this food item is a simple textured item.</dd>
-						<dt>contentid</dt><dd>Content ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>food: SimpleItem</dt><dd>Tells M3EC that this food item is a single textured item.</dd>
+						<dt>contentid: item_id</dt><dd>Item ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>title</dt><dd>Item name to be displayed in-game.</dd>
 						<dt>hunger</dt><dd>Amount of hunger points this food item provides when eaten.</dd>
 						<dt>saturation</dt><dd>Amount of saturation this food item provides when eaten.</dd>
 						<dt>texture</dt><dd>File name (without extension) in mod textures folder to use for this item.</dd>
 						<dt>alwaysedible</dt><dd>If this is defined, this food item will always be edible regardless of hunger.</dd>
 					</dl>
-				</dd>
+				</dd><br><br>
 				<dt>item</dt><dd>A simple textured item.<br>
 					<dl>
 						<dt>@: item</dt><dd>Tells M3EC that this is an item manifest.</dd>
 						<dt>item: SimpleItem</dt><dd>Tells M3EC that this is a simple textured item.</dd>
-						<dt>contentid</dt><dd>Content ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>contentid: item_id</dt><dd>Item ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>title</dt><dd>Item name to be displayed in-game.</dd>
 						<dt>texture</dt><dd>File name (without extension) in mod textures folder to use for this item.</dd>
 					</dl>
-				</dd>
+				</dd><br><br>
 				<dt>tool</dt><dd>A tool item.<br>
 					<dl>
 						<dt>@: tool</dt><dd>Tells M3EC that this is a tool item manifest.</dd>
 						<dt>tool: toolitem</dt><dd>Tool type. Currently only <i>toolitem</i> is implemented.</dd>
-						<dt>contentid</dt><dd>Content ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>contentid: item_id</dt><dd>Item ID. Must be unique, there cannot be any blocks, items, etc with the same ID.</dd>
+						<dt>title</dt><dd>Item name to be displayed in-game.</dd>
 						<dt>texture</dt><dd>File name (without extension) in mod textures folder to use for this item.</dd>
 					</dl>
-				</dd>
-			</dl>
-		</div>
-		<br>
-		<div class="quarterwidth"><h3>Example Projects</h3></div>
-		<div class="threequarterwidth">
-			<dl>
-				<dt>Test Ruby Mod</dt>
-					<dd>A simple M3EC test mod. <a href="https://github.com/beckadamtheinventor/M3EC/tree/master/testrubymod" target="_blank" rel="noreferrer noopener">GitHub link</a></dd>
+				</dd><br><br>
 			</dl>
 		</div>
 	</main>
