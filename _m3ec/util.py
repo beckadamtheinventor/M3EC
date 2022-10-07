@@ -1,6 +1,8 @@
 
 import os, json
 
+WRITTEN_FILES_LIST = []
+
 def load_resource(path, file, method=json.load):
 	with open(os.path.join(path, file)) as f:
 		return method(f)
@@ -170,6 +172,7 @@ def writeDictFile(fname, d):
 			f.write(data)
 	except IOError:
 		return False
+	WRITTEN_FILES_LIST.append(fname)
 	return True
 
 def getDictString(d, f=None):
@@ -323,6 +326,7 @@ def copy_file(src, dest):
 		with open(src, "rb") as f:
 			with open(dest, "wb") as f2:
 				f2.write(f.read())
+		WRITTEN_FILES_LIST.append(dest)
 	except FileNotFoundError:
 		print(f"Failed to copy file \"{src}\" into \"{dest}\"")
 		exit(1)
@@ -333,6 +337,7 @@ def readf_copyfile(source, dest, d):
 	if data is None:
 		return False
 	create_file(dest, data)
+	WRITTEN_FILES_LIST.append(dest)
 	return True
 
 
@@ -343,6 +348,7 @@ def create_file(fname, data):
 		try:
 			with open(fname, "w") as f:
 				f.write(data)
+			WRITTEN_FILES_LIST.append(fname)
 		except FileNotFoundError:
 			print(f"Warning: Failed to create file \"{fname}\"")
 

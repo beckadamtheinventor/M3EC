@@ -60,7 +60,6 @@ def build(project_path, modenv):
 		project_path = os.path.dirname(project_path)
 
 	manifest_dict = readDictFile(manifest_file)
-
 	manifest_dict["manifest_file"] = manifest_file
 	manifest_dict["project_path"] = project_path
 
@@ -325,9 +324,25 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
 
 	# clean up old built files if they exist
-	if os.path.exists(os.path.join(build_path, "src")):
-		shutil.rmtree(os.path.join(build_path, "src"))
+	# if os.path.exists(os.path.join(build_path, "src")):
+		# shutil.rmtree(os.path.join(build_path, "src"))
+	try:
+		with open(os.path.join(build_path, "m3ec_cache.json")) as f:
+			PREV_WRITTEN_FILES = json.load(f)
+	except FileNotFoundError:
+		PREV_WRITTEN_FILES = []
 
+	if type(PREV_WRITTEN_FILES) is not list:
+		print("Found invalid m3ec_cache.json in build directory, ignoring it.")
+		PREV_WRITTEN_FILES = []
+
+	for fname in PREV_WRITTEN_FILES:
+		try:
+			os.remove(fname)
+		except IOError:
+			pass
+
+	WRITTEN_FILES_LIST.clear()
 
 	for file in manifest_dict["preexecactions"]:
 		file = readf(file, manifest_dict)
@@ -436,6 +451,9 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	if "finalActions" in versionbuilder.keys():
 		execActions(versionbuilder["finalActions"], manifest_dict)
+
+	with open(os.path.join(build_path, "m3ec_cache.json"), "w") as f:
+		json.dump(WRITTEN_FILES_LIST, f)
 
 	return True
 

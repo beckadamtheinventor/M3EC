@@ -1,6 +1,8 @@
 
 package ${mod.package}.registry;
 
+import net.minecraft.block.Blocks;
+import net.minecraft.item.Items;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 

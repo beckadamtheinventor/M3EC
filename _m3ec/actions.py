@@ -227,10 +227,13 @@ def execActions(actions, d, accumulator=None):
 						try:
 							with open(dname, 'w') as f:
 								f.write(accumulator)
+							WRITTEN_FILES_LIST.append(dname)
 						except:
 							pass
 						if a == "movef":
 							os.remove(fname)
+							if fname in WRITTEN_FILES_LIST:
+								WRITTEN_FILES_LIST.remove(WRITTEN_FILES_LIST.index(fname))
 					else:
 						accumulator = None
 			else:
@@ -261,11 +264,13 @@ def execActions(actions, d, accumulator=None):
 					fname = action["dest"]
 				if "file" in action.keys():
 					fname = action["file"]
-				with open(readf(fname, d), 'w') as f:
+				fname = readf(fname, d)
+				with open(fname, 'w') as f:
 					if type(accumulator) is dict:
 						json.dump(accumulator, f)
 					elif accumulator is not None:
 						f.write(str(accumulator))
+					WRITTEN_FILES_LIST.append(fname)
 
 		elif a in ("makedir", "make_dir"):
 			if type(action["value"]) is list:
