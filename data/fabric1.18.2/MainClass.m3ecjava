@@ -43,9 +43,15 @@ public class ${mod.class} implements ModInitializer {
 
 	public static PlacedFeature OVERWORLD_${mod.ore.$%v.uppercased}_PLACED_FEATURE = new PlacedFeature
 		(RegistryEntry.of(OVERWORLD_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE),
+---fi---if mod.ore.$%v.DeepslateOre
+	private static ConfiguredFeature<?, ?> DEEPSLATE_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE = new ConfiguredFeature
+		(Feature.ORE, new OreFeatureConfig(OreConfiguredFeatures.DEEPSLATE_ORE_REPLACEABLES, ${mod.ore.$%v.vein.block}.getDefaultState(), ${mod.ore.$%v.vein.size}));
+
+	public static PlacedFeature DEEPSLATE_${mod.ore.$%v.uppercased}_PLACED_FEATURE = new PlacedFeature
+		(RegistryEntry.of(DEEPSLATE_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE),
 ---fi---if mod.ore.$%v.NetherOre
 	private static ConfiguredFeature<?, ?> NETHER_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE = new ConfiguredFeature
-		(Feature.ORE, new OreFeatureConfig(OreConfiguredFeatures.STONE_ORE_REPLACEABLES, ${mod.ore.$%v.vein.block}.getDefaultState(), ${mod.ore.$%v.vein.size}));
+		(Feature.ORE, new OreFeatureConfig(OreConfiguredFeatures.NETHERRACK, ${mod.ore.$%v.vein.block}.getDefaultState(), ${mod.ore.$%v.vein.size}));
 
 	public static PlacedFeature NETHER_${mod.ore.$%v.uppercased}_PLACED_FEATURE = new PlacedFeature
 		(RegistryEntry.of(NETHER_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE),
@@ -94,6 +100,13 @@ public class ${mod.class} implements ModInitializer {
 			new Identifier("${mod.mcpath}", "overworld_$%v"), OVERWORLD_${mod.ore.$%v.uppercased}_PLACED_FEATURE);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES,
 			RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier("${mod.mcpath}", "overworld_$%v")));
+	---fi---if mod.ore.$%v.DeepslateOre
+		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE,
+			new Identifier("${mod.mcpath}", "deepslate_$%v"), DEEPSLATE_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE);
+		Registry.register(BuiltinRegistries.PLACED_FEATURE,
+			new Identifier("${mod.mcpath}", "deepslate_$%v"), DEEPSLATE_${mod.ore.$%v.uppercased}_PLACED_FEATURE);
+		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES,
+			RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier("${mod.mcpath}", "deepslate_$%v")));
 	---fi---if mod.ore.$%v.NetherOre
 		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE,
 			new Identifier("${mod.mcpath}", "nether_$%v"), NETHER_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE);

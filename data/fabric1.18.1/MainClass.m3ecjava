@@ -33,6 +33,14 @@ public class ${mod.class} implements ModInitializer {
 				${mod.ore.$%v.vein.size}));
 		public static PlacedFeature OVERWORLD_${mod.ore.$%v.uppercased}_PLACED_FEATURE =
 			OVERWORLD_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE.withPlacement(
+---fi---if mod.ore.$%v.DeepslateOre
+		private static ConfiguredFeature<?, ?> DEEPSLATE_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE = Feature.ORE
+			.configure(new OreFeatureConfig(
+				OreConfiguredFeatures.DEEPSLATE_ORE_REPLACEABLES,
+				${mod.ore.$%v.vein.block}.getDefaultState(),
+				${mod.ore.$%v.vein.size}));
+		public static PlacedFeature DEEPSLATE_${mod.ore.$%v.uppercased}_PLACED_FEATURE =
+			DEEPSLATE_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE.withPlacement(
 ---fi---if mod.ore.$%v.NetherOre
 		private static ConfiguredFeature<?, ?> NETHER_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE = Feature.ORE
 			.configure(new OreFeatureConfig(
@@ -74,6 +82,13 @@ public class ${mod.class} implements ModInitializer {
 			new Identifier("${mod.mcpath}", "overworld_$%v"), OVERWORLD_${mod.ore.$%v.uppercased}_PLACED_FEATURE);
 		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES,
 			RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier("${mod.mcpath}", "overworld_$%v")));
+	---fi---if mod.ore.$%v.DeepslateOre
+		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE,
+			new Identifier("${mod.mcpath}", "deepslate_$%v"), DEEPSLATE_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE);
+		Registry.register(BuiltinRegistries.PLACED_FEATURE,
+			new Identifier("${mod.mcpath}", "deepslate_$%v"), DEEPSLATE_${mod.ore.$%v.uppercased}_PLACED_FEATURE);
+		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES,
+			RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier("${mod.mcpath}", "deepslate_$%v")));
 	---fi---if mod.ore.$%v.NetherOre
 		Registry.register(BuiltinRegistries.CONFIGURED_FEATURE,
 			new Identifier("${mod.mcpath}", "nether_$%v"), NETHER_${mod.ore.$%v.uppercased}_CONFIGURED_FEATURE);
