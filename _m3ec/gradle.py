@@ -20,7 +20,7 @@ def maybe_run_gradle(path, modenv, javaver):
 		jd = os.path.join(os.path.dirname(path), "built_mod_jars")
 		make_dir(jd)
 		for f in walk(os.path.join(path, "build", "libs")):
-			shutil.copy(f, os.path.join(jd, os.path.basename(f)))
+			shutil.copy(f, os.path.join(jd, os.path.splitext(os.path.basename(f))[0]+"-"+md["modloader"]+md["gameversion"]+".jar"))
 	if "runclient" in modenvlow:
 		subprocess.Popen([os.path.join(path, fname), "runClient", javapath], cwd=path).wait()
 	if "runserver" in modenvlow:

@@ -447,7 +447,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
 
 	if "javaVersion" in versionbuilder.keys():
-		maybe_run_gradle(os.path.join(project_path, f"{modloader}{version}_build"), modenv, versionbuilder["javaVersion"])
+		maybe_run_gradle(os.path.join(project_path, f"{modloader}{version}_build"), modenv, versionbuilder["javaVersion"], manifest_dict)
 
 	if "finalActions" in versionbuilder.keys():
 		execActions(versionbuilder["finalActions"], manifest_dict)
