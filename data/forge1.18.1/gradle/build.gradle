@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 
 
-version = '${mod.version}-forge${gameversion}'
+version = '${mod.version}'
 group = '${mod.prefix}.${mod.author^lower}.${mod.mcpath}' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = '${mod.mcpath}'
 
