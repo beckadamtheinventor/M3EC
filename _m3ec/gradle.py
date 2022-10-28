@@ -3,7 +3,7 @@ import os, sys, subprocess, shutil
 
 from .util import *
 
-def maybe_run_gradle(path, modenv, javaver):
+def maybe_run_gradle(path, modenv, javaver, md):
 	path = os.path.abspath(path)
 	modenvlow = [m.lower() for m in modenv]
 	if "buildjar" in modenvlow or "runclient" in modenvlow or "runserver" in modenvlow:
