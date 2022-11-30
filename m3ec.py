@@ -173,6 +173,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 							copied_d = d.copy()
 							if content_type == "block":
 								midcid = manifest_dict["mod.mcpath"]+":"+cid
+
 								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall"):
 									copied_d["title"] = d["title"]+" Wall"
 									copied_d["drops"] = copied_d["contentid"] = cid+"_wall"
@@ -337,6 +338,8 @@ def build_mod(modloader, version, modenv, manifest_dict):
 			PREV_WRITTEN_FILES = json.load(f)
 	except FileNotFoundError:
 		PREV_WRITTEN_FILES = []
+	except IOError:
+		PREV_WRITTEN_FILES = None
 
 	if type(PREV_WRITTEN_FILES) is not list:
 		print("Found invalid m3ec_cache.json in build directory, ignoring it.")
@@ -559,24 +562,25 @@ def build_resources(project_path, builddir, manifest_dict):
 				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.m3ecjson"), manifest_dict))
 				create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".m3ecjson"), manifest_dict))
 				if statename == "3Axis":
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_side.m3ecjson"), manifest_dict))
-				elif statename == "Trapdoor":
-					create_file(os.path.join(block_models_assets_dir, cid+"_bottom.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_bottom.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_open.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_open.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_top.m3ecjson"), manifest_dict))
 				elif statename == "Slab":
 					create_file(os.path.join(block_models_assets_dir, cid+"_double.json"), readf_file(os.path.join(commons_path, "block_models", "SimpleBlock.m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", statename+".m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_top.m3ecjson"), manifest_dict))
+				elif statename == "Stair":
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", "Stair.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_inner.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_inner.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_outer.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_outer.m3ecjson"), manifest_dict))
+				elif statename == "Trapdoor":
+					create_file(os.path.join(block_models_assets_dir, cid+"_bottom.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_bottom.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_open.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_open.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_top.m3ecjson"), manifest_dict))
 				elif statename == "Wall":
 					create_file(os.path.join(block_models_assets_dir, cid+"_inventory.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_inventory.m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+"_post.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_post.m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side.m3ecjson"), manifest_dict))
 					create_file(os.path.join(block_models_assets_dir, cid+"_side_tall.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side_tall.m3ecjson"), manifest_dict))
-				elif statename == "Stair":
-					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", "Stair.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_inner.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_inner.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_outer.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_outer.m3ecjson"), manifest_dict))
 				else:
 					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), manifest_dict))
 				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
