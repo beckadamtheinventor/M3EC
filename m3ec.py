@@ -628,9 +628,9 @@ def build_resources(project_path, builddir, manifest_dict):
 			if lang not in langdict.keys():
 				langdict[lang] = {}
 			langdict[lang][f"itemGroup.{modmcpath}.general"] = manifest_dict[f"mod.{lang}"]
-			langdict[lang][f"itemGroup.{modmcpath}"] = manifest_dict[f"mod.{lang}"]
+			langdict[lang][f"itemGroup.{modmcpath}tab"] = manifest_dict[f"mod.{lang}"]
 	langdict["en_us"][f"itemGroup.{modmcpath}.general"] = manifest_dict["mod.title"]
-	langdict["en_us"][f"itemGroup.{modmcpath}"] = manifest_dict["mod.title"]
+	langdict["en_us"][f"itemGroup.{modmcpath}tab"] = manifest_dict["mod.title"]
 
 	for lang in langdict.keys():
 		with open(os.path.join(lang_dir, lang+".json"),"w") as f:
