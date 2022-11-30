@@ -23,7 +23,7 @@ public class ModBlocks {
 	public static final RegistryObject<Block> ${mod.block.$%v^upper} = registerBlock("$%v", () -> new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
 ${mod.block.$%v.BlockMaterialBlock^UPPER}.get().defaultBlockState(), ---fi
 		BlockBehaviour.Properties.of(Material.${mod.block.$%v.material})
-		.strength(${mod.block.$%v.hardness}, ${mod.block.$%v.resistance})---if mod.block.$%v.requiresTool
+		.strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})---if mod.block.$%v.requiresTool
 		.requiresCorrectToolForDrops()---fi
 	), ${mod.class}.TAB);
 ---end
