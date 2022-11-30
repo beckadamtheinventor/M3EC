@@ -1,0 +1,11 @@
+
+package ${mod.package}.registry;
+
+import net.minecraft.item.${mod.tool.${%v}.tooltype};
+import net.minecraft.item.ToolMaterial;
+
+public class ${mod.tool.${%v}.class} extends ${mod.tool.${%v}.tooltype} {
+	public ${mod.tool.${%v}.class}(ToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
+		super(material, attackDamage, attackSpeed, settings);
+	}
+}

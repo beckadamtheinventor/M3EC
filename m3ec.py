@@ -280,6 +280,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "forge1.19" in modenv or "1.19" in modenv or "all" in modenv or "forge" in modenv:
 		build_mod("forge", "1.19", modenv, manifest_dict.copy())
 
+	if "forge1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.19.2", modenv, manifest_dict.copy())
+
 
 	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.16.5", modenv, manifest_dict.copy())
@@ -301,6 +304,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 	if "fabric1.19" in modenv or "1.19" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.19", modenv, manifest_dict.copy())
+
+	if "fabric1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.19.2", modenv, manifest_dict.copy())
 
 
 	for file in manifest_dict["finalexecactions"]:
@@ -622,7 +628,9 @@ def build_resources(project_path, builddir, manifest_dict):
 			if lang not in langdict.keys():
 				langdict[lang] = {}
 			langdict[lang][f"itemGroup.{modmcpath}.general"] = manifest_dict[f"mod.{lang}"]
+			langdict[lang][f"itemGroup.{modmcpath}"] = manifest_dict[f"mod.{lang}"]
 	langdict["en_us"][f"itemGroup.{modmcpath}.general"] = manifest_dict["mod.title"]
+	langdict["en_us"][f"itemGroup.{modmcpath}"] = manifest_dict["mod.title"]
 
 	for lang in langdict.keys():
 		with open(os.path.join(lang_dir, lang+".json"),"w") as f:

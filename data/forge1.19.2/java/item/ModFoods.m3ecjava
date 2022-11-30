@@ -1,0 +1,9 @@
+package ${mod.package}.item;
+
+import net.minecraft.world.food.FoodProperties;
+
+public class ModFoods {
+---iter mod.registry.food.names
+    public static final FoodProperties ${mod.food.$%v.uppercased} = (new FoodProperties.Builder())---if mod.food.$%v.snack
+.fast()---fi.nutrition(${mod.food.$%v.hunger}).saturationMod(${mod.food.$%v.saturation}).build();---end
+}
