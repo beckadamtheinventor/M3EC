@@ -328,6 +328,9 @@ def checkConditionString(condition, d):
 				if type(val) is str:
 					if val.startswith(condition[1]):
 						return not inverted
+			elif condition[0] == "#equals":
+				if val == condition[1]:
+					return not inverted
 			elif condition[0] == "#endswith":
 				if type(val) is str:
 					if val.endswith(condition[1]):

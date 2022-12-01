@@ -1,0 +1,32 @@
+[
+	{
+		"iterate": "mod.registry.block.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"if": "?mod.block.${%v}.blockclass #startswith ModStairBlock",
+				"action": "setdictkey",
+				"key": "mod.block.${%v}.blockclass",
+				"value": "StairBlock"
+			},
+			{
+				"if": "?mod.block.${%v}.blockclass #startswith ModDoorBlock",
+				"action": "setdictkey",
+				"key": "mod.block.${%v}.blockclass",
+				"value": "DoorBlock"
+			},
+			{
+				"if": "?mod.block.${%v}.blockclass #startswith ModTrapdoorBlock",
+				"action": "setdictkey",
+				"key": "mod.block.${%v}.blockclass",
+				"value": "TrapdoorBlock"
+			},
+			{
+				"if": "?mod.block.${%v}.blockclass #startswith PillarBlock",
+				"action": "setdictkey",
+				"key": "mod.block.${%v}.blockclass",
+				"value": "RotatedPillarBlock"
+			}
+		]
+	}
+]

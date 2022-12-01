@@ -20,71 +20,8 @@
 	],
 	"preActions": [
 		{
-			"action": "makedir",
-			"value": "src/main/java/${mod.packagedir}/block"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/java/${mod.packagedir}/item"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/META-INF"
-		},
-		{
-			"iterate": "mod.registry.block.names",
 			"action": "execactions",
-			"actions": [
-				{
-					"action": "if",
-					"condition": "?mod.block.${%v}.blockclass #contains ModStairBlock",
-					"actions": [
-						{
-							"action": "setdictkey",
-							"key": "mod.block.${%v}.blockclass",
-							"value": "StairBlock"
-						}
-					]
-				},
-				{
-					"action": "if",
-					"condition": "?mod.block.${%v}.blockclass #contains ModDoorBlock",
-					"actions": [
-						{
-							"action": "setdictkey",
-							"key": "mod.block.${%v}.blockclass",
-							"value": "DoorBlock"
-						}
-					]
-				},
-				{
-					"action": "if",
-					"condition": "?mod.block.${%v}.blockclass #contains ModTrapdoorBlock",
-					"actions": [
-						{
-							"action": "setdictkey",
-							"key": "mod.block.${%v}.blockclass",
-							"value": "TrapdoorBlock"
-						}
-					]
-				}
-			]
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/data/minecraft"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/data/minecraft/tags"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/data/minecraft/tags/blocks"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/data/minecraft/tags/blocks/mineable"
+			"file": "${source_path}/forge_common/forge_preactions.json"
 		},
 		{
 			"action": "execactions",
@@ -106,10 +43,6 @@
 		{
 			"source": "resources/META-INF/mods.toml",
 			"dest": "src/main/resources/META-INF/mods.toml"
-		},
-		{
-			"source": "resources/pack.mcmeta",
-			"dest": "src/main/resources/pack.mcmeta"
 		},
 		{
 			"source": "java/MainClass.m3ecjava",

@@ -1,0 +1,30 @@
+[
+	{
+		"action": "makedir",
+		"value": "src/main/java/${mod.packagedir}/blocks"
+	},
+	{
+		"action": "makedir",
+		"value": "src/main/resources/META-INF"
+	},
+	{
+		"action": "makedir",
+		"value": "src/main/resources/data/minecraft"
+	},
+	{
+		"action": "makedir",
+		"value": "src/main/resources/data/minecraft/tags"
+	},
+	{
+		"action": "makedir",
+		"value": "src/main/resources/data/minecraft/tags/blocks"
+	},
+	{
+		"action": "makedir",
+		"value": "src/main/resources/data/minecraft/tags/blocks/mineable"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/forge_common/substitute_class_names.json"
+	}
+]

@@ -32,7 +32,8 @@ public class ModBlocks {
     public static final RegistryObject<Block> ${$%v^upper} = registerBlock("$%v",
             () -> new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockClass.isStair
 ModBlocks.${mod.block.$%v.BlockMaterialBlock}.get().defaultBlockState(), ---fiBlockBehaviour.Properties.of(Material.${mod.block.$%v.material})
-                    .strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})---if mod.block.$%v.requiresTool
+                    .strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
+					.sound(SoundType.${mod.block.$%v.sounds})---if mod.block.$%v.requiresTool
 .requiresCorrectToolForDrops()---fi---if ${mod.block.$%v.extraBlockSettings}
 ${mod.block.$%v.extraBlockSettings}---fi), ModCreativeModeTab.TAB);---end
 

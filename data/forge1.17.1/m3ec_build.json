@@ -27,51 +27,8 @@
 	],
 	"preActions": [
 		{
-			"action": "makedir",
-			"value": "src/main/java/${mod.packagedir}/blocks"
-		},
-		{
-			"action": "makedir",
-			"value": "src/main/resources/META-INF"
-		},
-		{
-			"iterate": "mod.registry.block.names",
 			"action": "execactions",
-			"actions": [
-				{
-					"action": "if",
-					"condition": "?mod.block.${%v}.BlockClass #contains ModStairBlock",
-					"actions": [
-						{
-							"action": "setdictkey",
-							"key": "mod.block.${%v}.BlockClass",
-							"value": "StairBlock"
-						}
-					]
-				},
-				{
-					"action": "if",
-					"condition": "?mod.block.${%v}.BlockClass #contains ModDoorBlock",
-					"actions": [
-						{
-							"action": "setdictkey",
-							"key": "mod.block.${%v}.BlockClass",
-							"value": "DoorBlock"
-						}
-					]
-				},
-				{
-					"action": "if",
-					"condition": "?mod.block.${%v}.BlockClass #contains ModTrapdoorBlock",
-					"actions": [
-						{
-							"action": "setdictkey",
-							"key": "mod.block.${%v}.BlockClass",
-							"value": "TrapdoorBlock"
-						}
-					]
-				}
-			]
+			"file": "${source_path}/forge_common/forge_preactions.json"
 		}
 	],
 	"sources": [

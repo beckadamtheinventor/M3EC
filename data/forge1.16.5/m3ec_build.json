@@ -27,8 +27,8 @@
 	],
 	"preActions": [
 		{
-			"action": "makedir",
-			"value": "src/main/java/${mod.packagedir}/blocks"
+			"action": "execactions",
+			"file": "${source_path}/forge_common/forge_preactions.json"
 		}
 	],
 	"sources": [
