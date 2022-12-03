@@ -144,8 +144,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 						content_type = d["@"]
 						if content_type == "class":
 							d2 = {"file":d["file"], "class":d["class"]}
-							if "modloader" in d.keys():
-								d2["modloader"] = d["modloader"]
+							if "modloaders" in d.keys():
+								d2["modloaders"] = d["modloaders"]
 							if "gameversions" in d.keys():
 								d2["gameversions"] = d["gameversions"]
 							manifest_dict["mod.customclasses"].append(d2)
