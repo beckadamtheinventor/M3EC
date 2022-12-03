@@ -143,7 +143,12 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 					if "@" in d.keys():
 						content_type = d["@"]
 						if content_type == "class":
-							manifest_dict["mod.customclasses"].append({"file":d["file"], "class":d["class"],"modloader":d["modloader"], "gameversions":d["gameversions"]})
+							d2 = {"file":d["file"], "class":d["class"]}
+							if "modloader" in d.keys():
+								d2["modloader"] = d["modloader"]
+							if "gameversions" in d.keys():
+								d2["gameversions"] = d["gameversions"]
+							manifest_dict["mod.customclasses"].append(d2)
 							manifest_dict["mod.registry.classes"].append(d["class"])
 							continue
 						elif content_type == "itemfactory":
