@@ -1,7 +1,11 @@
 [
 	{
 		"action": "makedir",
-		"value": "src/main/java/${mod.packagedir}/blocks"
+		"value": "src/main/java/${mod.packagedir}/block"
+	},
+	{
+		"action": "makedir",
+		"value": "src/main/java/${mod.packagedir}/item"
 	},
 	{
 		"action": "makedir",

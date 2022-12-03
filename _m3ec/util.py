@@ -316,6 +316,11 @@ def make_dir(path):
 		return True
 	except FileExistsError:
 		return True
+	except FileNotFoundError:
+		if make_dir(os.path.dirname(path)):
+			os.mkdir(path)
+			return True
+		return False
 	except:
 		print(f"Warning: Failed to make directory \"{path}\"")
 		return False
