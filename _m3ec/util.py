@@ -52,7 +52,7 @@ def readDictFile(fname, d=None, md=None):
 	if d is None:
 		d = {}
 	try:
-		# print("Reading Dictionary File: ", fname)
+		# print("Reading Dictionary File: \""+fname+"\"")
 		with open(fname) as f:
 			return readDictString(f.read(), d, fname, md)
 	except FileNotFoundError:
@@ -63,20 +63,17 @@ def readDictString(data, d=None, f=None, md=None):
 		isthisapplicable = True
 		hasversionselector = False
 		for line in data.splitlines():
-			if len(line) and ":" in line and not line.startswith("#"):
-				key, value = line.split(":", maxsplit=1)
-				value = value.lstrip(" \t")
-				key = key.lower().strip(" \t")
-				if key == ("@gameversion", "@version"):
-					hasversionselector = True
-					if md["gameversion"] != value.lower():
-						isthisapplicable = False
-				elif key in ("@modloader", "@loader"):
-					hasversionselector = True
-					if md["modloader"] != value.lower():
-						isthisapplicable = False
+			if line.startswith("@gameversion ") or line.startswith("@version "):
+				hasversionselector = True
+				if md["gameversion"] != line.split(" ", maxsplit=1)[1].lower():
+					isthisapplicable = False
+			if line.startswith("@modloader ") or line.startswith("@loader "):
+				hasversionselector = True
+				if md["modloader"] != line.split(" ", maxsplit=1)[1].lower():
+					isthisapplicable = False
 
 		if hasversionselector and not isthisapplicable:
+			print(f"file {f} was not applicable to this modloader/version")
 			return False
 
 	if d is None:
@@ -93,7 +90,7 @@ def readDictString(data, d=None, f=None, md=None):
 		if "%v" in md.keys():
 			del md["%v"]
 	for line in data.splitlines():
-		if len(line) and not line.startswith("#"):
+		if not line.startswith("#"):
 			if ":" in line:
 				name, value = line.split(":", maxsplit=1)
 				name = name.lower().strip(" \t")
@@ -132,7 +129,8 @@ def readDictString(data, d=None, f=None, md=None):
 					ns = name
 					d[name] = v
 			elif line.startswith("@include "):
-				if readDictFile(line[9:], d) is None:
+				# print("Including file " + line[9:])
+				if readDictFile(line[9:], d, md) is None:
 					print("Failed to read dictionary file:", line[9:])
 					lineno += 1
 			elif line.startswith("@iterate "):

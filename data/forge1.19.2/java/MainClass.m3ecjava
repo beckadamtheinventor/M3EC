@@ -2,6 +2,10 @@ package ${mod.package};
 
 import ${mod.package}.block.ModBlocks;
 import ${mod.package}.item.ModItems;
+
+---iter mainclass.imports
+import $%v;---end
+
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -43,7 +47,8 @@ public class ${mod.class} {
 
         ModItems.register(eventBus);
         ModBlocks.register(eventBus);
-
+---iter mainclass.onInitialize
+		$%v---end
 /*
         ModPaintings.register(eventBus);
         ModSounds.register(eventBus);

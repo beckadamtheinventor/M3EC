@@ -335,6 +335,18 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	project_path = manifest_dict["project_path"]
 	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
 
+	if modloader in manifest_dict.keys():
+		for f in manifest_dict[modloader]:
+			readDictFile(f, manifest_dict, manifest_dict)
+
+	if version in manifest_dict.keys():
+		for f in manifest_dict[version]:
+			readDictFile(f, manifest_dict, manifest_dict)
+
+	if modloader+version in manifest_dict.keys():
+		for f in manifest_dict[modloader+version]:
+			readDictFile(f, manifest_dict, manifest_dict)
+
 	# clean up old built files if they exist
 	# if os.path.exists(os.path.join(build_path, "src")):
 		# shutil.rmtree(os.path.join(build_path, "src"))

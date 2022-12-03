@@ -3,6 +3,10 @@ package ${mod.package}.block;
 import ${mod.package}.${mod.class};
 import ${mod.package}.item.ModCreativeModeTab;
 import ${mod.package}.item.ModItems;
+
+---iter modblocks.imports
+import $%v;---end
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -35,6 +39,9 @@ ModBlocks.${mod.block.$%v.BlockMaterialBlock^upper}.get().defaultBlockState(), -
 					.sound(SoundType.${mod.block.$%v.sounds})---if mod.block.$%v.requiresTool
 .requiresCorrectToolForDrops()---fi---if ${mod.block.$%v.extraBlockSettings}
 ${mod.block.$%v.extraBlockSettings}---fi), ModCreativeModeTab.TAB);---end
+
+---iter modblocks.extramodblocks
+	$%v---end
 
     private static <T extends Block> RegistryObject<T> registerBlockWithoutBlockItem(String name, Supplier<T> block) {
         return BLOCKS.register(name, block);
