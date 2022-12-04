@@ -33,7 +33,7 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
 
 ---iter mod.registry.sapling.names
-	public static final ${mod.sapling.$%v.class}SaplingBlock ${mod.sapling.$%v^upper}_SAPLING =
+	public static final ${mod.sapling.$%v.class}SaplingBlock ${mod.sapling.$%v^upper} =
 		new ${mod.sapling.$%v.class}SaplingBlock(new ${mod.sapling.$%v.class}SaplingGenerator(), FabricBlockSettings
 		.of(Material.${mod.sapling.$%v.material})
 		---if mod.sapling.$%v.requiresTool
