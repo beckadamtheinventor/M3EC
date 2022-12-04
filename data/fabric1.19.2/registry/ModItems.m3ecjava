@@ -50,6 +50,10 @@ ${mod.food.$%v.statusEffects}---fi.build()));---end
 ---iter mod.registry.tool.names
 	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
 
+	//Sapling Items
+---iter mod.registry.sapling.names
+	public static final BlockItem ${mod.sapling.$%v.uppercased} = new BlockItem(ModBlocks.${mod.sapling.$%v.uppercased}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+
 ---iter moditems.extra
 	$%v---end
 
@@ -66,6 +70,8 @@ ${mod.food.$%v.statusEffects}---fi.build()));---end
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.armor.$%v.uppercased});---end
 ---iter mod.registry.tool.names
 		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
+---iter mod.registry.sapling.names
+		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v.uppercased});---end
 
 ---iter moditems.registeritems.extra
 		$%v---end
