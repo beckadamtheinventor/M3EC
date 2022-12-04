@@ -1,116 +1,120 @@
 {
-	"modloader": "fabric",
-	"minecraftVersion": "1.19",
-	"javaVersion": "17.",
-	"firstActions": [
-		{
-			"if": "?mod.registry.enchantment.names #length nonzero",
-			"action": "print",
-			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-		}
-	],
-	"preActions": [
-		{
-			"action": "makedir",
-			"value": [
-				"src/main/java/${mod.packagedir}/blocks",
-				"src/main/java/${mod.packagedir}/recipetype",
-				"src/main/resources/assets/minecraft",
-				"src/main/resources/assets/minecraft/textures",
-				"src/main/resources/assets/minecraft/textures/models",
-				"src/main/resources/assets/minecraft/textures/models/armor"
-			]
-		},
-		{
-			"action": "execactions",
-			"file": "${source_path}/common/actions/block_mining_requirements.json"
-		},
-		{
-			"iterate": "mod.registry.armormaterial.names",
-			"action": "execactions",
-			"actions": [
-				{
-					"action": "copy",
-					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
-					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
-				},
-				{
-					"action": "copy",
-					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
-					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
-				}
-			]
-		},
-		{
-			"action": "copyf",
-			"source": "${source_path}/${modloader}${gameversion}/ModDoorBlock.m3ecjava",
-			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModDoorBlock.java"
-		},
-		{
-			"action": "copyf",
-			"source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
-			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
-		},
-		{
-			"action": "copyf",
-			"source": "${source_path}/${modloader}${gameversion}/ModTrapdoorBlock.m3ecjava",
-			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
-		}
-	],
-	"postActions": [
-		{
-			"action": "copy",
-			"source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
-			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
-		}
-	],
-	"sources": [
-		{
-			"source": "fabric.mod.m3ecjson",
-			"dest": "src/main/resources/fabric.mod.json"
-		},
-		{
-			"source": "MainClass.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
-		},
-		{
-			"source": "registry/ModBlocks.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
-		},
-		{
-			"source": "registry/ModItems.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
-		},
-		{
-			"iterate": "mod.registry.toolmaterial.names",
-			"source": "../fabric_common/ToolMaterial.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.tool.names",
-			"source": "registry/ToolItem.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.armormaterial.names",
-			"source": "../fabric_common/ArmorMaterial.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.recipetype.names",
-			"source": "recipetype/Recipe.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Recipe.java"
-		},
-		{
-			"iterate": "mod.registry.recipetype.names",
-			"source": "recipetype/RecipeBlock.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/blocks/${mod.recipetype.${%v}.BlockClass}.java"
-		},
-		{
-			"iterate": "mod.registry.recipetype.names",
-			"source": "recipetype/RecipeSerializer.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
-		}
-	]
-	
+  "modloader": "fabric",
+  "minecraftVersion": "1.19",
+  "javaVersion": "17.",
+  "firstActions": [
+    {
+      "if": "?mod.registry.enchantment.names #length nonzero",
+      "action": "print",
+      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+    },
+    {
+      "if": "?mod.registry.sapling.names #length nonzero",
+      "action": "print",
+      "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
+    }
+  ],
+  "preActions": [
+    {
+      "action": "makedir",
+      "value": [
+        "src/main/java/${mod.packagedir}/blocks",
+        "src/main/java/${mod.packagedir}/recipetype",
+        "src/main/resources/assets/minecraft",
+        "src/main/resources/assets/minecraft/textures",
+        "src/main/resources/assets/minecraft/textures/models",
+        "src/main/resources/assets/minecraft/textures/models/armor"
+      ]
+    },
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/block_mining_requirements.json"
+    },
+    {
+      "iterate": "mod.registry.armormaterial.names",
+      "action": "execactions",
+      "actions": [
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
+          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
+        },
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
+          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
+        }
+      ]
+    },
+    {
+      "action": "copyf",
+      "source": "${source_path}/${modloader}${gameversion}/ModDoorBlock.m3ecjava",
+      "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModDoorBlock.java"
+    },
+    {
+      "action": "copyf",
+      "source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
+      "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
+    },
+    {
+      "action": "copyf",
+      "source": "${source_path}/${modloader}${gameversion}/ModTrapdoorBlock.m3ecjava",
+      "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
+    }
+  ],
+  "postActions": [
+    {
+      "action": "copy",
+      "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
+      "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+    }
+  ],
+  "sources": [
+    {
+      "source": "fabric.mod.m3ecjson",
+      "dest": "src/main/resources/fabric.mod.json"
+    },
+    {
+      "source": "MainClass.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+    },
+    {
+      "source": "registry/ModBlocks.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+    },
+    {
+      "source": "registry/ModItems.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+    },
+    {
+      "iterate": "mod.registry.toolmaterial.names",
+      "source": "../fabric_common/ToolMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.tool.names",
+      "source": "registry/ToolItem.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.armormaterial.names",
+      "source": "../fabric_common/ArmorMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/Recipe.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Recipe.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/RecipeBlock.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/${mod.recipetype.${%v}.BlockClass}.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/RecipeSerializer.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
+    }
+  ]
 }

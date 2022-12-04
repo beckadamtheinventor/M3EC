@@ -42,7 +42,8 @@ def build(project_path, modenv):
 		modenv = modenv.split(" ")
 	elif type(modenv) is not list:
 		modenv = [modenv]
-	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool", "armormaterial", "toolmaterial", "enchantment", "recipetype"]
+	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool",
+		"armormaterial", "toolmaterial", "enchantment", "recipetype", "sapling"]
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 
 	if not os.path.exists(project_path):

@@ -1,64 +1,68 @@
 {
-	"modloader": "forge",
-	"minecraftVersion": "1.17.1",
-	"javaVersion": "16.",
-	"firstActions": [
-		{
-			"if": [
-				"^OR",
-				"?mod.registry.armor.names #length nonzero",
-				"?mod.registry.armormaterial.names #length nonzero"
-			],
-			"action": "print",
-			"string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-		},
-		{
-			"if": [
-				"?mod.registry.food.names #length nonzero"
-			],
-			"action": "print",
-			"string": "Food is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-		},
-		{
-			"if": "?mod.registry.enchantment.names #length nonzero",
-			"action": "print",
-			"string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-		}
-	],
-	"preActions": [
-		{
-			"action": "execactions",
-			"file": "${source_path}/forge_common/forge_preactions.json"
-		}
-	],
-	"sources": [
-		{
-			"source": "MainClass.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
-		},
-		{
-			"source": "registry/ModBlocks.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
-		},
-		{
-			"iterate": "mod.registry.block.names",
-			"source": "Block.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/blocks/${mod.block.${%v}.class}.java"
-		},
-		{
-			"source": "registry/ModItems.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
-		},
-		{
-			"iterate": "mod.registry.toolmaterial.names",
-			"source": "registry/ToolMaterial.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
-		},
-		{
-			"iterate": "mod.registry.tool.names",
-			"source": "registry/ToolItem.m3ecjava",
-			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
-		}
-	]
-	
+  "modloader": "forge",
+  "minecraftVersion": "1.17.1",
+  "javaVersion": "16.",
+  "firstActions": [
+    {
+      "if": [
+        "^OR",
+        "?mod.registry.armor.names #length nonzero",
+        "?mod.registry.armormaterial.names #length nonzero"
+      ],
+      "action": "print",
+      "string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+    },
+    {
+      "if": [
+        "?mod.registry.food.names #length nonzero"
+      ],
+      "action": "print",
+      "string": "Food is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+    },
+    {
+      "if": "?mod.registry.enchantment.names #length nonzero",
+      "action": "print",
+      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+    },
+    {
+      "if": "?mod.registry.sapling.names #length nonzero",
+      "action": "print",
+      "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
+    }
+  ],
+  "preActions": [
+    {
+      "action": "execactions",
+      "file": "${source_path}/forge_common/forge_preactions.json"
+    }
+  ],
+  "sources": [
+    {
+      "source": "MainClass.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+    },
+    {
+      "source": "registry/ModBlocks.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+    },
+    {
+      "iterate": "mod.registry.block.names",
+      "source": "Block.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/${mod.block.${%v}.class}.java"
+    },
+    {
+      "source": "registry/ModItems.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+    },
+    {
+      "iterate": "mod.registry.toolmaterial.names",
+      "source": "registry/ToolMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.tool.names",
+      "source": "registry/ToolItem.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+    }
+  ]
 }
