@@ -4,7 +4,7 @@ package ${mod.package}.registry;
 import ${mod.package}.blocks.${mod.recipetype.$%v.BlockClass};---end
 
 ---iter mod.registry.sapling.names
-import ${mod.package}.feature.${mod.sapling.$%v.class}SaplingGenerator;
+import ${mod.package}.features.${mod.sapling.$%v.class}SaplingGenerator;
 import ${mod.package}.blocks.${mod.sapling.$%v.class}SaplingBlock;---end
 
 
