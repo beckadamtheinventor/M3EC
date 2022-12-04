@@ -13,7 +13,7 @@ public class ${mod.sapling.${%v}.class}SaplingGenerator extends SaplingGenerator
     @Nullable
     @Override
     protected RegistryEntry<ConfiguredFeature<TreeFeatureConfig, ?>> getTreeFeature(Random random, boolean bees) {
-        return ModFeatures.${mod.sapling.${%v}.class};
+        return ModFeatures.${mod.sapling.${%v}^upper};
     }
 
 }
