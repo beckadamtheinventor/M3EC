@@ -35,11 +35,11 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 ---iter mod.registry.sapling.names
 	public static final ${mod.sapling.$%v.class}SaplingBlock ${mod.sapling.$%v^upper}_SAPLING =
 		new ${mod.sapling.$%v.class}SaplingBlock(new ${mod.sapling.$%v.class}SaplingGenerator, FabricBlockSettings
-		.of(Material.${mod.block.$%v.material})
-		---if mod.block.$%v.requiresTool
+		.of(Material.${mod.sapling.$%v.material})
+		---if mod.sapling.$%v.requiresTool
 		.requiresTool()---fi
-		.strength(${mod.block.$%v.hardness}f, ${mod.block.$%v.resistance}f)
-		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
+		.strength(${mod.sapling.$%v.hardness}f, ${mod.sapling.$%v.resistance}f)
+		.sounds(BlockSoundGroup.${mod.sapling.$%v.sounds}));---end
 
     public static void RegisterBlocks() {
 ---iter mod.registry.block.names
