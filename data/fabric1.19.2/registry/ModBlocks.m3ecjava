@@ -34,7 +34,7 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 
 ---iter mod.registry.sapling.names
 	public static final ${mod.sapling.$%v.class}SaplingBlock ${mod.sapling.$%v^upper}_SAPLING =
-		new ${mod.sapling.$%v.class}SaplingBlock(new ${mod.sapling.$%v.class}SaplingGenerator, FabricBlockSettings
+		new ${mod.sapling.$%v.class}SaplingBlock(new ${mod.sapling.$%v.class}SaplingGenerator(), FabricBlockSettings
 		.of(Material.${mod.sapling.$%v.material})
 		---if mod.sapling.$%v.requiresTool
 		.requiresTool()---fi
