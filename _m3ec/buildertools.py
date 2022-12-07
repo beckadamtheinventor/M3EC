@@ -13,6 +13,8 @@ def UpdateJsons(path, fileregex, key=None, value=None, append=True):
 			print(fname)
 			with open(fname) as f:
 				data = json.load(f)
+			with open(fname+".bak", "w")  as f:
+				json.dump(data, f)
 			if key is not None:
 				if type(key) is list or type(key) is tuple:
 					if len(key) > 1:
