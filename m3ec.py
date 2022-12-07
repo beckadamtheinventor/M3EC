@@ -315,6 +315,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "fabric1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.19.2", modenv, manifest_dict.copy())
 
+	# if "fabric1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "fabric" in modenv:
+		# build_mod("fabric", "1.19.3", modenv, manifest_dict.copy())
+
 
 	for file in manifest_dict["finalexecactions"]:
 		file = readf(file, manifest_dict)
@@ -685,11 +688,13 @@ where modenv can be any combination of:
 + 1.18.1
 + 1.18.2
 + 1.19
++ 1.19.2
 + forge
 + forge1.16.5
 + forge1.18.1
 + forge1.18.2
 + forge1.19
++ forge1.19.2
 + fabric
 + fabric1.16.5
 + fabric1.17
@@ -698,6 +703,7 @@ where modenv can be any combination of:
 + fabric1.18.1
 + fabric1.18.2
 + fabric1.19
++ fabric1.19.2
 
 Note: Not all the game versions/modloaders listed are implemented to the same degree.
       If a feature is present in your mod that is not yet supported by the version/modloader implementation,
