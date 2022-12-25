@@ -27,10 +27,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, ${mod.class}.MOD_ID);
+
+---iter mod.registry.block.names
+---if mod.block.$%v.lightlevel
+	public static ToIntFunction<BlockState> ${mod.block.$%v^upper}_LIGHT_LEVEL = BlockState -> ${mod.block.$%v.lightlevel};---fi---end
+
 ---iter mod.registry.block.names
     public static final RegistryObject<Block> ${mod.block.$%v^upper} = registerBlock("$%v",
             () -> new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockClass.isStair
@@ -38,7 +44,7 @@ public class ModBlocks {
                     .strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
 					.sound(SoundType.${mod.block.$%v.sounds})---if mod.block.$%v.requiresTool
 					.requiresCorrectToolForDrops()---fi---if mod.block.$%v.lightlevel
-					.lightLevel(${mod.block.$%v.lightlevel})---fi---if ${mod.block.$%v.extraBlockSettings}
+					.lightLevel(${mod.block.$%v^upper}_LIGHT_LEVEL)---fi---if ${mod.block.$%v.extraBlockSettings}
 					${mod.block.$%v.extraBlockSettings}---fi), ModCreativeModeTab.TAB);---end
 
 ---iter modblocks.extramodblocks

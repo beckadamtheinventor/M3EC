@@ -4,15 +4,21 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.common.ToolType;
 
+---if mod.block.$%v.lightlevel
+import java.util.function.ToIntFunction;---fi
+
 public class ${mod.block.${%v}.class} extends Block {
+	---if mod.block.$%v.lightlevel
+	public static ToIntFunction<BlockState> lightLevel = BlockState -> mod.block.$%v.lightlevel;
+---fi
 	public ${mod.block.${%v}.class}() {
 		super(Block.Properties.of(Material.${mod.block.${%v}.material})
-				.strength(${mod.block.${%v}.hardness}f, ${mod.block.${%v}.resistance}f)
+				.strength(${mod.block.${%v}.hardness^float}, ${mod.block.${%v}.resistance^float})
 				.sound(SoundType.${mod.block.${%v}.sounds})
 				.harvestLevel(${mod.block.${%v}.toollevelint})
 				.harvestTool(ToolType.${mod.block.${%v}.toolclass})---if mod.block.${%v}.requiresTool
 				.requiresCorrectToolForDrops()---fi---if mod.block.$%v.lightlevel
-				.lightLevel(${mod.block.$%v.lightlevel})---fi
+				.lightLevel(lightLevel)---fi
 			);
 	}
 }
