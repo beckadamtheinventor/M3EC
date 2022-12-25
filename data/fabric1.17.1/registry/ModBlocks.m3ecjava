@@ -20,7 +20,8 @@ public class ModBlocks {
 ---if mod.block.$%v.requiresTool
 		.requiresTool()---fi
 		.strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
-		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
+		.sounds(BlockSoundGroup.${mod.block.$%v.sounds})---if mod.block.$%v.lightlevel
+		.luminance(${mod.block.$%v.lightlevel})---fi);---end
 
 ---iter modblocks.extra
 	$%v---end

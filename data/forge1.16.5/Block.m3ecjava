@@ -10,9 +10,9 @@ public class ${mod.block.${%v}.class} extends Block {
 				.strength(${mod.block.${%v}.hardness}f, ${mod.block.${%v}.resistance}f)
 				.sound(SoundType.${mod.block.${%v}.sounds})
 				.harvestLevel(${mod.block.${%v}.toollevelint})
-				.harvestTool(ToolType.${mod.block.${%v}.toolclass})
-				---if mod.block.${%v}.requiresTool
-				.requiresCorrectToolForDrops()---fi
-				);
+				.harvestTool(ToolType.${mod.block.${%v}.toolclass})---if mod.block.${%v}.requiresTool
+				.requiresCorrectToolForDrops()---fi---if mod.block.$%v.lightlevel
+				.lightLevel(${mod.block.$%v.lightlevel})---fi
+			);
 	}
 }

@@ -30,7 +30,8 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 		---if mod.block.$%v.requiresTool
 		.requiresTool()---fi
 		.strength(${mod.block.$%v.hardness}f, ${mod.block.$%v.resistance}f)
-		.sounds(BlockSoundGroup.${mod.block.$%v.sounds}));---end
+		.sounds(BlockSoundGroup.${mod.block.$%v.sounds})---if mod.block.$%v.lightlevel
+		.luminance(${mod.block.$%v.lightlevel})---fi);---end
 
 ---iter mod.registry.sapling.names
 	public static final ${mod.sapling.$%v.class}SaplingBlock ${mod.sapling.$%v^upper} =
@@ -39,7 +40,8 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 		---if mod.sapling.$%v.requiresTool
 		.requiresTool()---fi
 		.strength(${mod.sapling.$%v.hardness}f, ${mod.sapling.$%v.resistance}f)
-		.sounds(BlockSoundGroup.${mod.sapling.$%v.sounds}));---end
+		.sounds(BlockSoundGroup.${mod.sapling.$%v.sounds})---if mod.block.$%v.lightlevel
+		.luminance(${mod.block.$%v.lightlevel})---fi);---end
 
     public static void RegisterBlocks() {
 ---iter mod.registry.block.names

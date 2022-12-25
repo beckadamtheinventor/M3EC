@@ -33,7 +33,8 @@ public class ModBlocks {
 ModBlocks.${mod.block.$%v.BlockMaterialBlock}.get().defaultBlockState(), ---fiBlockBehaviour.Properties.of(Material.${mod.block.$%v.material})
                     .strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
 					.sound(SoundType.${mod.block.$%v.sounds})---if mod.block.$%v.requiresTool
-.requiresCorrectToolForDrops()---fi---if ${mod.block.$%v.extraBlockSettings}
+					.requiresCorrectToolForDrops()---fi---if mod.block.$%v.lightlevel
+					.lightLevel(${mod.block.$%v.lightlevel})---fi---if ${mod.block.$%v.extraBlockSettings}
 ${mod.block.$%v.extraBlockSettings}---fi), ModCreativeModeTab.TAB);---end
 
     private static <T extends Block> RegistryObject<T> registerBlockWithoutBlockItem(String name, Supplier<T> block) {

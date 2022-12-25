@@ -28,7 +28,8 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 		.requiresTool()---fi
 		.strength(${mod.block.$%v.hardness}f,${mod.block.$%v.resistance}f)
 		.sounds(BlockSoundGroup.${mod.block.$%v.sounds})---if mod.block.$%v.BlockClass #contains ModDoorBlock
-		.nonOpaque()---fi);---end
+		.nonOpaque()---fi---if mod.block.$%v.lightlevel
+		.luminance(${mod.block.$%v.lightlevel})---fi);---end
 
 	private static Block registerBlock(String name, Block block, ItemGroup group) {
 		registerBlockItem(name, block, group);

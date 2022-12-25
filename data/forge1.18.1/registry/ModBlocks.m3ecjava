@@ -25,7 +25,8 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.get().defaultBlockState(), ---fi
 		BlockBehaviour.Properties.of(Material.${mod.block.$%v.material})
 		.strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
 		.sound(SoundType.${mod.block.$%v.sounds})---if mod.block.$%v.requiresTool
-		.requiresCorrectToolForDrops()---fi
+		.requiresCorrectToolForDrops()---if mod.block.$%v.lightlevel
+		.lightLevel(${mod.block.$%v.lightlevel})---fi---fi
 	), ${mod.class}.TAB);
 ---end
 
