@@ -246,11 +246,15 @@ def CreateShapedRecipe(mfd):
 			sg.Text("Count:"),
 			sg.Input(size=EDITOR_BUTTON_SIZE, k="count"),
 		],
+		[sg.Checkbox("Minify", k="minify", size=EDITOR_BUTTON_SIZE, default=True),
+			sg.Checkbox("Mirror X", k="mirrorx", size=EDITOR_BUTTON_SIZE, default=True),
+			sg.Checkbox("Mirror Y", k="mirrory", size=EDITOR_BUTTON_SIZE, default=False),
+		],
 		[sg.Sizer(0, 20)],
 		[sg.Ok(size=EDITOR_BUTTON_SIZE), sg.Cancel(size=EDITOR_BUTTON_SIZE)],
 	]
 	window = sg.Window("Create Shaped Recipe", layout, icon=ICON_FILE)
-	recipe = {"@": "recipe", "recipe": "ShapedRecipe", "pattern": [], "items":[], "itemkeys":[], "result": "", "count": "1"}
+	recipe = {"@": "recipe", "recipe": "ShapedRecipe", "pattern": [[" "]*3]*3, "items":[], "itemkeys":[], "result": "", "count": "1"}
 	while True:
 		event, values = window.read()
 		if event in (sg.WINDOW_CLOSED, 'Cancel'):
@@ -267,16 +271,59 @@ def CreateShapedRecipe(mfd):
 					ErrorWindow("Count must be an integer greater than or equal to 1.")
 					continue
 				recipe["count"] = values["count"]
-			for row in range(len(recipe["pattern"])):
-				recipe["pattern"][row] = '"'+"".join(recipe["pattern"][row])+'"'
+			if checkDictKeyTrue(values, "minify"):
+				mx = my = 0
+				ex = max([len(s) for s in recipe["pattern"]])
+				ey = len(recipe["pattern"])
+				for row in range(len(recipe["pattern"])):
+					if not all([c==' ' for c in recipe["pattern"][row]]):
+						sy = row
+						break
+
+				for row in range(len(recipe["pattern"])):
+					if all([c==' ' for c in recipe["pattern"][row]]):
+						ey = row
+						break
+
+				for row in range(len(recipe["pattern"])):
+					x = len(recipe["pattern"][row].rstrip(" "))
+					y = 0
+					for col in range(len(recipe["pattern"][row])-1, -1, -1):
+						if recipe["pattern"][row][col] != ' ':
+							if col < ex:
+								ex = col
+					for col in range(len(recipe["pattern"][row])):
+						if recipe["pattern"][row][col] != ' ':
+							if col > sx:
+								sx = col
+				
+				for row in range(sy, ey+1):
+					recipe["pattern"][row] = recipe["pattern"][row][sx:ex+1]
+
+				recipe["pattern"] = recipe["pattern"][sy:ey+1]
+			else:
+				for row in range(len(recipe["pattern"])):
+					recipe["pattern"][row] = '"'+"".join(recipe["pattern"][row])+'"'
 			yield recipe
+			if checkDictKeyTrue(values, "mirrorx"):
+				recipe2 = recipe.copy()
+				recipe2["pattern"] = [s[::-1] for s in recipe2["pattern"]]
+				yield recipe2
+				if checkDictKeyTrue(values, "mirrory"):
+					recipe3 = recipe.copy()
+					recipe3["pattern"] = recipe2["pattern"][::-1]
+					yield recipe3
+			if checkDictKeyTrue(values, "mirrory"):
+				recipe2 = recipe.copy()
+				recipe2["pattern"] = recipe2["pattern"][::-1]
+				yield recipe2
 			break
 		elif event.startswith("item"):
 			item = ContentSelectWindow(mfd, ["block", "item"])
-			if event[4:] == "result":
+			if event == "itemresult":
 				recipe["result"] = item
-			elif event =="itemall":
-				recipe["pattern"] = ["AAA", "AAA", "AAA"]
+			elif event == "itemall":
+				recipe["pattern"] = [["A"]*3]*3
 				recipe["items"] = [item]
 				recipe["itemkeys"] = ["A"]
 				for n in range(9):
@@ -1186,7 +1233,10 @@ def _ModEditor(manifest_dict, fname):
 			sg.Button(manifest_dict["mod.mcpath"], key="SetName", size=EDITOR_BUTTON_SIZE),
 			sg.Button(manifest_dict["mod.version"], key="SetVersion", size=EDITOR_BUTTON_SIZE),
 		],
-		[sg.Button("Build Project", key="Build", size=EDITOR_BUTTON_SIZE), sg.Button("Quit", key="Exit", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Build Project", key="Build", size=EDITOR_BUTTON_SIZE),
+			sg.Button("Quit", key="Exit", size=EDITOR_BUTTON_SIZE),
+			sg.Button("Save", key="Save", size=EDITOR_BUTTON_SIZE)
+		],
 		[sg.Text("Import Texture"), sg.Input(key="TextureImport"),
 			sg.FilesBrowse(key="TextureImport", file_types=(("PNG Files", "*.png"),("All Files","*.* *"))),
 			sg.Button("Import", key="ImportTexture")
@@ -1213,6 +1263,8 @@ def _ModEditor(manifest_dict, fname):
 		if event in ('Exit', sg.WIN_CLOSED):
 			SaveProject(fname, manifest_dict)
 			break
+		elif event in ('Save',):
+			SaveProject(fname, manifest_dict)
 		elif event in ('Build',):
 			BuildMod(manifest_dict)
 		elif event in ('SetVersion',):

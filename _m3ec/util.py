@@ -48,6 +48,183 @@ def getDictVal(d, k, fname):
 	else:
 		print(f"Missing \"{k}\" in file \"{fname}\"!")
 
+def joinDicts(a, b):
+	c = a.copy()
+	for k in b.keys():
+		c[k] = b[k]
+	return c
+
+def checkDictKeyTrue(d, key):
+	if key.lower() in d.keys():
+		if type(d[key.lower()]) is str:
+			if d[key].lower() in ["true", "yes", "1"]:
+				return True
+		else:
+			return d[key]
+	return False
+
+def checkConditionString(condition, d):
+	if " " in condition:
+		condition = condition.split(" ", maxsplit=2)
+		val = readf(condition.pop(0), d)
+		if val.startswith("!"):
+			val = val[1:]
+			inverted = True
+		else:
+			inverted = False
+		if val in d.keys():
+			val = d[val]
+			# print(val, condition)
+			if condition[0] == "#contains":
+				if condition[1] in val:
+					return not inverted
+				return inverted
+			elif condition[0] == "#typeis":
+				if condition[1] == "int" and type(val) is int:
+					return not inverted
+				elif condition[1] == "float" and type(val) is float:
+					return not inverted
+				elif condition[1] == "str" and type(val) is str:
+					return not inverted
+				elif condition[1] == "list" and type(val) is list:
+					return not inverted
+				elif condition[1] == "tuple" and type(val) is tuple:
+					return not inverted
+				elif condition[1] == "dict" and type(val) is dict:
+					return not inverted
+				elif condition[1] == "number" and (type(val) is int or type(val) is float):
+					return not inverted
+				elif condition[1] == "iterable" and (type(val) is list or type(val) is tuple):
+					return not inverted
+			elif condition[0] == "#startswith":
+				if type(val) is str:
+					if val.startswith(condition[1]):
+						return not inverted
+			elif condition[0] == "#equals":
+				if val == condition[1]:
+					return not inverted
+			elif condition[0] == "#endswith":
+				if type(val) is str:
+					if val.endswith(condition[1]):
+						return not inverted
+			elif condition[0] == "#length":
+				if type(val) is str or type(val) is list or type(val) is tuple:
+					if condition[1] == "nonzero" and len(val) > 0:
+						return not inverted
+					elif condition[1] == "zero" and len(val) <= 0:
+						return not inverted
+			elif condition[0] == ">":
+				if toNumber(val, default=0) > toNumber(condition[1], default=0):
+					return not inverted
+			elif condition[0] == "<":
+				if toNumber(val, default=0) < toNumber(condition[1], default=0):
+					return not inverted
+			elif condition[0] == ">=":
+				if toNumber(val, default=0) >= toNumber(condition[1], default=0):
+					return not inverted
+			elif condition[0] == "<=":
+				if toNumber(val, default=0) <= toNumber(condition[1], default=0):
+					return not inverted
+			elif condition[0] == "==":
+				if toNumber(val, default=0) == toNumber(condition[1], default=0):
+					return not inverted
+			elif condition[0] == "!=":
+				if toNumber(val, default=0) != toNumber(condition[1], default=0):
+					return not inverted
+		return inverted
+
+	if condition in d.keys():
+		c = d["condition"]
+		if type(c) is str:
+			if c.lower() in ("true", "yes"):
+				return True
+			elif c.isnumeric():
+				if "." in c:
+					return float(c)
+				else:
+					return int(c)
+			else:
+				return False
+		elif type(c) is bool:
+			return c
+		else:
+			return True
+	return False
+
+def checkTrue(condition, d):
+	condition = readf(condition, d)
+	if condition.startswith("?"):
+		return checkConditionString(condition[1:], d)
+	elif condition.startswith("!"):
+		if condition[1:].startswith("keyexists ") or condition[1:].startswith("exists "):
+			return condition.split(" ", maxsplit=1)[1] not in d.keys()
+		else:
+			return not checkDictKeyTrue(d, condition[1:])
+	else:
+		if condition.startswith("keyexists ") or condition.startswith("exists "):
+			return condition.split(" ", maxsplit=1)[1] in d.keys()
+		else:
+			return checkDictKeyTrue(d, condition)
+
+def checkActionConditions(conditions, d):
+	if type(conditions) is list:
+		conditions = conditions[:]
+		if len(conditions):
+			if conditions[0] == "^AND":
+				useand = True
+				usexor = False
+				usexnor = False
+				conditions.pop(0)
+			elif conditions[0] == "^OR":
+				useand = False
+				usexor = False
+				usexnor = False
+				conditions.pop(0)
+			elif conditions[0] == "^OR":
+				useand = False
+				usexor = True
+				usexnor = False
+				conditions.pop(0)
+			elif conditions[0] == "^XNOR":
+				useand = False
+				usexor = False
+				usexnor = True
+				conditions.pop(0)
+			else:
+				useand = True
+				usexor = False
+				usexnor = False
+
+			if len(conditions):
+				c = conditions.pop(0)
+				if type(c) is str:
+					val = checkTrue(c, d)
+				elif type(c) is list:
+					val = checkActionConditions(c, d)
+				if len(conditions):
+					for condition in conditions:
+						if type(condition) is str:
+							v = checkTrue(condition, d)
+						elif type(condition) is list:
+							v = checkActionConditions(condition, d)
+						else:
+							continue
+						if useand:
+							val = val and v
+						elif usexor:
+							val = (val and not v) or (v and not val)
+						elif usexnor:
+							val = (val and v) or not (val and v)
+						else:
+							val = val or v
+				# print(val)
+				return val
+		return False
+	elif type(conditions) is str:
+		return checkTrue(conditions, d)
+	elif type(conditions) is bool or type(conditions) is int or type(conditions) is float:
+		return conditions
+
 def readDictFile(fname, d=None, md=None):
 	if d is None:
 		d = {}
@@ -73,7 +250,7 @@ def readDictString(data, d=None, f=None, md=None):
 					isthisapplicable = False
 
 		if hasversionselector and not isthisapplicable:
-			print(f"file {f} was not applicable to this modloader/version")
+			print(f"File {f} was not applicable to this modloader/version, skipping it")
 			return False
 
 	if d is None:
@@ -89,9 +266,44 @@ def readDictString(data, d=None, f=None, md=None):
 	if md is not None:
 		if "%v" in md.keys():
 			del md["%v"]
-	for line in data.splitlines():
+
+	should_process_lines = True
+	should_process_lines_stack = []
+	
+	lines = data.splitlines()
+	for lineno in range(len(lines)):
+		line = lines[lineno]
 		if not line.startswith("#"):
-			if ":" in line:
+			if line.startswith("@endif"):
+				if len(should_process_lines_stack):
+					should_process_lines = should_process_lines_stack.pop(0)
+				elif f is not None:
+					print(f"Warning: \"@endif\" used without matching if statement on line {lineno} of file {f}")
+				else:
+					print(f"Warning: \"@endif\" used without matching if statement")
+			elif line.startswith("@else"):
+				should_process_lines = not should_process_lines
+			if not should_process_lines:
+				continue
+			if line.startswith("@include "):
+				# print("Including file " + line[9:])
+				if readDictFile(line[9:], d, md) is None:
+					print("Failed to read dictionary file:", line[9:])
+					lineno += 1
+			elif line.startswith("@iterate "):
+				if line[9:] in d.keys():
+					iteratorvalues = d[line[9:]]
+				elif md is not None and line[9:] in md.keys():
+					iteratorvalues = md[line[9:]]
+				else:
+					print("Warning: iterator key", line[9:], "is not defined.")
+			elif line.startswith("@if "):
+				should_process_lines_stack.append(should_process_lines)
+				if line[4] == '{' or line[4] == '[':
+					should_process_lines = checkActionConditions(json.loads(line[4:]), joinDicts(md, d))
+				else:
+					should_process_lines = checkConditionString(line[4:], joinDicts(md, d))
+			elif ":" in line:
 				name, value = line.split(":", maxsplit=1)
 				name = name.lower().strip(" \t")
 				v = value.lstrip(" \t")
@@ -128,18 +340,7 @@ def readDictString(data, d=None, f=None, md=None):
 				else:
 					ns = name
 					d[name] = v
-			elif line.startswith("@include "):
-				# print("Including file " + line[9:])
-				if readDictFile(line[9:], d, md) is None:
-					print("Failed to read dictionary file:", line[9:])
-					lineno += 1
-			elif line.startswith("@iterate "):
-				if line[9:] in d.keys():
-					iteratorvalues = d[line[9:]]
-				elif md is not None and line[9:] in md.keys():
-					iteratorvalues = md[line[9:]]
-				else:
-					print("Warning: iterator key", line[9:], "is not defined.")
+
 	if iteratorvalues is not None:
 		values = []
 		if md is None:
@@ -175,6 +376,7 @@ def writeDictFile(fname, d):
 
 def getDictString(d, f=None):
 	o = []
+	indices = {}
 	if "#data" in d.keys() and f in d["#data"].keys():
 		# print(f"Updating existing dict file \"{f}\"")
 		oldd = readDictString(d["#data"][f])
@@ -188,10 +390,16 @@ def getDictString(d, f=None):
 					# print(k, value)
 					if line.startswith("+.") or line.startswith(".+"):
 						if ns in d.keys() and ns+'.'+k[2:] in d.keys():
-							o.append(f"{k}: {d[ns+'.'+k[2:]].pop(0)}")
+							if ns+'.'+k[2:] not in indices.keys():
+								indices[ns+'.'+k[2:]] = 0
+							o.append(f"{k}: {d[ns+'.'+k[2:]][indices[ns+'.'+k[2:]]]}")
+							indices[ns+'.'+k[2:]] += 1
 					elif line.startswith("+"):
 						if k[1:] in d.keys():
-							o.append(f"{k}: {d[k[1:]].pop(0)}")
+							if k[1:] not in indices.keys():
+								indices[k[1:]] = 0
+							o.append(f"{k}: {d[k[1:]][indices[k[1:]]]}")
+							indices[k[1:]] += 1
 					elif line.startswith("."):
 						if ns in d.keys() and ns+'.'+k[1:] in d.keys():
 							o.append(f"{k}: {d[ns+'.'+k[1:]]}")
@@ -299,14 +507,19 @@ def texture_pathify(d, tex, ct, cid):
 		return f"{mod}:{ct}s/{os.path.basename(tex)}"
 	return tex
 
-def checkDictKeyTrue(d, key):
-	if key.lower() in d.keys():
-		if type(d[key.lower()]) is str:
-			if d[key].lower() in ["true", "yes", "1"]:
-				return True
-		else:
-			return d[key]
-	return False
+def toNumber(val, default=None):
+	if type(val) is int or type(val) is float:
+		return val
+	elif type(val) is str:
+		try:
+			return int(val)
+		except:
+			pass
+		try:
+			return float(val)
+		except:
+			pass
+	return default
 
 def make_dir(path):
 	try:

@@ -42,8 +42,6 @@ def build(project_path, modenv):
 		modenv = modenv.split(" ")
 	elif type(modenv) is not list:
 		modenv = [modenv]
-	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool",
-		"armormaterial", "toolmaterial", "enchantment", "recipetype", "sapling"]
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 
 	if not os.path.exists(project_path):
@@ -105,6 +103,70 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "mod.iconitem" not in manifest_dict.keys():
 		print("Warning: Icon item for custom creative tab unspecified. Defaulting to first item registered.")
 
+	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
+
+
+	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
+		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
+
+	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.16.5", modenv, manifest_dict.copy())
+
+	if "forge1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.18.1", modenv, manifest_dict.copy())
+
+	if "forge1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.18.2", modenv, manifest_dict.copy())
+
+	if "forge1.19" in modenv or "1.19" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.19", modenv, manifest_dict.copy())
+
+	if "forge1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "forge" in modenv:
+		build_mod("forge", "1.19.2", modenv, manifest_dict.copy())
+
+
+	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.16.5", modenv, manifest_dict.copy())
+
+	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.17", modenv, manifest_dict.copy())
+
+	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.17.1", modenv, manifest_dict.copy())
+
+	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.18", modenv, manifest_dict.copy())
+
+	if "fabric1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.18.1", modenv, manifest_dict.copy())
+
+	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.18.2", modenv, manifest_dict.copy())
+
+	if "fabric1.19" in modenv or "1.19" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.19", modenv, manifest_dict.copy())
+
+	if "fabric1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.19.2", modenv, manifest_dict.copy())
+
+	# if "fabric1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "fabric" in modenv:
+		# build_mod("fabric", "1.19.3", modenv, manifest_dict.copy())
+
+def build_mod(modloader, version, modenv, manifest_dict):
+	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool",
+		"armormaterial", "toolmaterial", "enchantment", "recipetype", "sapling"]
+	print(f"\n\
+\n\
+-----------------------------------------------\n\
+   Building {modloader} {version} mod project\n")
+
+	manifest_dict["modloader"] = modloader
+	manifest_dict["gameversion"] = gameversion = version
+	_, manifest_dict["gameversion.major"], manifest_dict["gameversion.minor"] = (int(v) for v in version.split(".", maxsplit=2))
+	source_path = manifest_dict["source_path"]
+	project_path = manifest_dict["project_path"]
+	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
+
 	# TODO: build stuff that needs to be in MainClass.java here
 
 	# if "mod.ItemGroups.java" not in manifest_dict:
@@ -135,7 +197,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			print(f"Warning: file \"{file}\" listed in firstexecactions does not exist.")
 
 	for path in manifest_dict["mod.paths"]:
-		for fname in walk(os.path.normpath(os.path.join(project_path, path))):
+		for fname in walk(os.path.normpath(os.path.join(manifest_dict["project_path"], path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec"):
 				dlist = readDictFile(fname, md=manifest_dict)
 				if "@iterate" not in dlist.keys():
@@ -267,77 +329,6 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 						print(f"Warning: Skipping file \"{fname}\" due to missing content type.")
 
 		# print(f"{key}: {manifest_dict[key]}")
-
-	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
-	path = project_path
-
-
-	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
-		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
-
-	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.16.5", modenv, manifest_dict.copy())
-
-	if "forge1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.18.1", modenv, manifest_dict.copy())
-
-	if "forge1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.18.2", modenv, manifest_dict.copy())
-
-	if "forge1.19" in modenv or "1.19" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.19", modenv, manifest_dict.copy())
-
-	if "forge1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.19.2", modenv, manifest_dict.copy())
-
-
-	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.16.5", modenv, manifest_dict.copy())
-
-	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17", modenv, manifest_dict.copy())
-
-	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17.1", modenv, manifest_dict.copy())
-
-	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18", modenv, manifest_dict.copy())
-
-	if "fabric1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18.1", modenv, manifest_dict.copy())
-
-	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18.2", modenv, manifest_dict.copy())
-
-	if "fabric1.19" in modenv or "1.19" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.19", modenv, manifest_dict.copy())
-
-	if "fabric1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.19.2", modenv, manifest_dict.copy())
-
-	# if "fabric1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "fabric" in modenv:
-		# build_mod("fabric", "1.19.3", modenv, manifest_dict.copy())
-
-
-	for file in manifest_dict["finalexecactions"]:
-		file = readf(file, manifest_dict)
-		try:
-			with open(file) as f:
-				j = json.load(f)
-			execActions(j, manifest_dict)
-		except FileNotFoundError:
-			print(f"Warning: file \"{file}\" listed in finalexecactions does not exist.")
-
-def build_mod(modloader, version, modenv, manifest_dict):
-	print(f"\n\
-\n\
------------------------------------------------\n\
-   Building {modloader} {version} mod project\n")
-	manifest_dict["modloader"] = modloader
-	manifest_dict["gameversion"] = gameversion = version
-	source_path = manifest_dict["source_path"]
-	project_path = manifest_dict["project_path"]
-	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
 
 	if modloader in manifest_dict.keys():
 		for f in manifest_dict[modloader]:
@@ -484,6 +475,15 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	with open(os.path.join(build_path, "m3ec_cache.json"), "w") as f:
 		json.dump(WRITTEN_FILES_LIST, f)
+
+	for file in manifest_dict["finalexecactions"]:
+		file = readf(file, manifest_dict)
+		try:
+			with open(file) as f:
+				j = json.load(f)
+			execActions(j, manifest_dict)
+		except FileNotFoundError:
+			print(f"Warning: file \"{file}\" listed in finalexecactions does not exist.")
 
 	return True
 
