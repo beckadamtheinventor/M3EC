@@ -1,0 +1,8 @@
+@:            recipe
+recipe:       SmeltingRecipe
+contentid:    perfect_ruby_smelting
+ingredient:   ${mod.mcpath}:ruby
+result:       ${mod.mcpath}:perfect_ruby
+count:        1
+time:         200
+experience:   2

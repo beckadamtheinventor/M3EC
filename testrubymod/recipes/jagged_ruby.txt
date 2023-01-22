@@ -1,0 +1,16 @@
+@: recipe
+recipe: ShapelessRecipe
+contentid: jagged_ruby
+
++ingredients: ${mod.mcpath}:ruby
+
+# only use amethyst as part of the recipe if the target version is 1.17 or higher
+@if gameversion.major >= 17
++ingredients: minecraft:amethyst_crystal
+# otherwise default to purple dye
+@else
++ingredients: minecraft:purple_dye
+@endif
+
+result: ${mod.mcpath}:jagged_ruby
+count: 1
