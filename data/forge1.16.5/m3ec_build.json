@@ -39,8 +39,7 @@
       "action": "setdictkey",
       "key": "mod.creativemodetab",
 	  "value": "${mod.class}.TAB"
-    },
-
+    }
   ],
   "sources": [
     {

@@ -2,6 +2,7 @@ package ${mod.package}.item;
 
 import ${mod.package}.${mod.class};
 import ${mod.package}.block.ModBlocks;
+import ${mod.package}.item.ModCreativeModeTab;
 import net.minecraft.world.item.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
