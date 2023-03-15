@@ -36,6 +36,11 @@
       "file": "${source_path}/forge_common/forge_preactions.json"
     },
     {
+      "action": "setdictkey",
+      "key": "mod.creativemodetab",
+	  "value": "${mod.class}.TAB"
+    },
+    {
       "action": "execactions",
       "file": "${source_path}/common/actions/block_mining_requirements.json"
     }

@@ -2,6 +2,7 @@ package ${mod.package};
 
 import ${mod.package}.block.ModBlocks;
 import ${mod.package}.item.ModItems;
+import ${mod.package}.item.ModCreativeModeTab;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;

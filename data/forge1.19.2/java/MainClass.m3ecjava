@@ -2,6 +2,7 @@ package ${mod.package};
 
 import ${mod.package}.block.ModBlocks;
 import ${mod.package}.item.ModItems;
+import ${mod.package}.item.ModCreativeModeTab;
 
 ---iter mainclass.imports
 import $%v;---end
