@@ -169,7 +169,11 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	manifest_dict["modloader"] = modloader
 	manifest_dict["gameversion"] = gameversion = version
-	_, manifest_dict["gameversion.major"], manifest_dict["gameversion.minor"] = (int(v) for v in version.split(".", maxsplit=2))
+	try:
+		_, manifest_dict["gameversion.major"], manifest_dict["gameversion.minor"] = (int(v) for v in version.split(".", maxsplit=2))
+	except ValueError:
+		_, manifest_dict["gameversion.major"] = (int(v) for v in version.split(".", maxsplit=1))
+		manifest_dict["gameversion.minor"] = 0
 	source_path = manifest_dict["source_path"]
 	project_path = manifest_dict["project_path"]
 	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
