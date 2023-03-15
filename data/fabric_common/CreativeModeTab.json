@@ -3,7 +3,7 @@
 	"if": "exists mod.iconitem",
 	"action": "setdictkey",
 	"key": "mod.creativemodetab",
-	"value": "mod.ITEM_GROUP"
+	"value": "${mod.class}.ITEM_GROUP"
 },
 {
 	"if": "!exists mod.iconitem",
