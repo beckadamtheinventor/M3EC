@@ -210,14 +210,17 @@ def execActions(actions, d, accumulator=None):
 		elif a == "copyf":
 			if "source" in action.keys() and "dest" in action.keys():
 				if "iterate" in action.keys():
+					iterating = True
 					l = action["iterate"]
 					if type(l) is str:
 						l = d[l]
 				else:
+					iterating = False
 					l = [action["source"]]
 				for i in range(len(l)):
-					d["%i"] = i
-					d["%v"] = l[i]
+					if iterating:
+						d["%i"] = i
+						d["%v"] = l[i]
 					fname = readf(action["source"], d)
 					dname = readf(action["dest"], d)
 					# print("copyf", fname, "-->", dname)
@@ -290,3 +293,5 @@ def execActions(actions, d, accumulator=None):
 			print()
 			if a == "error":
 				exit(1)
+
+

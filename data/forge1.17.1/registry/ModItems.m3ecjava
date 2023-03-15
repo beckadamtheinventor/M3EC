@@ -12,20 +12,20 @@ public class ModItems {
 
 ---iter mod.registry.item.names
 	public static final RegistryObject<Item> ${mod.item.$%v.uppercased} = ITEMS.register("$%v",
-			  () -> new ${mod.item.$%v.customclass}(new Item.Properties().tab(${mod.class}.TAB)));---end
+			  () -> new ${mod.item.$%v.customclass}(new Item.Properties().tab(${mod.creativemodetab})));---end
 
 //    public static final RegistryObject<PoisonAppleItem> POISON_APPLE = ITEMS.register("poison_apple", PoisonAppleItem::new);
 
 
 ---iter mod.registry.block.names
 	public static final RegistryObject<Item> ${mod.block.$%v.uppercased}_ITEM = ITEMS.register("$%v",
-			  () -> new BlockItem(ModBlocks.${mod.block.$%v.uppercased}.get(), new Item.Properties().tab(${mod.class}.TAB)));---end
+			  () -> new BlockItem(ModBlocks.${mod.block.$%v.uppercased}.get(), new Item.Properties().tab(${mod.creativemodetab})));---end
 
     // Tools
 //    public static final RegistryObject<SwordItem> RUBY_SWORD = ITEMS.register("ruby_sword",
-//            () -> new SwordItem(ModItemTier.RUBY, 2, -2.4F, new Item.Properties().tab(${mod.class}.TAB)));
+//            () -> new SwordItem(ModItemTier.RUBY, 2, -2.4F, new Item.Properties().tab(${mod.creativemodetab})));
 
     // Armor
 //    public static final RegistryObject<ArmorItem> RUBY_HELMET = ITEMS.register("ruby_helmet",
-//            () -> new ArmorItem(ModArmorMaterial.RUBY, EquipmentSlotType.HEAD, new Item.Properties().tab(${mod.class}.TAB)));
+//            () -> new ArmorItem(ModArmorMaterial.RUBY, EquipmentSlotType.HEAD, new Item.Properties().tab(${mod.creativemodetab})));
 }

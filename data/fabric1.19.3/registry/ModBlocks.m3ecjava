@@ -1,17 +1,11 @@
 package ${mod.package}.registry;
-
 ---iter mod.registry.recipetype.names
 import ${mod.package}.blocks.${mod.recipetype.$%v.BlockClass};---end
-
 ---iter mod.registry.sapling.names
 import ${mod.package}.features.${mod.sapling.$%v.class}SaplingGenerator;
 import ${mod.package}.blocks.${mod.sapling.$%v.class}SaplingBlock;---end
-
-
 import ${mod.package}.${mod.class};
-import ${mod.package}.blocks.ModDoorBlock;
 import ${mod.package}.blocks.ModStairBlock;
-import ${mod.package}.blocks.ModTrapdoorBlock;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -20,7 +14,8 @@ import net.minecraft.block.PillarBlock;
 import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class ModBlocks {
 ---iter mod.registry.block.names
@@ -45,9 +40,9 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 
     public static void RegisterBlocks() {
 ---iter mod.registry.block.names
-		Registry.register(Registry.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v^upper});---end
+		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v^upper});---end
 ---iter mod.registry.sapling.names
-		Registry.register(Registry.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v^upper});---end
+		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v^upper});---end
     }
 
 }

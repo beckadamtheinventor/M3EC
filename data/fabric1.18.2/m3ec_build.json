@@ -50,7 +50,12 @@
       "action": "copyf",
       "source": "${source_path}/${modloader}${gameversion}/ModTrapdoorBlock.m3ecjava",
       "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
-    }
+    },
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/fabric_preactions.json"
+	}
+
   ],
   "postActions": [
     {

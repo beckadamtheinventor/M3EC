@@ -18,7 +18,12 @@
     {
       "action": "execactions",
       "file": "${source_path}/common/actions/armor_layers.json"
-    }
+    },
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/fabric_preactions.json"
+	}
+
   ],
   "sources": [
     {

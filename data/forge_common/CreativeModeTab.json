@@ -1,0 +1,14 @@
+[
+{
+	"if": "exists mod.iconitem",
+	"action": "setdictkey",
+	"key": "mod.creativemodetab",
+	"value": "ModCreativeModeTab.TAB"
+},
+{
+	"if": "!exists mod.iconitem",
+	"action": "setdictkey",
+	"key": "mod.creativemodetab",
+	"value": "ModCreativeModeTab.TAB"
+}
+]

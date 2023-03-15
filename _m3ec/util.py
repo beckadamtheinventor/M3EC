@@ -504,7 +504,10 @@ def texture_pathify(d, tex, ct, cid):
 		if ct in ["tool", "armor", "blockitem", "food", "fuel"]:
 			ct = "item"
 		mod = d["mod.mcpath"]
-		return f"{mod}:{ct}s/{os.path.basename(tex)}"
+		if d["version_past_1.19.3"]:
+			return f"{mod}:{ct}/{os.path.basename(tex)}"
+		else:
+			return f"{mod}:{ct}s/{os.path.basename(tex)}"
 	return tex
 
 def toNumber(val, default=None):

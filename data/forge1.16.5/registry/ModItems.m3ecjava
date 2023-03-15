@@ -15,14 +15,14 @@ public class ModItems {
 
 //		Items
 ---iter mod.registry.item.names
-		public static final RegistryObject<Item> ${mod.item.$%v^UPPER} = ITEMS.register("$%v", () -> new ${mod.item.$%v.customclass}(new Item.Properties().tab(${mod.class}.TAB)));---end
+		public static final RegistryObject<Item> ${mod.item.$%v^UPPER} = ITEMS.register("$%v", () -> new ${mod.item.$%v.customclass}(new Item.Properties().tab(${mod.creativemodetab})));---end
 
 //		BlockItems
 ---iter mod.registry.block.names
-		public static final RegistryObject<Item> ${mod.block.$%v^UPPER} = ITEMS.register("$%v", () -> new BlockItem(ModBlocks.${mod.block.$%v^UPPER}.get(), new Item.Properties().tab(${mod.class}.TAB)));---end
+		public static final RegistryObject<Item> ${mod.block.$%v^UPPER} = ITEMS.register("$%v", () -> new BlockItem(ModBlocks.${mod.block.$%v^UPPER}.get(), new Item.Properties().tab(${mod.creativemodetab})));---end
 
 //     Tools
 ---iter mod.registry.tool.names
-		public static final RegistryObject<Item> ${mod.tool.$%v^UPPER} = ITEMS.register("$%v", () -> new ${mod.tool.$%v.tooltype}(new ${mod.tool.$%v.material}(), ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Properties().tab(${mod.class}.TAB)));---end
+		public static final RegistryObject<Item> ${mod.tool.$%v^UPPER} = ITEMS.register("$%v", () -> new ${mod.tool.$%v.tooltype}(new ${mod.tool.$%v.material}(), ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Properties().tab(${mod.creativemodetab})));---end
 
 }

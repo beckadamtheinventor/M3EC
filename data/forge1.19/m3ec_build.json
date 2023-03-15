@@ -38,6 +38,12 @@
       "action": "copy",
       "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
       "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+    },
+    {
+	  "if": "exists mod.iconitem",
+	  "action": "copyf",
+      "source": "java/item/ModCreativeModeTab.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/item/ModCreativeModeTab.java"
     }
   ],
   "sources": [
@@ -68,10 +74,6 @@
     {
       "source": "java/item/ModTiers.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/item/ModTiers.java"
-    },
-    {
-      "source": "java/item/ModCreativeModeTab.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/item/ModCreativeModeTab.java"
     }
   ]
 }

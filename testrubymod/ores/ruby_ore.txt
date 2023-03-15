@@ -1,4 +1,5 @@
 @:          ore
+OverworldOre:
 ore:
 contentid:  ruby_ore_ore
 name:       ruby_ore_ore
@@ -8,5 +9,8 @@ vein:
 .atbedrock:
 .block:     ModBlocks.RUBY_ORE
 .size:      6
-.perchunk:  5
-OverworldOre:
+.perchunk:  6
+# required for versions 1.19.3 and up
+.count: 100
+# required for versions 1.19.3 and up
+blockid:    ${mod.mcpath}:ruby_ore

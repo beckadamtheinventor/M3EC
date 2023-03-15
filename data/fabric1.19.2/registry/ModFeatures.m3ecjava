@@ -16,12 +16,7 @@ import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 
 public class ModFeatures {
 ---iter mod.registry.sapling.names
-    public static final RegistryEntry<ConfiguredFeature<TreeFeatureConfig, ?>> ${mod.sapling.$%v^upper} =
-            ConfiguredFeatures.register("${mod.mcpath}:$%v", Feature.TREE, new TreeFeatureConfig.Builder(
-            BlockStateProvider.of(${mod.sapling.$%v.logblock}),
-            new StraightTrunkPlacer(${mod.sapling.$%v.baseheight}, ${mod.sapling.$%v.randomheighta}, ${mod.sapling.$%v.randomheightb}),
-            BlockStateProvider.of(${mod.sapling.$%v.leafblock}),
-            new BlobFoliagePlacer(ConstantIntProvider.create(${mod.sapling.$%v.leafradius}), ConstantIntProvider.create(${mod.sapling.$%v.leafoffset}), ${mod.sapling.$%v.leafheight}),
-            new TwoLayersFeatureSize(1, 0, 1)
-    ).build());---end
+	public static final RegistryKey<ConfiguredFeature<?, ?>> ${mod.sapling.${%v}^upper}_FEATURE = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, new Identifier("${mod.mcpath}", "${%v}"));
+	public static final RegistryKey<PlacedFeature> ${mod.sapling.${%v}^upper}_PLACED_FEATURE = RegistryKey.of(RegistryKeys.PLACED_FEATURE, new Identifier("${mod.mcpath}", "${%v}"));
+---end
 }

@@ -1,6 +1,7 @@
 */*_build
 */*_build
 */todo
+testrubymod/built_mod_jars
 __pycache__
 javapaths.json
 config

@@ -2,6 +2,7 @@ package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
 
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ToolMaterial;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
@@ -15,7 +16,9 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+
 ---iter moditems.imports
 	import $%v;---end
 
@@ -23,19 +26,19 @@ public class ModItems {
 
     //Items
 ---iter mod.registry.item.names
-	public static final Item ${mod.item.$%v.uppercased} = new ${mod.item.$%v.customclass}(new Item.Settings().group(${mod.class}.ITEM_GROUP)---if mod.item.$%v.extraItemSettings
+	public static final Item ${mod.item.$%v.uppercased} = new ${mod.item.$%v.customclass}(new FabricItemSettings()---if mod.item.$%v.extraItemSettings
 ${mod.item.$%v.extraItemSettings}---fi);---end
 
 	//Food
 ---iter mod.registry.food.names
-	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.class}.ITEM_GROUP).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})---if mod.food.$%v.snack
+	public static final Item ${mod.food.$%v.uppercased} = new Item(new FabricItemSettings().food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})---if mod.food.$%v.snack
 .snack()---fi---if mod.food.$%v.alwaysEdible
 .alwaysEdible()---fi---if mod.food.$%v.statusEffects
 ${mod.food.$%v.statusEffects}---fi.build()));---end
 
     //Block Items
 ---iter mod.registry.blockitem.names
-	public static final BlockItem ${mod.blockitem.$%v.uppercased} = new BlockItem(ModBlocks.${mod.blockitem.$%v.uppercased}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final BlockItem ${mod.blockitem.$%v.uppercased} = new BlockItem(ModBlocks.${mod.blockitem.$%v.uppercased}, new FabricItemSettings());---end
 
 	//Armor materials
 ---iter mod.registry.armormaterial.names
@@ -43,35 +46,35 @@ ${mod.food.$%v.statusEffects}---fi.build()));---end
 
 	//Armor items
 ---iter mod.registry.armor.names
-	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material^upper}, EquipmentSlot.${mod.armor.$%v.slot}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final Item ${mod.armor.$%v.uppercased} = new ArmorItem(${mod.armor.$%v.material^upper}, EquipmentSlot.${mod.armor.$%v.slot}, new FabricItemSettings());---end
 
 
 	//Tool items
 ---iter mod.registry.tool.names
-	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new FabricItemSettings());---end
 
 	//Sapling Items
 ---iter mod.registry.sapling.names
-	public static final BlockItem ${mod.sapling.$%v.uppercased} = new BlockItem(ModBlocks.${mod.sapling.$%v.uppercased}, new Item.Settings().group(${mod.class}.ITEM_GROUP));---end
+	public static final BlockItem ${mod.sapling.$%v.uppercased} = new BlockItem(ModBlocks.${mod.sapling.$%v.uppercased}, new FabricItemSettings());---end
 
 ---iter moditems.extra
 	$%v---end
 
     public static void RegisterItems() {
 ---iter mod.registry.item.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.item.$%v.uppercased});---end
+		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.item.$%v.uppercased});---end
 ---iter mod.registry.food.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.food.$%v.uppercased});---end
+		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.food.$%v.uppercased});---end
 ---iter mod.registry.blockitem.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.blockitem.$%v.uppercased});---end
+		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.blockitem.$%v.uppercased});---end
 ---iter mod.registry.fuel.names
 		FuelRegistry.INSTANCE.add(${mod.fuel.$%v.uppercased}, ${mod.fuel.$%v.burntime});---end
 ---iter mod.registry.armor.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.armor.$%v.uppercased});---end
+		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.armor.$%v.uppercased});---end
 ---iter mod.registry.tool.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
+		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
 ---iter mod.registry.sapling.names
-		Registry.register(Registry.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v.uppercased});---end
+		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v.uppercased});---end
 
 ---iter moditems.registeritems.extra
 		$%v---end

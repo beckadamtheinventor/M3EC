@@ -30,11 +30,12 @@ public class ${mod.class}
 
     private void doClientStuff(final FMLClientSetupEvent event) { }
 
+---if mod.iconItem
     // Custom ItemGroup TAB
     public static final ItemGroup TAB = new ItemGroup("${mod.title}") {
 		@Override
 		public ItemStack makeIcon() {
 			return new ItemStack(ModItems.${mod.iconItem^UPPER}.get());
 		}
-	};
+	};---fi
 }

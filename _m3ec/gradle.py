@@ -29,9 +29,10 @@ def maybe_run_gradle(path, modenv, javaver, md):
 
 def find_java_version(javaver):
 	if sys.platform.startswith("win32"):
-		javapath = find_jdk("C:\\Program Files\\Java", javaver)
-		if javapath is None:
-			javapath = find_jdk("C:\\Program Files (x86)\\Java", javaver)
+		for p in ["Program Files\\Eclipse Adoptium", "Program Files\\Java", "Program Files (x86)\\Java", "Program Files (x86)\\Eclipse Adoptium"]:
+			javapath = find_jdk(f"C:\\{p}", javaver)
+			if javapath is not None:
+				break
 	else:
 		javapath = find_jdk("/usr/lib/jvm", javaver)
 

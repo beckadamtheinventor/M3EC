@@ -14,15 +14,15 @@ public class ModItems {
 
 ---iter mod.registry.item.names
     public static final RegistryObject<Item> ${mod.item.$%v.uppercased} = ITEMS.register("$%v",
-            () -> new ${mod.item.$%v.customclass}(new Item.Properties().tab(ModCreativeModeTab.TAB)));---end
+            () -> new ${mod.item.$%v.customclass}(new Item.Properties().tab(${mod.creativemodetab})));---end
 
 ---iter mod.registry.food.names
 	public static final RegistryObject<Item> ${mod.food.$%v.uppercased} = ITEMS.register("$%v",
-            () -> new Item(new Item.Properties().tab(ModCreativeModeTab.TAB).food(ModFoods.${mod.food.$%v.uppercased})));---end
+            () -> new Item(new Item.Properties().tab(${mod.creativemodetab}).food(ModFoods.${mod.food.$%v.uppercased})));---end
 
 ---iter mod.registry.tool.names
 	public static final RegistryObject<Item> ${mod.tool.$%v.uppercased} = ITEMS.register("$%v",
-		() -> new ${mod.tool.$%v.tooltype}(${mod.tool.$%v.tooltier}, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Properties().tab(ModCreativeModeTab.TAB)));---end
+		() -> new ${mod.tool.$%v.tooltype}(${mod.tool.$%v.tooltier}, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Properties().tab(${mod.creativemodetab})));---end
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

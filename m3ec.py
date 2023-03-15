@@ -101,13 +101,15 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		manifest_dict["mod.license"] = "All Rights Reserved"
 
 	if "mod.iconitem" not in manifest_dict.keys():
-		print("Warning: Icon item for custom creative tab unspecified. Defaulting to first item registered.")
+		print("Warning: Icon item for custom creative tab unspecified. Defaulting to none.")
 
 	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
 
 
 	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
 		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
+
+	manifest_dict["version_past_1.19.3"] = False
 
 	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
 		build_mod("forge", "1.16.5", modenv, manifest_dict.copy())
@@ -149,8 +151,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "fabric1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.19.2", modenv, manifest_dict.copy())
 
-	# if "fabric1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "fabric" in modenv:
-		# build_mod("fabric", "1.19.3", modenv, manifest_dict.copy())
+	manifest_dict["version_past_1.19.3"] = True
+
+	if "fabric1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.19.3", modenv, manifest_dict.copy())
+
+	# if "forge1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "forge" in modenv:
+		# build_mod("forge", "1.19.3", modenv, manifest_dict.copy())
 
 def build_mod(modloader, version, modenv, manifest_dict):
 	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool",
@@ -497,10 +504,15 @@ def build_resources(project_path, builddir, manifest_dict):
 	builddir = os.path.join(project_path, builddir+"_build")
 	build_java_dir = os.path.join(builddir, "src", "main", "java", manifest_dict["mod.prefix"], manifest_dict["mod.author"], manifest_dict["mod.class"])
 	block_models_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "block")
-	block_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "blocks")
 	blockstates_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "blockstates")
 	item_models_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "item")
-	item_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "items")
+	# because they decided to change pluralization I guess
+	if manifest_dict["version_past_1.19.3"]:
+		block_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "block")
+		item_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "item")
+	else:
+		block_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "blocks")
+		item_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "items")
 	lang_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "lang")
 	block_loot_table_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks")
 	recipes_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes")
@@ -529,8 +541,12 @@ def build_resources(project_path, builddir, manifest_dict):
 	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "block"))
 	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "item"))
 	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "items"))
+	if manifest_dict["version_past_1.19.3"]:
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "block"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "item"))
+	else:
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "items"))
 	make_dir(os.path.join(dest, "src", "main", "resources", "data"))
 	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath))
 	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables"))

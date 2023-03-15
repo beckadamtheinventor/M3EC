@@ -1,0 +1,6 @@
+[
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/CreativeModeTab.json"
+	}
+]

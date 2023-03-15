@@ -19,9 +19,41 @@
         "src/main/resources/assets/minecraft",
         "src/main/resources/assets/minecraft/textures",
         "src/main/resources/assets/minecraft/textures/models",
-        "src/main/resources/assets/minecraft/textures/models/armor"
+        "src/main/resources/assets/minecraft/textures/models/armor",
+		"src/main/resources/data",
+		"src/main/resources/data/${mod.mcpath}",
+		"src/main/resources/data/${mod.mcpath}/worldgen",
+		"src/main/resources/data/${mod.mcpath}/worldgen/configured_feature",
+		"src/main/resources/data/${mod.mcpath}/worldgen/placed_feature"
       ]
     },
+	{
+		"iterate": "mod.registry.ore.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "setdictkey",
+				"key": "ore",
+				"value": "${%v}"
+			},
+			{
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/configured_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/configured_feature/${ore}.json"
+			},
+			{
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/${ore}.json"
+			},
+			{
+				"if": "exists mod.registry.ore.${%v}.deepslateblockid",
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/deepslate_${ore}.json"
+			}
+		]
+	},
     {
       "action": "execactions",
       "file": "${source_path}/common/actions/block_mining_requirements.json"
@@ -44,24 +76,18 @@
     },
     {
       "action": "copyf",
-      "source": "${source_path}/${modloader}${gameversion}/ModDoorBlock.m3ecjava",
-      "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModDoorBlock.java"
-    },
-    {
-      "action": "copyf",
       "source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
       "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
     },
-    {
-      "action": "copyf",
-      "source": "${source_path}/${modloader}${gameversion}/ModTrapdoorBlock.m3ecjava",
-      "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModTrapdoorBlock.java"
-    }
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/fabric_preactions.json"
+	}
   ],
   "postActions": [
     {
       "action": "copy",
-      "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
+      "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item/${mod.iconItem}.png",
       "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
     }
   ],
@@ -112,10 +138,6 @@
       "source": "recipetype/RecipeSerializer.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
     },
-	{
-		"source": "registry/ModFeatures.m3ecjava",
-		"dest": "src/main/java/${mod.packagedir}/features/ModFeatures.java"
-	},
 	{
 		"iterate": "mod.registry.sapling.names",
 		"source": "registry/SaplingBlock.m3ecjava",

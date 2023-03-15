@@ -41,12 +41,13 @@ public class ${mod.class}
 		
 	}
 
+---if mod.iconItem
 	public static final CreativeModeTab TAB = new CreativeModeTab("${mod.title}") {
 		@Override
 		public ItemStack makeIcon() {
 			return new ItemStack(ModItems.${mod.iconItem^UPPER}.get());
 		}
-	};
+	};---fi
 
 }
 

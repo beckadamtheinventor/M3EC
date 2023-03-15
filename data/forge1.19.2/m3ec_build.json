@@ -31,6 +31,12 @@
     {
       "action": "execactions",
       "file": "${source_path}/common/actions/block_mining_requirements.json"
+    },
+    {
+	  "if": "exists mod.iconitem",
+	  "action": "copyf",
+      "source": "java/item/ModCreativeModeTab.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/item/ModCreativeModeTab.java"
     }
   ],
   "postActions": [
@@ -68,10 +74,6 @@
     {
       "source": "java/item/ModTiers.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/item/ModTiers.java"
-    },
-    {
-      "source": "java/item/ModCreativeModeTab.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/item/ModCreativeModeTab.java"
     }
   ]
 }

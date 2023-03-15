@@ -3,8 +3,8 @@ package ${mod.package}.blocks;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.block.sapling.SaplingGenerator;
 
-public class ${mod.sapling.${%v}.class}SaplingBlock extends SaplingBlock {
-    public ${mod.sapling.${%v}.class}SaplingBlock(SaplingGenerator generator, Settings settings) {
-        super(generator, settings);
+public class ${mod.sapling.${%v}.class}Block extends SaplingBlock {
+    public ${mod.sapling.${%v}.class}Block(Settings settings) {
+        super(new ${mod.sapling.${%v}.class}Generator, settings.noCollision().ticksRandomly());
     }
 }
