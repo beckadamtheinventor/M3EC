@@ -573,6 +573,7 @@ def build_resources(project_path, builddir, manifest_dict):
 	make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir, "registry"))
 	langdict = {"en_us":{}}
 	tagdict = {}
+	blocktagdict = {}
 	manifest_dict[f"mod.registry.blockitem.names"].clear()
 
 	includedClasses = []
@@ -685,16 +686,16 @@ def build_resources(project_path, builddir, manifest_dict):
 				if "blocktags" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
 					if type(manifest_dict[f"mod.{content_type}.{cid}.blocktags"]) is list:
 						for tag in manifest_dict[f"mod.{content_type}.{cid}.blocktags"]:
-							if tag in tagdict.keys():
-								tagdict[tag].append(nscid)
+							if tag in blocktagdict.keys():
+								blocktagdict[tag].append(nscid)
 							else:
-								tagdict[tag] = [nscid]
+								blocktagdict[tag] = [nscid]
 					else:
 						for tag in manifest_dict[f"mod.{content_type}.{cid}.blocktags"].split(" "):
-							if tag in tagdict.keys():
-								tagdict[tag].append(nscid)
+							if tag in blocktagdict.keys():
+								blocktagdict[tag].append(nscid)
 							else:
-								tagdict[tag] = [nscid]
+								blocktagdict[tag] = [nscid]
 
 			if "customclass" in manifest_dict.keys():
 				manifest_dict[f"mod.{content_type}.{cid}.customclass"] = manifest_dict["customclass"]
@@ -721,9 +722,18 @@ def build_resources(project_path, builddir, manifest_dict):
 		else:
 			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
 			exit(1)
-		make_dir(os.path.join(build_data_dir, ns))
-		make_dir(os.path.join(build_data_dir, ns, "tags"))
-		with open(os.path.join(build_data_dir, ns, "tags", tag), "w") as f:
+		make_dir(os.path.join(build_data_dir, ns, "tags", "item"))
+		with open(os.path.join(build_data_dir, ns, "tags", "item", tag), "w") as f:
+			json.dump(tagdict[tag], f)
+
+	for tag in blocktagdict.keys():
+		if ":" in tag:
+			ns, tag = tag.split(":")
+		else:
+			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
+			exit(1)
+		make_dir(os.path.join(build_data_dir, ns, "tags", "block"))
+		with open(os.path.join(build_data_dir, ns, "tags", "block", tag), "w") as f:
 			json.dump(tagdict[tag], f)
 
 

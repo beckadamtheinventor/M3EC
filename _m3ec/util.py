@@ -525,10 +525,13 @@ def toNumber(val, default=None):
 	return default
 
 def make_dir(path):
+	if os.path.exists(path) and os.path.isdir(path):
+		return True
+	elif os.path.exists(path):
+		print(f"Warning: Failed to make directory \"{path}\" because a file of the same name exists")
+		return False
 	try:
 		os.mkdir(path)
-		return True
-	except FileExistsError:
 		return True
 	except FileNotFoundError:
 		if make_dir(os.path.dirname(path)):
