@@ -723,7 +723,7 @@ def build_resources(project_path, builddir, manifest_dict):
 			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "item"))
-		with open(os.path.join(build_data_dir, ns, "tags", "item", t), "w") as f:
+		with open(os.path.join(build_data_dir, ns, "tags", "item", t+".json"), "w") as f:
 			json.dump(tagdict[tag], f)
 
 	for tag in blocktagdict.keys():
@@ -733,7 +733,7 @@ def build_resources(project_path, builddir, manifest_dict):
 			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "block"))
-		with open(os.path.join(build_data_dir, ns, "tags", "block", t), "w") as f:
+		with open(os.path.join(build_data_dir, ns, "tags", "block", t+".json"), "w") as f:
 			json.dump(tagdict[tag], f)
 
 
