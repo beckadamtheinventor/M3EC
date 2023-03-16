@@ -4,7 +4,7 @@
 ---list ingredients
 		{
 ---if $%v #startswith #
-			"tag": "$%v"---fi---if !$%v #startswith #
+			"tag": "${$%v^split(1)}"---fi---if !$%v #startswith #
 			"item": "$%v"---fi
 		}---end
     ],

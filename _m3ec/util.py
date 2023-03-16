@@ -744,35 +744,48 @@ def readf(data, d):
 				fns = word.split("^")[1:]
 				if w in d.keys():
 					w = d[w]
-					if type(w) is str:
-						for fn in fns:
-							# if fn.startswith("("):
-								# if fn.endswith(")"):
-									# try:
-										# w = w(args)
-									# except:
-										# print(f"Attempted to call non-function key: \"{w}\"")
-								# else:
-									# print(f"Malformed function key call: \"{fn}\"")
-							if fn.lower() == "upper":
-								w = w.upper()
-							elif fn.lower() == "lower":
-								w = w.lower()
-							elif fn.lower() == "capital":
-								w = w.capitalize()
-							elif fn.lower() == "float":
-								if type(w) is str:
-									if not w.endswith("f"):
-										w = w+"f"
-								else:
-									w = str(float(w))+"f"
-							elif fn.lower() == "int":
-								if type(w) is str:
-									if w.endswith("f"):
-										w = w[:-1]
-									w = int(float(w))
-								else:
-									w = int(w)
+				if type(w) is str:
+					for fn in fns:
+						# if fn.startswith("("):
+							# if fn.endswith(")"):
+								# try:
+									# w = w(args)
+								# except:
+									# print(f"Attempted to call non-function key: \"{w}\"")
+							# else:
+								# print(f"Malformed function key call: \"{fn}\"")
+						if fn.lower() == "upper":
+							w = w.upper()
+						elif fn.lower() == "lower":
+							w = w.lower()
+						elif fn.lower() == "capital":
+							w = w.capitalize()
+						elif fn.lower() == "float":
+							if type(w) is str:
+								if not w.endswith("f"):
+									w = w+"f"
+							else:
+								w = str(float(w))+"f"
+						elif fn.lower() == "int":
+							if type(w) is str:
+								if w.endswith("f"):
+									w = w[:-1]
+								w = int(float(w))
+							else:
+								w = int(w)
+						elif fn.lower().startswith("split(") and fn.endswith(")"):
+							if type(w) is not str:
+								w = str(w)
+							args = fn.lower()[6:-1].split(",")
+							if len(args) == 1:
+								w = w[args[0]:]
+							elif len(args) == 2:
+								w = w[args[0]:args[1]]
+							elif len(args) == 3:
+								w = w[args[0]:args[1]:args[2]]
+							else:
+								print("Wrong number of arguments to ^split in ${"+word+"} (minimum 1, maximum 3 arguments)")
+								exit(1)
 			elif word.lower() in d.keys():
 				w = d[word.lower()]
 			data = head + str(w) + tail
