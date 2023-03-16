@@ -724,7 +724,7 @@ def build_resources(project_path, builddir, manifest_dict):
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "items"))
 		with open(os.path.join(build_data_dir, ns, "tags", "items", t+".json"), "w") as f:
-			json.dump(tagdict[tag], f)
+			json.dump({"replace": False, "values": tagdict[tag]}, f)
 
 	for tag in blocktagdict.keys():
 		if ":" in tag:
@@ -734,7 +734,7 @@ def build_resources(project_path, builddir, manifest_dict):
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "blocks"))
 		with open(os.path.join(build_data_dir, ns, "tags", "blocks", t+".json"), "w") as f:
-			json.dump(tagdict[tag], f)
+			json.dump({"replace": False, "values": blocktagdict[tag]}, f)
 
 
 def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
