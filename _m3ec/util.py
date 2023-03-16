@@ -790,6 +790,17 @@ def readf(data, d):
 							else:
 								print("Wrong number of arguments to key function ^split in ${"+word+"} (minimum 1, maximum 3 arguments)")
 								exit(1)
+						elif fn.lower().startswith("replace(") and fn.endswith(")"):
+							if type(w) is not str:
+								w = str(w)
+							args = fn.lower()[8:-1].split(",")
+							if len(args) == 1:
+								w = w.replace(args[0], "")
+							elif len(args) == 2:
+								w = w.replace(args[0], args[1])
+							else:
+								print("Wrong number of arguments to key function ^replace in ${"+word+"} (minimum 1, maximum 2 arguments)")
+								exit(1)
 			elif word.lower() in d.keys():
 				w = d[word.lower()]
 			data = head + str(w) + tail
