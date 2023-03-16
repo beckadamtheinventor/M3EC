@@ -779,7 +779,7 @@ def readf(data, d):
 							try:
 								args = [int(a) for a in fn.lower()[6:-1].split(",")]
 							except:
-								print("Error parsing integer argument in key function arguments ${"+word"}")
+								print("Error parsing integer argument in key function arguments ${"+word+"}")
 								exit(1)
 							if len(args) == 1:
 								w = w[args[0]:]
