@@ -518,6 +518,7 @@ def build_resources(project_path, builddir, manifest_dict):
 		block_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "blocks")
 		item_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "items")
 	lang_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "lang")
+	build_data_dir = os.path.join(builddir, "src", "main", "resources", "data")
 	block_loot_table_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks")
 	recipes_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes")
 	gradlesrc = os.path.join(source_path, "gradle")
@@ -571,11 +572,13 @@ def build_resources(project_path, builddir, manifest_dict):
 	make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir))
 	make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir, "registry"))
 	langdict = {"en_us":{}}
+	tagdict = {}
 	manifest_dict[f"mod.registry.blockitem.names"].clear()
 
 	includedClasses = []
 	for content_type in manifest_dict["mod.content_types"]:
 		for cid in manifest_dict[f"mod.registry.{content_type}.names"]:
+			nscid = manifest_dict["mod.mcpath"]+":"+cid
 			tname = manifest_dict[f"mod.{content_type}.{cid}.{content_type}"]
 			# print(cid, content_type, tname)
 			# print(manifest_dict[f"mod.{content_type}.{cid}.keys"])
@@ -663,6 +666,36 @@ def build_resources(project_path, builddir, manifest_dict):
 					content_type_mc = content_type
 				langdict["en_us"][f"{content_type_mc}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.title"]
 
+			if content_type in ["block", "item", "food", "armor", "tool"]:
+				if "itemtags" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
+					if type(manifest_dict[f"mod.{content_type}.{cid}.itemtags"]) is list:
+						for tag in manifest_dict[f"mod.{content_type}.{cid}.itemtags"]:
+							if tag in tagdict.keys():
+								tagdict[tag].append(nscid)
+							else:
+								tagdict[tag] = [nscid]
+					else:
+						for tag in manifest_dict[f"mod.{content_type}.{cid}.itemtags"].split(" "):
+							if tag in tagdict.keys():
+								tagdict[tag].append(nscid)
+							else:
+								tagdict[tag] = [nscid]
+
+			if content_type in ["block"]:
+				if "blocktags" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
+					if type(manifest_dict[f"mod.{content_type}.{cid}.blocktags"]) is list:
+						for tag in manifest_dict[f"mod.{content_type}.{cid}.blocktags"]:
+							if tag in tagdict.keys():
+								tagdict[tag].append(nscid)
+							else:
+								tagdict[tag] = [nscid]
+					else:
+						for tag in manifest_dict[f"mod.{content_type}.{cid}.blocktags"].split(" "):
+							if tag in tagdict.keys():
+								tagdict[tag].append(nscid)
+							else:
+								tagdict[tag] = [nscid]
+
 			if "customclass" in manifest_dict.keys():
 				manifest_dict[f"mod.{content_type}.{cid}.customclass"] = manifest_dict["customclass"]
 			elif content_type in ["item", "food", "armor", "tool"]:
@@ -681,6 +714,17 @@ def build_resources(project_path, builddir, manifest_dict):
 	for lang in langdict.keys():
 		with open(os.path.join(lang_dir, lang+".json"),"w") as f:
 			json.dump(langdict[lang], f)
+
+	for tag in tagdict.keys():
+		if ":" in tag:
+			ns, tag = tag.split(":")
+		else:
+			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
+			exit(1)
+		make_dir(os.path.join(build_data_dir, ns))
+		make_dir(os.path.join(build_data_dir, ns, "tags"))
+		with open(os.path.join(build_data_dir, ns, "tags", tag), "w") as f:
+			json.dump(tagdict[tag], f)
 
 
 def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
