@@ -677,20 +677,27 @@ def readf(data, d):
 					key = data[i+len(istr):n]
 				if " " in key:
 					key, tail = key.split(" ", maxsplit=1)
-					tail = tail.lower().split(" ")
+					tail = tail.split(" ")
 				else:
 					tail = []
 				condtrue = False
 				key = readf(key.lower(), d).lower()
 				# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
-				if "#contains" in tail:
+				if len(tail) < 1:
+					if key in d.keys():
+						condtrue = True
+				elif tail[0].lower() == "#contains":
 					if len(tail):
-						if all([w.lower() in key for w in tail[1:]]):
+						if all([w in key for w in tail[1:]]):
 							condtrue = True
 							for w in tail[1:]:
 								key = key.replace(w.lower(), "")
 					elif len(key):
 						condtrue = True
+				elif tail[0].lower() == "#startswith":
+					if len(tail) > 1:
+						if key.startswith(tail[1]):
+							condtrue = True
 				elif key in d.keys():
 					condtrue = True
 				if inverted:

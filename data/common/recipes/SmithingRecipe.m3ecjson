@@ -1,10 +1,14 @@
 {
 	"type": "minecraft:smithing",
 	"base": {
-		"item": "${ingredient}"
+---if ${ingredient} #startswith #
+		"tag": "${ingredient}"---fi---if !${ingredient} #startswith #
+        "item": "${ingredient}"---fi
 	},
 	"addition": {
-        "item": "${ingredient2}"
+---if ${ingredient2} #startswith #
+		"tag": "${ingredient2}"---fi---if !${ingredient2} #startswith #
+        "item": "${ingredient2}"---fi
 	},
 	"result": {
 		"item": "${result}"

@@ -6,7 +6,11 @@
     ],
     "key": {
 ---list items
-		"${itemkeys.list.$%i}": {"item": "$%v"}---end
+		"${itemkeys.list.$%i}": {
+---if $%v #startswith #
+			"tag": "$%v"---fi---if !$%v #startswith #
+			"item": "$%v"---fi
+		}---end
     },
     "result": {
         "item": "${result}",

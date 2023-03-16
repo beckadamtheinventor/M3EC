@@ -1,7 +1,9 @@
 {
     "type": "minecraft:smoking",
 	"ingredient": {
-        "item": "${ingredient}"
+---if ${ingredient} #startswith #
+		"tag": "${ingredient}"---fi---if !${ingredient} #startswith #
+        "item": "${ingredient}"---fi
 	},
     "result": "${result}",
     "experience": ${experience},

@@ -1,7 +1,9 @@
 {
     "type": "minecraft:campfire_cooking",
     "ingredient": {
-        "item": "${ingredient}"
+---if ${ingredient} #startswith #
+		"tag": "${ingredient}"---fi---if !${ingredient} #startswith #
+        "item": "${ingredient}"---fi
     },
     "result": "${result}",
     "cookingtime": ${time}
