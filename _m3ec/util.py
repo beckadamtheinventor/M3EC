@@ -776,7 +776,11 @@ def readf(data, d):
 						elif fn.lower().startswith("split(") and fn.endswith(")"):
 							if type(w) is not str:
 								w = str(w)
-							args = fn.lower()[6:-1].split(",")
+							try:
+								args = [int(a) for a in fn.lower()[6:-1].split(",")]
+							except:
+								print("Error parsing integer argument in key function arguments ${"+word"}")
+								exit(1)
 							if len(args) == 1:
 								w = w[args[0]:]
 							elif len(args) == 2:
@@ -784,7 +788,7 @@ def readf(data, d):
 							elif len(args) == 3:
 								w = w[args[0]:args[1]:args[2]]
 							else:
-								print("Wrong number of arguments to ^split in ${"+word+"} (minimum 1, maximum 3 arguments)")
+								print("Wrong number of arguments to key function ^split in ${"+word+"} (minimum 1, maximum 3 arguments)")
 								exit(1)
 			elif word.lower() in d.keys():
 				w = d[word.lower()]
