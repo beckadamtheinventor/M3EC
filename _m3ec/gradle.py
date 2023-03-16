@@ -55,6 +55,6 @@ def find_jdk(path, javaver):
 	if os.path.exists(path):
 		for root, dirs, files in os.walk(path):
 			for d in dirs:
-				if javaver in d and d.startswith("jdk"):
+				if d.startswith("jdk") and (f"-{javaver}" in d or f"1.{javaver}" in d):
 					return os.path.join(root, d)
 	return None

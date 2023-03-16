@@ -26,8 +26,8 @@ public class ModBlocks {
 
 ---iter mod.registry.block.names
 	public static final RegistryObject<Block> ${mod.block.$%v^upper} = registerBlock("$%v", () -> new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
-${mod.block.$%v.BlockMaterialBlock^UPPER}.get().defaultBlockState(), ---fi
-		BlockBehaviour.Properties.of(Material.${mod.block.$%v.material})
+${mod.block.$%v.BlockMaterialBlock^upper}.get().defaultBlockState(), ---fi
+		BlockBehaviour.Properties.of(Material.${mod.block.$%v.material^upper})
 		.strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
 		.sound(SoundType.${mod.block.$%v.sounds})---if mod.block.$%v.requiresTool
 		.requiresCorrectToolForDrops()---fi---if mod.block.$%v.lightlevel

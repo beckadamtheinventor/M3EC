@@ -1,7 +1,7 @@
 {
   "modloader": "forge",
   "minecraftVersion": "1.16.5",
-  "javaVersion": "1.8.",
+  "javaVersion": "8.",
   "firstActions": [
     {
       "if": [
