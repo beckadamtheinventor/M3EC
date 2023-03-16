@@ -718,22 +718,22 @@ def build_resources(project_path, builddir, manifest_dict):
 
 	for tag in tagdict.keys():
 		if ":" in tag:
-			ns, tag = tag.split(":")
+			ns, t = tag.split(":")
 		else:
 			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "item"))
-		with open(os.path.join(build_data_dir, ns, "tags", "item", tag), "w") as f:
+		with open(os.path.join(build_data_dir, ns, "tags", "item", t), "w") as f:
 			json.dump(tagdict[tag], f)
 
 	for tag in blocktagdict.keys():
 		if ":" in tag:
-			ns, tag = tag.split(":")
+			ns, t = tag.split(":")
 		else:
 			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "block"))
-		with open(os.path.join(build_data_dir, ns, "tags", "block", tag), "w") as f:
+		with open(os.path.join(build_data_dir, ns, "tags", "block", t), "w") as f:
 			json.dump(tagdict[tag], f)
 
 
