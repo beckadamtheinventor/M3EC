@@ -1,0 +1,95 @@
+
+package ${mod.package}.registry;
+
+import ${mod.package}.registry.ModItems;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+---iter ${%v}.imports
+	import $%v;---end
+
+public class ${mod.armormaterial.${%v}.class} implements ArmorMaterial {
+	private static int[] BASE_DURABILITY = new int[] {13, 15, 16, 11};
+	private static int[] PROTECTION_VALUES = new int[] {${mod.armormaterial.${%v}.protection.helmet^int}, ${mod.armormaterial.${%v}.protection.chestplate^int}, ${mod.armormaterial.${%v}.protection.leggings^int}, ${mod.armormaterial.${%v}.protection.boots^int}};
+
+	@Override
+	public int getDurability(ArmorItem.Type type) {
+---if !${%v}.getdurability
+		return BASE_DURABILITY[type.getEquipmentSlot().getEntitySlotId()] * ${mod.armormaterial.${%v}.durability^int};---fi
+---if ${%v}.getdurability
+---iter ${%v}.getdurability
+		$%v---end---fi
+	}
+ 
+	@Override
+	public int getProtection(ArmorItem.Type type) {
+---if !${%v}.getprotectionamount
+		return PROTECTION_VALUES[type.getEquipmentSlot().getEntitySlotId()];---fi
+---if ${%v}.getprotectionamount
+---iter ${%v}.getprotectionamount
+		$%v---end---fi
+	}
+ 
+	@Override
+	public int getEnchantability() {
+---if !${%v}.getenchantability
+		return ${mod.armormaterial.${%v}.enchantability^int};---fi
+---if ${%v}.getenchantability
+---iter ${%v}.getenchantability
+		$%v---end---fi
+	}
+ 
+	@Override
+	public SoundEvent getEquipSound() {
+---if !${%v}.getequipsound
+		return SoundEvents.${mod.armormaterial.${%v}.sound};---fi
+---if ${%v}.getequipsound
+---list ${%v}.getequipsound
+		$%v---end---fi
+	}
+ 
+	@Override
+	public Ingredient getRepairIngredient() {
+---if !${%v}.getrepairingredient
+		return Ingredient.ofItems(${mod.armormaterial.${%v}.repairitem});---fi
+---if ${%v}.getrepairingredient
+---list ${%v}.getrepairingredient
+		$%v---end---fi
+	}
+ 
+	@Override
+	public String getName() {
+---if !${%v}.getname
+		return "${mod.armormaterial.${%v}.name}";---fi
+---if ${%v}.getname
+---list ${%v}.getname
+		$%v---end---fi
+	}
+ 
+	@Override
+	public float getToughness() {
+---if !${%v}.gettoughness
+		return ${mod.armormaterial.${%v}.toughness^float};---fi
+---if ${%v}.gettoughness
+---list ${%v}.gettoughness
+		$%v---end---fi
+	}
+ 
+	@Override
+	public float getKnockbackResistance() {
+---if !${%v}.getknockbackresistance
+		return ${mod.armormaterial.${%v}.knockbackresistance^float};---fi
+---if ${%v}.getknockbackresistance
+---list ${%v}.getknockbackresistance
+		$%v---end---fi
+	}
+
+---iter ${%v}.extra
+	$%v---end
+
+
+}
+

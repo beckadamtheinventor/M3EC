@@ -146,11 +146,14 @@ def execActions(actions, d, accumulator=None):
 					l = action["iterate"]
 					if type(l) is str:
 						l = d[l]
+					iterating = True
 				else:
 					l = [None]
+					iterating = False
 				for i in range(len(l)):
-					d["%i"] = i
-					d["%v"] = l[i]
+					if iterating:
+						d["%i"] = i
+						d["%v"] = l[i]
 					execActions(action["actions"], d, accumulator)
 
 			if "file" in action.keys():
@@ -158,15 +161,20 @@ def execActions(actions, d, accumulator=None):
 					l = action["iterate"]
 					if type(l) is str:
 						l = d[l]
+					iterating = True
 				else:
 					l = [None]
+					iterating = False
 				for i in range(len(l)):
-					d["%i"] = i
-					d["%v"] = l[i]
+					if iterating:
+						d["%i"] = i
+						d["%v"] = l[i]
 					fname = readf(action["file"], d)
 					if os.path.exists(fname):
 						with open(fname) as f:
 							execActions(json.load(f), d, accumulator)
+					else:
+						print(f"Failed to locate actions json file \"{fname}\"")
 
 		elif a == "repeatactions":
 			if "repeat" in action.keys():

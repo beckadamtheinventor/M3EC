@@ -156,6 +156,9 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "fabric1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "fabric" in modenv:
 		build_mod("fabric", "1.19.3", modenv, manifest_dict.copy())
 
+	if "fabric1.19.4" in modenv or "1.19.4" in modenv or "all" in modenv or "fabric" in modenv:
+		build_mod("fabric", "1.19.4", modenv, manifest_dict.copy())
+
 	# if "forge1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "forge" in modenv:
 		# build_mod("forge", "1.19.3", modenv, manifest_dict.copy())
 

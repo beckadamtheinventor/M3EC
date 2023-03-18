@@ -1,0 +1,47 @@
+package ${mod.package}.blocks;
+
+import ${mod.package}.recipetype.*;
+
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.Optional;
+
+public class ${mod.recipetype.${%v}.BlockClass} extends Block {
+	private static final Text TITLE = new TranslatableText("container.${%v}");
+	public ${mod.recipetype.${%v}.BlockClass}(AbstractBlock.Settings settings) {
+		super(settings);
+	}
+
+	@Override
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if(world.isClient) {
+			return ActionResult.SUCCESS;
+		} else {
+			SimpleInventory inventory = new SimpleInventory(player.getMainHandStack(), player.getOffHandStack());
+			Optional<${mod.recipetype.${%v}.class}Recipe> match = world.getRecipeManager().getFirstMatch(${mod.recipetype.${%v}.class}Recipe.Type.INSTANCE, inventory, world);
+
+			if (match.isPresent()) {
+				player.getInventory().offerOrDrop(match.get().getOutput().copy());---if ${mod.recipetype.${%v}.damage} #contains mainhand
+				player.getMainHandStack().setDamage(player.getMainHandStack().getDamage() - 1);---fi---if ${mod.recipetype.${%v}.damage} #contains offhand
+				player.getOffHandStack().setDamage(player.getOffHandStack().getDamage() - 1);---fi---if ${mod.recipetype.${%v}.remove} #contains mainhand
+				player.getMainHandStack().decrement(1);---fi---if ${mod.recipetype.${%v}.remove} #contains offhand
+				player.getOffHandStack().decrement(1);---fi
+				return ActionResult.CONSUME;
+			} else {
+				return ActionResult.FAIL;
+			}
+		}
+	}
+}
+

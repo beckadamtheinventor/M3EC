@@ -4,13 +4,17 @@ ore:
 contentid:  ruby_ore_ore
 name:       ruby_ore_ore
 title:      ruby_ore_ore
+@if gameversion.major >= 17
+maxy:      12
+@else
 maxy:      8
+@endif
 vein:
 .atbedrock:
 .block:     ModBlocks.RUBY_ORE
 .size:      6
 .perchunk:  6
 # required for versions 1.19.3 and up
-.count: 100
+.count: 25
 # required for versions 1.19.3 and up
 blockid:    ${mod.mcpath}:ruby_ore

@@ -1,0 +1,32 @@
+[
+{
+	"iterate": "mod.registry.armor.names",
+	"action": "execactions",
+	"actions": [
+	{
+		"if": "?mod.armor.${%v}.slot #contains CHEST",
+		"action": "setdictkey",
+		"key": "mod.armor.${%v}.slot",
+		"value": "CHESTPLATE"
+	},
+	{
+		"if": "?mod.armor.${%v}.slot #contains FEET",
+		"action": "setdictkey",
+		"key": "mod.armor.${%v}.slot",
+		"value": "BOOTS"
+	},
+	{
+		"if": "?mod.armor.${%v}.slot #contains HEAD",
+		"action": "setdictkey",
+		"key": "mod.armor.${%v}.slot",
+		"value": "HELMET"
+	},
+	{
+		"if": "?mod.armor.${%v}.slot #contains LEGS",
+		"action": "setdictkey",
+		"key": "mod.armor.${%v}.slot",
+		"value": "LEGGINGS"
+	}
+	]
+}
+]
