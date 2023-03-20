@@ -60,7 +60,7 @@ def build(project_path, modenv):
 
 	manifest_dict = readDictFile(manifest_file)
 	manifest_dict["manifest_file"] = manifest_file
-	manifest_dict["project_path"] = project_path
+	manifest_dict["project_path"] = os.path.abspath(project_path)
 
 	try:
 		fname = os.path.join(source_path, "mc", "blocks.json")
@@ -202,13 +202,16 @@ def build_mod(modloader, version, modenv, manifest_dict):
 			manifest_dict[f"{a}execactions"] = []
 
 	for file in manifest_dict["firstexecactions"]:
+		manifest_dict["curdir"] = manifest_dict["project_path"]
 		file = readf(file, manifest_dict)
 		try:
 			with open(file) as f:
 				j = json.load(f)
 			execActions(j, manifest_dict)
-		except FileNotFoundError:
+		except FileNotFoundError as e:
 			print(f"Warning: file \"{file}\" listed in firstexecactions does not exist.")
+
+	manifest_dict["curdir"] = manifest_dict["project_path"]
 
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(os.path.normpath(os.path.join(manifest_dict["project_path"], path))):

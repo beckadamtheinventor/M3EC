@@ -1,5 +1,7 @@
 
 import os, shutil, json
+from PIL import Image
+from PIL import ImageChops
 from .util import *
 
 def execActions(actions, d, accumulator=None):
@@ -7,19 +9,21 @@ def execActions(actions, d, accumulator=None):
 		if type(action) is not dict:
 			continue
 
-		if "action" not in action.keys():
+		ak = action.keys()
+
+		if "action" not in ak:
 			continue
 
-		if "if" in action.keys() and not checkActionConditions(action["if"], d):
+		if "if" in ak and not checkActionConditions(action["if"], d):
 			continue
 
 
 		a = action["action"].lower()
 		# print(a)
 		if a == "var":
-			if "source" in action.keys() and "dest" in action.keys():
+			if "source" in ak and "dest" in ak:
 				d[readf(action["dest"], d)] = d[readf(action["source"], d)]
-			elif "name" in action.keys() and "value" in action.keys():
+			elif "name" in ak and "value" in ak:
 				v = action["value"]
 				if type(v) is str:
 					v = readf(v, d)
@@ -27,12 +31,12 @@ def execActions(actions, d, accumulator=None):
 
 		elif a in ("setdictkey", "appenddictkey"):
 			# print(action)
-			if "key" in action.keys():
-				if "value" in action.keys():
+			if "key" in ak:
+				if "value" in ak:
 					value = action["value"]
 				else:
 					value = accumulator
-				if "iterate" in action.keys():
+				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is not list:
 						l = d[l]
@@ -43,7 +47,7 @@ def execActions(actions, d, accumulator=None):
 							v = readf(value, d)
 						else:
 							v = value
-						if "dict" in action.keys():
+						if "dict" in ak:
 							accumulator = action["dict"]
 						else:
 							accumulator = d
@@ -63,7 +67,7 @@ def execActions(actions, d, accumulator=None):
 						v = readf(value, d)
 					else:
 						v = value
-					if "dict" in action.keys():
+					if "dict" in ak:
 						accumulator = action["dict"]
 					else:
 						accumulator = d
@@ -79,11 +83,11 @@ def execActions(actions, d, accumulator=None):
 						accumulator[k] = v
 
 		elif a == "getdictkey":
-			if "key" in action.keys():
+			if "key" in ak:
 				key = action["key"]
 			else:
 				key = accumulator
-			if "iterate" in action.keys():
+			if "iterate" in ak:
 				accumulator = []
 				l = action["iterate"]
 				if type(l) is not list:
@@ -92,16 +96,16 @@ def execActions(actions, d, accumulator=None):
 					d["%i"] = i
 					d["%v"] = l[i]
 					k = readf(key, d)
-					if "dict" in action.keys():
+					if "dict" in ak:
 						if k in action["dict"].keys():
 							accumulator.append(action["dict"][k])
-						elif "default" in action.keys():
+						elif "default" in ak:
 							accumulator.append(action["default"])
 						else:
 							accumulator.append(None)
 					elif k in d.keys():
 						accumulator.append(d[k])
-					elif "default" in action.keys():
+					elif "default" in ak:
 						accumulator.append(action["default"])
 					else:
 						accumulator.append(None)
@@ -110,28 +114,28 @@ def execActions(actions, d, accumulator=None):
 				accumulator = None
 				if k in d.keys():
 					k = d[k]
-					if "dict" in action.keys():
+					if "dict" in ak:
 						if k in action["dict"].keys():
 							accumulator = action["dict"][k]
-						elif "default" in action.keys():
+						elif "default" in ak:
 							accumulator = action["default"]
 					elif k in d.keys():
 						accumulator = d[k]
-					elif "default" in action.keys():
+					elif "default" in ak:
 						accumulator = action["default"]
 
-			if "var" in action.keys():
+			if "var" in ak:
 				d[readf(action["var"], d)] = readf(accumulator, d)
 
 
 		elif a == "if":
-			if "condition" in action.keys() and "actions" in action.keys():
+			if "condition" in ak and "actions" in ak:
 				if checkActionConditions(action["condition"], d):
 					execActions(action["actions"], d, accumulator)
 
 		elif a == "doactions":
 			cond = None
-			if "while" in action.keys() and "var" in action.keys():
+			if "while" in ak and "var" in ak:
 				cond = action["var"]
 			while True:
 				execActions(action["actions"], d, accumulator)
@@ -141,8 +145,8 @@ def execActions(actions, d, accumulator=None):
 					break
 
 		elif a == "execactions":
-			if "actions" in action.keys():
-				if "iterate" in action.keys():
+			if "actions" in ak:
+				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
 						l = d[l]
@@ -156,8 +160,8 @@ def execActions(actions, d, accumulator=None):
 						d["%v"] = l[i]
 					execActions(action["actions"], d, accumulator)
 
-			if "file" in action.keys():
-				if "iterate" in action.keys():
+			if "file" in ak:
+				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
 						l = d[l]
@@ -172,43 +176,51 @@ def execActions(actions, d, accumulator=None):
 					fname = readf(action["file"], d)
 					if os.path.exists(fname):
 						with open(fname) as f:
+							tmp = d["curdir"]
+							d["curdir"] = os.path.dirname(fname)
 							execActions(json.load(f), d, accumulator)
+							d["curdir"] = tmp
 					else:
 						print(f"Failed to locate actions json file \"{fname}\"")
 
 		elif a == "repeatactions":
-			if "repeat" in action.keys():
+			if "repeat" in ak:
 				rep = int(action["repeat"])
 				for i in range(rep):
 					execActions(action["actions"], d, accumulator)
 
 		elif a == "readf":
-			if "file" in action.keys():
+			if "file" in ak:
 				d["$%f"] = action["file"]
 				accumulator = readf_file(readf(action["file"], d), d)
-			elif "data" in action.keys():
+			elif "data" in ak:
 				accumulator = readf(action["data"], d)
 
 		elif a == "copy" or a == "move":
-			if "source" in action.keys() and "dest" in action.keys():
+			if "source" in ak and "dest" in ak:
 				fname = readf(action["source"], d)
 				if os.path.exists(fname):
+					dname = readf(action["dest"], d)
+					if not os.path.isabs(dname):
+						dname = os.path.join(d["curdir"], dname)
 					if a == "copy":
-						shutil.copy(fname, readf(action["dest"], d))
+						shutil.copy(fname, dname)
 					elif a == "move":
-						shutil.move(fname, readf(action["dest"], d))
+						shutil.move(fname, dname)
 					accumulator = fname
 				else:
 					accumulator = None
 			else:
-				if "file" in action.keys():
+				if "file" in ak:
 					fname = action["file"]
-				elif "filevar" in action.keys():
+				elif "filevar" in ak:
 					fname = d[action["filevar"]]
 				else:
 					fname = accumulator
 
 				fname = readf(fname, d)
+				if not os.path.isabs(fname):
+					fname = os.path.join(d["curdir"], fname)
 				if os.path.exists(fname):
 					with open(fname) as f:
 						accumulator = f.read()
@@ -216,8 +228,8 @@ def execActions(actions, d, accumulator=None):
 					accumulator = None
 
 		elif a == "copyf":
-			if "source" in action.keys() and "dest" in action.keys():
-				if "iterate" in action.keys():
+			if "source" in ak and "dest" in ak:
+				if "iterate" in ak:
 					iterating = True
 					l = action["iterate"]
 					if type(l) is str:
@@ -230,7 +242,11 @@ def execActions(actions, d, accumulator=None):
 						d["%i"] = i
 						d["%v"] = l[i]
 					fname = readf(action["source"], d)
+					if not os.path.isabs(fname):
+						fname = os.path.join(d["curdir"], fname)
 					dname = readf(action["dest"], d)
+					if not os.path.isabs(dname):
+						dname = os.path.join(d["curdir"], dname)
 					# print("copyf", fname, "-->", dname)
 					if os.path.exists(fname):
 						with open(fname) as f:
@@ -248,14 +264,16 @@ def execActions(actions, d, accumulator=None):
 					else:
 						accumulator = None
 			else:
-				if "file" in action.keys():
+				if "file" in ak:
 					fname = action["file"]
-				elif "filevar" in action.keys():
+				elif "filevar" in ak:
 					fname = d[action["filevar"]]
 				else:
 					fname = accumulator
 
 				fname = readf(fname, d)
+				if not os.path.isabs(fname):
+					fname = os.path.join(d["curdir"], fname)
 				if os.path.exists(fname):
 					with open(fname) as f:
 						accumulator = f.read()
@@ -263,17 +281,17 @@ def execActions(actions, d, accumulator=None):
 					accumulator = None
 
 		elif a == "write":
-			if "dest" in action.keys() or "file" in action.keys():
-				if "data" in action.keys():
+			if "dest" in ak or "file" in ak:
+				if "data" in ak:
 					accumulator = action["data"]
-				elif "var" in action.keys():
+				elif "var" in ak:
 					if action["var"] in d.keys():
 						accumulator = d[action["var"]]
 					else:
 						accumulator = None
-				if "dest" in action.keys():
+				if "dest" in ak:
 					fname = action["dest"]
-				if "file" in action.keys():
+				if "file" in ak:
 					fname = action["file"]
 				fname = readf(fname, d)
 				with open(fname, 'w') as f:
@@ -286,20 +304,73 @@ def execActions(actions, d, accumulator=None):
 		elif a in ("makedir", "make_dir"):
 			if type(action["value"]) is list:
 				for value in action["value"]:
-					make_dir(os.path.join(d["build_path"], readf(value, d)))
+					dname = readf(value, d)
+					if not os.path.isabs(dname):
+						dname = os.path.join(d["build_path"], dname)
+					make_dir(dname)
 			else:
-				make_dir(os.path.join(d["build_path"], readf(action["value"], d)))
+				dname = readf(action["value"], d)
+				if not os.path.isabs(dname):
+					dname = os.path.join(d["build_path"], dname)
+				make_dir(dname)
 		
 		elif a in ("print", "display", "error"):
-			if "string" in action.keys():
+			if "string" in ak:
 				print(readf(action["string"], d),end=" ")
-			if "var" in action.keys():
+			if "var" in ak:
 				if action["var"] in d.keys():
 					print(readf(d[action["var"]], d), end=" ")
-			if "value" in action.keys():
+			if "value" in ak:
 				print(readf(action["value"], d), end=" ")
 			print()
 			if a == "error":
 				exit(1)
+
+		elif a in ("makeimage", "maketexture"):
+			if "source" in ak:
+				fname = action["source"]
+				if not os.path.isabs(fname):
+					fname = os.path.join(d["curdir"], fname)
+				try:
+					srcimg = Image.open(fname).convert("RGBA")
+				except FileNotFoundError:
+					print(f"Warning: Image file \"{fname}\" does not exist.")
+					continue
+			elif "color" in ak and "width" in ak and "height" in ak:
+				srcimg = Image.new("RGBA", (width, height), action["color"])
+			else:
+				print(f"Warning: action \"{a}\" without a \"source\" key must have a \"color\" key, \"width\" key, and \"height\" key.")
+				continue
+
+			if "operation" in ak:
+				try:
+					srcimg = ImageOperation(d, srcimg, action["operation"])
+				except Exception as e:
+					print(f"Warning: Image operation failed.\nOriginal error: {e}")
+					continue
+			elif "operations" in ak:
+				for op in action["operation"]:
+					try:
+						srcimg = ImageOperation(srcimg, op)
+					except Exception as e:
+						print(f"Warning: Image operation failed.\nOriginal error: {e}")
+						continue
+			if "color" in ak:
+				color = tuple(int(c) for c in readf(action["color"], d).strip("()").split(","))
+				srcimg = ImageChops.multiply(Image.new("RGBA", srcimg.size, color), srcimg)
+
+			if "dest" in ak:
+				fname = readf(action["dest"], d)
+				if not os.path.isabs(fname):
+					fname = os.path.join(d["curdir"], fname)
+				try:
+					srcimg.save(fname)
+				except Exception as e:
+					print(f"Warning: Failed to save image \"{fname}\".\nOriginal error: {e}")
+					continue
+			else:
+				accumulator = srcimg
+
+
 
 

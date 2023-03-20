@@ -1,7 +1,54 @@
 
 import os, json
+from PIL import Image
+from PIL import ImageFilter
+from PIL.Image import Transpose
 
 WRITTEN_FILES_LIST = []
+
+def ImageOperation(d, img, op):
+	try:
+		if type(op) is list:
+			o = op[0]
+			if o == "alpha_composite":
+				return img.alpha_composite(Image.open(os.path.join(d["project_path"], o[1])))
+			if o == "rotate":
+				return img.rotate(int(o[1]))
+			if o == "blend":
+				return img.blend(Image.open(os.path.join(d["project_path"], o[1])), float(o[2]))
+			if o == "composite":
+				return img.composite(Image.open(os.path.join(d["project_path"], o[1])), Image.open(os.path.join(d["project_path"], o[2])))
+			if o == "crop":
+				return img.crop(tuple(o[1]))
+			if o == "effect_spread":
+				return img.effect_spread(float(o[1]))
+			if o == "filter":
+				filters = ["BLUR","CONTOUR","DETAIL","EDGE_ENHANCE","EDGE_ENHANCE_MORE","EMBOSS","FIND_EDGES","SHARPEN","SMOOTH","SMOOTH_MORE"]
+				if o[1] in filters:
+					return img.filter(getattr(ImageFilter, o[1])(float(o[2])))
+				print(f"Warning: undefined filter type \"{o[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
+				return img
+			if o == "transpose":
+				filters = ["FLIP_LEFT_RIGHT", "FLIP_TOP_BOTTOM", "ROTATE_90", "ROTATE_180", "ROTATE_270", "TRANSPOSE", "TRANSVERSE"]
+				if o[1] in filters:
+					return img.filter(getattr(Transpose, o[1]))
+				print(f"Warning: undefined filter type \"{o[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
+				return img
+			if o == "paste":
+				if len(o) == 2:
+					return img.paste(Image.open(os.path.join(d["project_path"], o[1])))
+				elif len(o) == 3:
+					return img.paste(Image.open(os.path.join(d["project_path"], o[1])), tuple(o[2]))
+				elif len(o) >= 4:
+					return img.paste(Image.open(os.path.join(d["project_path"], o[1])), tuple(o[2]), Image.open(os.path.join(d["project_path"], o[3])))
+			print(f"Warning: undefined image operation: {o}, ignoring.")
+			return img
+		else:
+			print(f"Warning: Image operations should be a list starting with the operation and following with arguments.")
+			return img
+	except Exception as e:
+		print(f"Warning: failed to apply image operation {op}\nOriginal error: {str(e)}")
+	return img
 
 def load_resource(path, file, method=json.load):
 	with open(os.path.join(path, file)) as f:
@@ -180,7 +227,7 @@ def checkActionConditions(conditions, d):
 				usexor = False
 				usexnor = False
 				conditions.pop(0)
-			elif conditions[0] == "^OR":
+			elif conditions[0] == "^XOR":
 				useand = False
 				usexor = True
 				usexnor = False
@@ -231,7 +278,13 @@ def readDictFile(fname, d=None, md=None):
 	try:
 		# print("Reading Dictionary File: \""+fname+"\"")
 		with open(fname) as f:
-			return readDictString(f.read(), d, fname, md)
+			if md is not None:
+				tmp = md["curdir"]
+				md["curdir"] = os.path.dirname(fname)
+			rv = readDictString(f.read(), d, fname, md)
+			if md is not None:
+				md["curdir"] = tmp
+			return rv
 	except FileNotFoundError:
 		return None
 
@@ -760,6 +813,8 @@ def readf(data, d):
 							w = w.lower()
 						elif fn.lower() == "capital":
 							w = w.capitalize()
+						elif fn.lower() == "title":
+							w = w.title()
 						elif fn.lower() == "float":
 							if type(w) is str:
 								if not w.endswith("f"):
