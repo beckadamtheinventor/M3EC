@@ -230,6 +230,18 @@ def execActions(actions, d, accumulator=None):
 				else:
 					accumulator = None
 
+		elif a == "delete" or a == "remove":
+			if "source" in ak:
+				fname = readf(action["source"], d)
+				if fname.startswith(d["project_path"]):
+					if os.path.exists(fname):
+						if os.path.isdir(fname):
+							shutil.rmtree(fname)
+						else:
+							os.remove(fname)
+				else:
+					print("Warning: action attempted to delete file outside of project directory. Ignoring.")
+
 		elif a == "copyf":
 			if "source" in ak and "dest" in ak:
 				if "iterate" in ak:
