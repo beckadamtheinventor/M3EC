@@ -204,7 +204,10 @@ def execActions(actions, d, accumulator=None):
 					if not os.path.isabs(dname):
 						dname = os.path.join(d["curdir"], dname)
 					if a == "copy":
-						shutil.copy(fname, dname)
+						if os.path.isdir(fname):
+							shutil.copytree(fname, dname)
+						else:
+							shutil.copy(fname, dname)
 					elif a == "move":
 						shutil.move(fname, dname)
 					accumulator = fname
