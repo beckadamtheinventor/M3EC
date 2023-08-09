@@ -1,0 +1,249 @@
+{
+  "modloader": "fabric",
+  "minecraftVersion": "1.20.1",
+  "javaVersion": "17.",
+  "firstActions": [
+    {
+      "if": "?mod.registry.enchantment.names #length nonzero",
+      "action": "print",
+      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+    }
+  ],
+  "preActions": [
+    {
+      "action": "makedir",
+      "value": [
+        "src/main/java/${mod.packagedir}/blocks",
+        "src/main/java/${mod.packagedir}/features",
+        "src/main/java/${mod.packagedir}/recipetype",
+        "src/main/resources/assets/minecraft",
+        "src/main/resources/assets/minecraft/textures",
+        "src/main/resources/assets/minecraft/textures/models",
+        "src/main/resources/assets/minecraft/textures/models/armor",
+		"src/main/resources/data",
+		"src/main/resources/data/${mod.mcpath}",
+		"src/main/resources/data/${mod.mcpath}/worldgen",
+		"src/main/resources/data/${mod.mcpath}/worldgen/configured_feature",
+		"src/main/resources/data/${mod.mcpath}/worldgen/placed_feature"
+      ]
+    },
+	{
+		"iterate": "mod.registry.ore.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "setdictkey",
+				"key": "ore",
+				"value": "${%v}"
+			},
+			{
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/configured_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/configured_feature/${ore}.json"
+			},
+			{
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/${ore}.json"
+			},
+			{
+				"if": "exists mod.registry.ore.${%v}.deepslateblockid",
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/deepslate_${ore}.json"
+			}
+		]
+	},
+	{
+		"if": "!?mod.iconitem #contains .",
+		"action": "setdictkey",
+		"key": "mod.iconitem",
+		"value": "ModItems.${mod.iconitem}"
+	},
+	{
+		"iterate": "mod.registry.block.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "setdictkey",
+				"key": "blockname",
+				"value": "${%v}"
+			},
+			{
+				"if": "!keyexists mod.block.${%v}.copyblock",
+				"action": "execactions",
+				"actions": [
+					{
+						"if": "!warning.copyblock_1_20",
+						"action": "print",
+						"string": "In 1.20 and above, blocks must additionally specify a block to copy properties of via the `copyblock` key. Defaulting to semi-accurate replacement based on original material."
+					},
+					{
+						"action": "setdictkey",
+						"key": "warning.copyblock_1_20",
+						"value": true
+					},
+					{
+						"action": "getdictkey",
+						"key": "${mod.block.${blockname}.material}",
+						"dict": {
+							"AGGREGATE": "SAND",
+							"AIR": "AIR",
+							"AMETHYST": "AMETHYST_BLOCK",
+							"BAMBOO_SAPLING": "BAMBOO_SAPLING",
+							"BAMBOO": "BAMBOO",
+							"BARRIER": "BARRIER",
+							"BUBBLE_COLUMN": "WATER",
+							"CACTUS": "CACTUS",
+							"CAKE": "CAKE",
+							"CARPET": "WHITE_CARPET",
+							"COBWEB": "COBWEB",
+							"DECORATION": "FLOWER_POT",
+							"DENSE_ICE": "PACKED_ICE",
+							"EGG": "TURTLE_EGG",
+							"FIRE": "FIRE",
+							"GLASS": "GLASS",
+							"GOURD": "PUMPKIN",
+							"ICE": "ICE",
+							"LAVA": "LAVA",
+							"LEAVES": "OAK_LEAVES",
+							"METAL": "IRON_BLOCK",
+							"MOSS_BLOCK": "MOSS",
+							"NETHER_SHOOTS": "WARPED_ROOTS",
+							"NETHER_WOOD": "CRIMSON_STEM",
+							"ORGANIC_PRODUCT": "CLAY",
+							"PISTON": "PISTON",
+							"PLANT": "POPPY",
+							"PORTAL": "PORTAL",
+							"POWDER_SNOW": "POWDER_SNOW",
+							"REDSTONE_LAMP": "REDSTONE_LAMP",
+							"REPAIR_STATION": "ANVIL",
+							"REPLACEABLE_NETHER_PLANT": "AIR",
+							"REPLACEABLE_PLANT": "FERN",
+							"SCULK": "SCULK",
+							"SHULKER_BOX": "WHITE_SHULKER_BOX",
+							"SNOW_BLOCK": "SNOW_BLOCK",
+							"SNOW_LAYER": "SNOW",
+							"SOIL": "DIRT",
+							"SOLID_ORGANIC": "GRASS_BLOCK",
+							"SPONGE": "SPONGE",
+							"STONE": "STONE",
+							"STRUCTURE_VOID": "STRUCTURE_VOID",
+							"TNT": "TNT",
+							"UNDERWATER_PLANT": "KELP",
+							"WATER": "WATER",
+							"WOOD": "OAK_WOOD",
+							"WOOL": "WHITE_WOOL"
+						},
+						"default": "STONE",
+						"var": "blockmaterial"
+					},
+					{
+						"action": "setdictkey",
+						"key": "mod.block.${blockname}.copyblock",
+						"value": "Blocks.${blockmaterial}"
+					}
+				]
+			}
+		]
+	},
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/block_mining_requirements.json"
+    },
+    {
+      "iterate": "mod.registry.armormaterial.names",
+      "action": "execactions",
+      "actions": [
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
+          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
+        },
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
+          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
+        }
+      ]
+    },
+    {
+      "action": "copyf",
+      "source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
+      "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
+    },
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/fabric_preactions.json"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/1.19.4_and_up_preactions.json"
+	}
+  ],
+  "postActions": [
+    {
+      "action": "copy",
+      "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item/${mod.iconItem}.png",
+      "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+    }
+  ],
+  "sources": [
+    {
+      "source": "fabric.mod.m3ecjson",
+      "dest": "src/main/resources/fabric.mod.json"
+    },
+    {
+      "source": "MainClass.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+    },
+    {
+      "source": "registry/ModBlocks.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+    },
+    {
+      "source": "registry/ModItems.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+    },
+    {
+      "iterate": "mod.registry.toolmaterial.names",
+      "source": "../fabric_common/ToolMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.tool.names",
+      "source": "registry/ToolItem.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.armormaterial.names",
+      "source": "registry/ArmorMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/Recipe.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Recipe.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/RecipeBlock.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/${mod.recipetype.${%v}.BlockClass}.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/RecipeSerializer.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
+    },
+	{
+		"iterate": "mod.registry.sapling.names",
+		"source": "registry/SaplingBlock.m3ecjava",
+		"dest": "src/main/java/${mod.packagedir}/blocks/${mod.sapling.${%v}.class}SaplingBlock.java"
+	},
+	{
+		"iterate": "mod.registry.sapling.names",
+		"source": "registry/SaplingGenerator.m3ecjava",
+		"dest": "src/main/java/${mod.packagedir}/features/${mod.sapling.${%v}.class}SaplingGenerator.java"
+	}
+  ]
+}

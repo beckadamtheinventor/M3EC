@@ -478,7 +478,7 @@ def _getDictString(d, key, nest=None):
 		for item in d[key]:
 			yield f"+{key}: {item}"
 	elif type(d[key]) is dict:
-		if not (key.endswith(".") and key in d.keys()):
+		if not (key.endswith(".") and key in d[key].keys()):
 			if nest is None:
 				yield f"{key}:"
 			else:

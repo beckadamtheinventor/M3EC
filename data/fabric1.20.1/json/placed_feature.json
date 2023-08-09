@@ -1,0 +1,24 @@
+{
+	"feature": "${mod.mcpath}:${%v}",
+	"placement": [
+		{
+			"type": "minecraft:count",
+			"count": ${mod.ore.${%v}.vein.count}
+		},
+		{
+			"type": "minecraft:in_square"
+		},
+		{
+			"type": "minecraft:height_range",
+			"height": {
+				"type": "minecraft:trapezoid",
+				"min_inclusive": {
+					"absolute": -63
+				},
+				"max_inclusive": {
+					"absolute": ${mod.ore.${%v}.maxy}
+				}
+			}
+		}
+	]
+}

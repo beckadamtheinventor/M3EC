@@ -1,0 +1,13 @@
+
+package ${mod.package}.blocks;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.block.StairsBlock;
+
+
+public class ModStairBlock extends StairsBlock {
+	public ModStairBlock(BlockState baseBlockStateType, Settings settings) {
+		super(baseBlockStateType, settings);
+	}
+}
+

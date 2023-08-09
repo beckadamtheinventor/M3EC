@@ -1,0 +1,49 @@
+package ${mod.package}.registry;
+---iter mod.registry.recipetype.names
+import ${mod.package}.blocks.${mod.recipetype.$%v.BlockClass};---end
+---iter mod.registry.sapling.names
+import ${mod.package}.features.${mod.sapling.$%v.class}SaplingGenerator;
+import ${mod.package}.blocks.${mod.sapling.$%v.class}SaplingBlock;---end
+import ${mod.package}.${mod.class};
+import ${mod.package}.blocks.ModStairBlock;
+
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.PillarBlock;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.Identifier;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+
+public class ModBlocks {
+---iter mod.registry.block.names
+	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
+${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSettings
+		.copyOf(${mod.block.$%v.copyblock})
+		---if mod.block.$%v.requiresTool
+		.requiresTool()---fi
+		.strength(${mod.block.$%v.hardness}f, ${mod.block.$%v.resistance}f)
+		.sounds(BlockSoundGroup.${mod.block.$%v.sounds})---if mod.block.$%v.lightlevel
+		.luminance(${mod.block.$%v.lightlevel})---fi);---end
+
+---iter mod.registry.sapling.names
+	public static final ${mod.sapling.$%v.class}SaplingBlock ${mod.sapling.$%v^upper} =
+		new ${mod.sapling.$%v.class}SaplingBlock(new ${mod.sapling.$%v.class}SaplingGenerator(), FabricBlockSettings
+		.copyOf(${mod.block.$%v.copyblock})
+		---if mod.sapling.$%v.requiresTool
+		.requiresTool()---fi
+		.strength(${mod.sapling.$%v.hardness}f, ${mod.sapling.$%v.resistance}f)
+		.sounds(BlockSoundGroup.${mod.sapling.$%v.sounds})---if mod.block.$%v.lightlevel
+		.luminance(${mod.block.$%v.lightlevel})---fi);---end
+
+    public static void RegisterBlocks() {
+---iter mod.registry.block.names
+		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v^upper});---end
+---iter mod.registry.sapling.names
+		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v^upper});---end
+    }
+
+}
+

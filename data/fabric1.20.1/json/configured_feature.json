@@ -1,0 +1,29 @@
+{
+	"type": "minecraft:ore",
+	"config": {
+	"discard_chance_on_air_exposure": 0.0,
+	"size": ${mod.ore.${%v}.vein.size},
+	"targets": [
+		{
+			"state": {
+				"Name": "${mod.ore.${%v}.blockid}"
+			},
+			"target": {
+				"predicate_type": "minecraft:tag_match",
+				"tag": "minecraft:stone_ore_replaceables"
+			}
+		}---if mod.ore.${%v}.deepslateblockid
+,
+		{
+			"state": {
+				"Name": "${mod.ore.${%v}.deepslateblockid}"
+			},
+			"target": {
+				"predicate_type": "minecraft:tag_match",
+				"tag": "minecraft:deepslate_ore_replaceables"
+			}
+		}---fi
+	]
+	}
+}
+

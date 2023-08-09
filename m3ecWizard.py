@@ -1,5 +1,7 @@
 
 import os, sys, json, tempfile, hashlib, shutil, threading, subprocess, m3ec
+from zipfile import ZipFile
+from base64 import b64encode, b64decode
 
 try:
 	from PIL import Image
@@ -1086,6 +1088,10 @@ def SaveProject(fname, manifest_dict):
 			d[k] = manifest_dict[k]
 
 	writeDictFile(fname, d)
+	
+	if "imported_mod_items" in manifest_dict.keys():
+		writeDictFile(fname.rsplit(".", maxsplit=1)[0]+"-imports.m3ec", manifest_dict["imported_mod_items"])
+	
 
 def GetImageAsPNG(img, d):
 	if not os.path.exists(img):
@@ -1235,12 +1241,15 @@ def _ModEditor(manifest_dict, fname):
 		],
 		[sg.Button("Build Project", key="Build", size=EDITOR_BUTTON_SIZE),
 			sg.Button("Quit", key="Exit", size=EDITOR_BUTTON_SIZE),
-			sg.Button("Save", key="Save", size=EDITOR_BUTTON_SIZE)
+			sg.Button("Save", key="Save", size=EDITOR_BUTTON_SIZE),
 		],
 		[sg.Text("Import Texture"), sg.Input(key="TextureImport"),
 			sg.FilesBrowse(key="TextureImport", file_types=(("PNG Files", "*.png"),("All Files","*.* *"))),
 			sg.Button("Import", key="ImportTexture")
 		],
+		[sg.Text("Import items from mod JAR"), sg.Input(key="JarImport"),
+			sg.FilesBrowse(key="JarImport", file_types=(("JAR Files", "*.jar"), ("ZIP Files", "*.zip"), ("All Files", "*.* *"))),
+			sg.Button("Import", key="ImportJar")],
 		[sg.Sizer(WIN_WIDTH,20)],
 		[sg.Text("Blocks")],
 		[sg.Button("New Block", key="NewBlock", size=EDITOR_BUTTON_SIZE),
@@ -1301,6 +1310,14 @@ def _ModEditor(manifest_dict, fname):
 			CreateBlock(manifest_dict)
 		elif event in ('NewRecipe',):
 			CreateRecipe(manifest_dict)
+		elif event in ('ImportJar',):
+			if "JarImport" in values.keys():
+				fnames = values["JarImport"]
+				if os.pathsep in fnames:
+					fnames = fnames.split(os.pathsep)
+				else:
+					fnames = [fnames]
+				ImportFromJar(fnames, manifest_dict)
 		elif event in ('ImportTexture',):
 			if "TextureImport" in values.keys():
 				fnames = values["TextureImport"]
@@ -1333,11 +1350,14 @@ def BuildMod(d):
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Checkbox("Build mod JAR", k="buildjar", size=EDITOR_BUTTON_SIZE)],
 		[sg.Sizer(WIN_WIDTH, 20)],
+		[sg.Button("Build for KubeJS", k="kubejs", size=EDITOR_BUTTON_SIZE)],
+		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Button("All supported modloaders and game versions", k="all")],
 		[sg.Button("All supported Forge versions", k="forge")],
 		[sg.Button("Forge 1.16.5", k="forge1.16.5", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Forge 1.18.2", k="forge1.18.2", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Forge 1.19", k="forge1.19", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Forge 1.19.2", k="forge1.19.2", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("All supported Fabric versions", k="fabric")],
 		[sg.Button("Fabric 1.16.5", k="fabric1.16.5", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.17", k="fabric1.17", size=EDITOR_BUTTON_SIZE)],
@@ -1346,6 +1366,9 @@ def BuildMod(d):
 		[sg.Button("Fabric 1.18.1", k="fabric1.18.1", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.18.2", k="fabric1.18.2", size=EDITOR_BUTTON_SIZE)],
 		[sg.Button("Fabric 1.19", k="fabric1.19", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Fabric 1.19.2", k="fabric1.19.2", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Fabric 1.19.3", k="fabric1.19.3", size=EDITOR_BUTTON_SIZE)],
+		[sg.Button("Fabric 1.19.4", k="fabric1.19.4", size=EDITOR_BUTTON_SIZE)],
 		[sg.Cancel()],
 		[sg.Text("",k="building")]
 	]
@@ -1353,14 +1376,103 @@ def BuildMod(d):
 	event, values = window.read(close=True)
 	if event not in ('Cancel', sg.WIN_CLOSED):
 		window["building"].update("Building Project...")
-		cmd = [event]
-		if values["buildjar"]:
-			cmd.append("buildjar")
-		threading.Thread(target=_BuildMod,args=(d["project_path"], " ".join(cmd), )).start()
+		if event in ('kubejs',):
+			ExportForKubeJS(d)
+		else:
+			cmd = [event]
+			if values["buildjar"]:
+				cmd.append("buildjar")
+			threading.Thread(target=_BuildMod,args=(d["project_path"], " ".join(cmd), )).start()
 
 def _BuildMod(path, modenv):
 	m3ec.build(path, modenv)
 	print("Build Complete")
+
+def ExportForKubeJS(d):
+	export_path = os.path.join(d["project_path"], "kubejs_build")
+	if not os.exists(export_path):
+		os.mkdir(export_path)
+	if not os.exists(os.path.join(export_path, "startup_scripts")):
+		os.mkdir(os.path.join(export_path, "startup_scripts"))
+	if not os.exists(os.path.join(export_path, "server_scripts")):
+		os.mkdir(os.path.join(export_path, "server_scripts"))
+
+def ImportFromJar(fnames, d):
+	n = 0
+	for fname in fnames:
+		if len(fname):
+			try:
+				n += _ImportFromJar(fname, d)
+			except Exception as e:
+				ErrorWindow(f"Error importing from file \"{fname}\": {str(e)}")
+				return
+
+	InfoWindow(f"Successfuly imported {n} blocks/items.")
+
+def _ImportFromJar(fname, d):
+	zf = ZipFile(fname)
+
+	filenames = [s.split("/") for s in zf.namelist()]
+	moditems = {}
+	numitems = 0
+	for fn in filenames:
+		if fn[0] == "assets":
+			if len(fn) == 5:
+				if fn[1] != "minecraft":
+					modname = fn[1]
+					if modname not in moditems.keys():
+						moditems[modname] = {}
+					if fn[2] == "models" and fn[4].endswith(".json") and fn[3] in ("block", "item"):
+						with zf.open("/".join(fn)) as f:
+							moditems[modname][fn[4].rsplit(".",maxsplit=1)[0]] = json.load(f)
+						numitems += 1
+
+	for modname in moditems.keys():
+		mod = moditems[modname]
+		for item in mod.keys():
+			dd = mod[item]
+			if "textures" not in dd.keys():
+				while "parent" in dd.keys():
+					try:
+						with zf.open("/".join(["assets", dd["parent"].split(":", maxsplit=1)[0], "models", dd["parent"].split(":", maxsplit=1)[1]+".json"])) as f:
+							dd = json.load(f)
+					except Exception as e:
+						print(f"Exception loading parent json: {e}")
+						dd["icon"] = ""
+						dd = {}
+						break
+			if "textures" in dd.keys():
+				if "all" in dd.keys():
+					tname = dd["textures"]["all"]
+				elif "front" in dd.keys():
+					tname = dd["textures"]["front"]
+				elif "side" in dd.keys():
+					tname = dd["textures"]["side"]
+				elif "top" in dd.keys():
+					tname = dd["textures"]["top"]
+				elif "bottom" in dd.keys():
+					tname = dd["textures"]["bottom"]
+				elif "layer0" in dd.keys():
+					tname = dd["textures"]["side"]
+				else:
+					dd["icon"] = ""
+					continue
+				try:
+					with zf.open("/".join(["assets", tname.split(":", maxsplit=1)[0], "textures", tname.split(":", maxsplit=1)[1]]), 'rb') as f:
+						dd["icon"] = b64encode(f.read())
+				except:
+					print(f"Exception loading icon: {e}")
+					dd["icon"] = ""
+
+	if "imported_mod_items" not in d.keys():
+		d["imported_mod_items"] = moditems
+	else:
+		for k in moditems.keys():
+			d["imported_mod_items"][k] = moditems[k]
+
+	zf.close()
+
+	return numitems
 
 def MainMenuWindow():
 	windowitems = [
@@ -1485,6 +1597,9 @@ def RenameValueWindow(old, valuetype="", parent=None):
 		elif event in ('Ok',):
 			window.close()
 			return values[0]
+
+def InfoWindow(text, title="Info", parent=None):
+	return sg.Window(title, [[sg.Text(text)],[sg.Ok()]], icon=ICON_FILE).read(close=True)
 
 def ErrorWindow(text, title="Error", parent=None):
 	return sg.Window(title, [[sg.Text(text)],[sg.Ok()]], icon=ICON_FILE).read(close=True)

@@ -112,17 +112,15 @@ def execActions(actions, d, accumulator=None):
 			else:
 				k = readf(key, d)
 				accumulator = None
-				if k in d.keys():
-					k = d[k]
-					if "dict" in ak:
-						if k in action["dict"].keys():
-							accumulator = action["dict"][k]
-						elif "default" in ak:
-							accumulator = action["default"]
-					elif k in d.keys():
-						accumulator = d[k]
+				if "dict" in ak:
+					if k in action["dict"].keys():
+						accumulator = action["dict"][k]
 					elif "default" in ak:
 						accumulator = action["default"]
+				elif k in d.keys():
+					accumulator = d[k]
+				elif "default" in ak:
+					accumulator = action["default"]
 
 			if "var" in ak:
 				d[readf(action["var"], d)] = readf(accumulator, d)
