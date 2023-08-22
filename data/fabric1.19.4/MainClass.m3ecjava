@@ -68,26 +68,18 @@ public class ${mod.class} implements ModInitializer {
 ---iter mod.registry.recipetype.names
 		Registry.register(Registry.RECIPE_SERIALIZER, ${mod.recipetype.$%v.class}Serializer.ID, ${mod.recipetype.$%v.class}Serializer.INSTANCE);
 		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);---end
+		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
 ---iter mod.registry.item.names
-		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
-			content.add(ModItems.${mod.item.$%v^upper});
-		});---end
+			content.add(ModItems.${mod.item.$%v^upper});---end
 ---iter mod.registry.blockitem.names
-		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
-			content.add(ModItems.${mod.blockitem.$%v.uppercased});
-		});---end
+			content.add(ModItems.${mod.blockitem.$%v.uppercased});---end
 ---iter mod.registry.armor.names
-		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
-			content.add(ModItems.${mod.armor.$%v.uppercased});
-		});---end
+			content.add(ModItems.${mod.armor.$%v.uppercased});---end
 ---iter mod.registry.tool.names
-		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
-			content.add(ModItems.${mod.tool.$%v.uppercased});
-		});---end
+			content.add(ModItems.${mod.tool.$%v.uppercased});---end
 ---iter mod.registry.sapling.names
-		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
-			content.add(ModItems.${mod.sapling.$%v.uppercased});
-		});---end
+			content.add(ModItems.${mod.sapling.$%v.uppercased});---end
+		});
 
 ---iter mod.registry.ore.names
 ---if mod.ore.$%v.overworldore
