@@ -71,7 +71,7 @@ public class ${mod.class} implements ModInitializer {
 		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);---end
 ---if mod.iconItem
 		Registry.register(Registries.ITEM_GROUP, ITEM_GROUP, FabricItemGroup.builder()
-		   .displayName(Text.translatable("ItemGroup.${mod.mcpath}.general"))
+		   .displayName(Text.translatable("itemGroup.${mod.mcpath}.general"))
 		   .icon(() -> new ItemStack(${mod.iconItem}))
 		   .entries((context, entries) -> {
 ---iter mod.registry.item.names
