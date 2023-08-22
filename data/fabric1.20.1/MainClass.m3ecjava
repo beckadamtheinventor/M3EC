@@ -76,6 +76,8 @@ public class ${mod.class} implements ModInitializer {
 		   .entries((context, entries) -> {
 ---iter mod.registry.item.names
 				entries.add(ModItems.${mod.item.$%v^upper});---end
+---iter mod.registry.food.names
+				entries.add(ModItems.${mod.food.$%v^upper});---end
 ---iter mod.registry.blockitem.names
 				entries.add(ModItems.${mod.block.$%v^upper});---end
 ---iter mod.registry.armor.names

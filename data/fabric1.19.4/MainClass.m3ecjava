@@ -71,6 +71,8 @@ public class ${mod.class} implements ModInitializer {
 		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
 ---iter mod.registry.item.names
 			content.add(ModItems.${mod.item.$%v^upper});---end
+---iter mod.registry.food.names
+			content.add(ModItems.${mod.food.$%v^upper});---end
 ---iter mod.registry.blockitem.names
 			content.add(ModItems.${mod.blockitem.$%v.uppercased});---end
 ---iter mod.registry.armor.names
