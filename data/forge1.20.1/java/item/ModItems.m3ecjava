@@ -1,0 +1,30 @@
+package ${mod.package}.item;
+
+import ${mod.package}.${mod.class};
+import ${mod.package}.block.ModBlocks;
+import net.minecraft.world.item.*;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+
+public class ModItems {
+    public static final DeferredRegister<Item> ITEMS =
+            DeferredRegister.create(ForgeRegistries.ITEMS, ${mod.class}.MOD_ID);
+
+---iter mod.registry.item.names
+    public static final RegistryObject<Item> ${mod.item.$%v.uppercased} = ITEMS.register("$%v",
+            () -> new ${mod.item.$%v.customclass}(new Item.Properties()));---end
+
+---iter mod.registry.food.names
+	public static final RegistryObject<Item> ${mod.food.$%v.uppercased} = ITEMS.register("$%v",
+            () -> new Item(new Item.Properties().food(ModFoods.${mod.food.$%v.uppercased})));---end
+
+---iter mod.registry.tool.names
+	public static final RegistryObject<Item> ${mod.tool.$%v.uppercased} = ITEMS.register("$%v",
+		() -> new ${mod.tool.$%v.tooltype}(${mod.tool.$%v.tooltier}, ${mod.tool.$%v.attackdamage}, ${mod.tool.$%v.attackspeed}, new Item.Properties()));---end
+
+    public static void register(IEventBus eventBus) {
+        ITEMS.register(eventBus);
+    }
+}

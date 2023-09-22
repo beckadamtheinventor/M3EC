@@ -60,93 +60,10 @@
 		"key": "mod.iconitem",
 		"value": "ModItems.${mod.iconitem}"
 	},
-	{
-		"iterate": "mod.registry.block.names",
-		"action": "execactions",
-		"actions": [
-			{
-				"action": "setdictkey",
-				"key": "blockname",
-				"value": "${%v}"
-			},
-			{
-				"if": "!keyexists mod.block.${%v}.copyblock",
-				"action": "execactions",
-				"actions": [
-					{
-						"if": "!warning.copyblock_1_20",
-						"action": "print",
-						"string": "In 1.20 and above, blocks must additionally specify a block to copy properties of via the `copyblock` key. Defaulting to semi-accurate replacement based on original material."
-					},
-					{
-						"action": "setdictkey",
-						"key": "warning.copyblock_1_20",
-						"value": true
-					},
-					{
-						"action": "getdictkey",
-						"key": "${mod.block.${blockname}.material}",
-						"dict": {
-							"AGGREGATE": "SAND",
-							"AIR": "AIR",
-							"AMETHYST": "AMETHYST_BLOCK",
-							"BAMBOO_SAPLING": "BAMBOO_SAPLING",
-							"BAMBOO": "BAMBOO",
-							"BARRIER": "BARRIER",
-							"BUBBLE_COLUMN": "WATER",
-							"CACTUS": "CACTUS",
-							"CAKE": "CAKE",
-							"CARPET": "WHITE_CARPET",
-							"COBWEB": "COBWEB",
-							"DECORATION": "FLOWER_POT",
-							"DENSE_ICE": "PACKED_ICE",
-							"EGG": "TURTLE_EGG",
-							"FIRE": "FIRE",
-							"GLASS": "GLASS",
-							"GOURD": "PUMPKIN",
-							"ICE": "ICE",
-							"LAVA": "LAVA",
-							"LEAVES": "OAK_LEAVES",
-							"METAL": "IRON_BLOCK",
-							"MOSS_BLOCK": "MOSS",
-							"NETHER_SHOOTS": "WARPED_ROOTS",
-							"NETHER_WOOD": "CRIMSON_STEM",
-							"ORGANIC_PRODUCT": "CLAY",
-							"PISTON": "PISTON",
-							"PLANT": "POPPY",
-							"PORTAL": "PORTAL",
-							"POWDER_SNOW": "POWDER_SNOW",
-							"REDSTONE_LAMP": "REDSTONE_LAMP",
-							"REPAIR_STATION": "ANVIL",
-							"REPLACEABLE_NETHER_PLANT": "AIR",
-							"REPLACEABLE_PLANT": "FERN",
-							"SCULK": "SCULK",
-							"SHULKER_BOX": "WHITE_SHULKER_BOX",
-							"SNOW_BLOCK": "SNOW_BLOCK",
-							"SNOW_LAYER": "SNOW",
-							"SOIL": "DIRT",
-							"SOLID_ORGANIC": "GRASS_BLOCK",
-							"SPONGE": "SPONGE",
-							"STONE": "STONE",
-							"STRUCTURE_VOID": "STRUCTURE_VOID",
-							"TNT": "TNT",
-							"UNDERWATER_PLANT": "KELP",
-							"WATER": "WATER",
-							"WOOD": "OAK_WOOD",
-							"WOOL": "WHITE_WOOL"
-						},
-						"default": "STONE",
-						"var": "blockmaterial"
-					},
-					{
-						"action": "setdictkey",
-						"key": "mod.block.${blockname}.copyblock",
-						"value": "Blocks.${blockmaterial}"
-					}
-				]
-			}
-		]
-	},
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/1.20_and_up_actions.json"
+    },
     {
       "action": "execactions",
       "file": "${source_path}/common/actions/block_mining_requirements.json"

@@ -1,0 +1,65 @@
+package ${mod.package}.block;
+
+import ${mod.package}.${mod.class};
+import ${mod.package}.item.ModCreativeModeTab;
+import ${mod.package}.item.ModItems;
+
+---iter modblocks.imports
+import $%v;---end
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+
+public class ModBlocks {
+    public static final DeferredRegister<Block> BLOCKS =
+            DeferredRegister.create(ForgeRegistries.BLOCKS, ${mod.class}.MOD_ID);
+
+---iter mod.registry.block.names
+---if mod.block.$%v.lightlevel
+	public static ToIntFunction<BlockState> ${mod.block.$%v^upper}_LIGHT_LEVEL = BlockState -> ${mod.block.$%v.lightlevel};---fi---end
+
+---iter mod.registry.block.names
+    public static final RegistryObject<Block> ${mod.block.$%v^upper} = registerBlock("$%v",
+            () -> new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockClass.isStair
+					ModBlocks.${mod.block.$%v.BlockMaterialBlock^upper}.get().defaultBlockState(), ---fiBlockBehaviour.Properties.copy(${mod.block.$%v.copyblock})
+                    .strength(${mod.block.$%v.hardness^float}, ${mod.block.$%v.resistance^float})
+					.sound(SoundType.${mod.block.$%v.sounds})---if mod.block.$%v.requiresTool
+					.requiresCorrectToolForDrops()---fi---if mod.block.$%v.lightlevel
+					.lightLevel(${mod.block.$%v^upper}_LIGHT_LEVEL)---fi---if ${mod.block.$%v.extraBlockSettings}
+					${mod.block.$%v.extraBlockSettings}---fi));---end
+
+---iter modblocks.extramodblocks
+	$%v---end
+
+	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
+        RegistryObject<T> toReturn = BLOCKS.register(name, block);
+        registerBlockItem(name, toReturn);
+        return toReturn;
+    }
+
+    private static <T extends Block> RegistryObject<Item> registerBlockItem(String name, RegistryObject<T> block) {
+        return ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+    }
+
+    public static void register(IEventBus eventBus) {
+        BLOCKS.register(eventBus);
+    }
+}
