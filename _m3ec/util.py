@@ -473,22 +473,19 @@ def getDictString(d, f=None):
 
 	return "\n".join(o)
 
-def _getDictString(d, key, nest=None):
+def _getDictString(d, key):
 	if type(d[key]) is list:
 		for item in d[key]:
 			yield f"+{key}: {item}"
 	elif type(d[key]) is dict:
 		if not (key.endswith(".") and key in d[key].keys()):
-			if nest is None:
-				yield f"{key}:"
-			else:
-				yield f"{nest}.{key}:"
+			yield f"{key}:"
 		for s in sorted(d[key].keys()):
-			for val in _getDictString(d[key], s, nest=key):
-				if nest is None:
-					yield "."+val
+			for val in _getDictString(d[key], s):
+				if val.startswith("+"):
+					yield f"+{key}.{val[1:]}"
 				else:
-					yield val
+					yield f"{key}.{val}"
 	else:
 		yield f"{key}: {d[key]}"
 
@@ -576,6 +573,14 @@ def toNumber(val, default=None):
 		except:
 			pass
 	return default
+
+def make_dirs(path):
+	p = path.replace("\\", "/").split("/")
+	for i in range(len(p)):
+		if not os.path.exists("/".join(p[:i])):
+			if not make_dir(path):
+				return False
+	return True
 
 def make_dir(path):
 	if os.path.exists(path) and os.path.isdir(path):

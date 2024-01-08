@@ -1350,8 +1350,8 @@ def BuildMod(d):
 		[sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Checkbox("Build mod JAR", k="buildjar", size=EDITOR_BUTTON_SIZE)],
 		[sg.Sizer(WIN_WIDTH, 20)],
-		[sg.Button("Build for KubeJS", k="kubejs", size=EDITOR_BUTTON_SIZE)],
-		[sg.Sizer(WIN_WIDTH, 20)],
+		# [sg.Button("Build for KubeJS", k="kubejs", size=EDITOR_BUTTON_SIZE)],
+		# [sg.Sizer(WIN_WIDTH, 20)],
 		[sg.Button("All supported modloaders and game versions", k="all")],
 		[sg.Button("All supported Forge versions", k="forge")],
 		[sg.Button("Forge 1.16.5", k="forge1.16.5", size=EDITOR_BUTTON_SIZE)],
@@ -1404,10 +1404,10 @@ def ImportFromJar(fnames, d):
 			try:
 				n += _ImportFromJar(fname, d)
 			except Exception as e:
-				ErrorWindow(f"Error importing from file \"{fname}\": {str(e)}")
+				ErrorWindow(f"Error importing from JAR \"{fname}\":\n{str(e)}")
 				return
 
-	InfoWindow(f"Successfuly imported {n} blocks/items.")
+	InfoWindow(f"Successfuly imported {n} blocks/items.\nNote that you will need to set properties that cannot be loaded from asset json.")
 
 def _ImportFromJar(fname, d):
 	zf = ZipFile(fname)
@@ -1416,31 +1416,29 @@ def _ImportFromJar(fname, d):
 	moditems = {}
 	numitems = 0
 	for fn in filenames:
-		if fn[0] == "assets":
-			if len(fn) == 5:
-				if fn[1] != "minecraft":
-					modname = fn[1]
-					if modname not in moditems.keys():
-						moditems[modname] = {}
-					if fn[2] == "models" and fn[4].endswith(".json") and fn[3] in ("block", "item"):
-						with zf.open("/".join(fn)) as f:
-							moditems[modname][fn[4].rsplit(".",maxsplit=1)[0]] = json.load(f)
-						numitems += 1
+		if len(fn[-1]) > 0 and fn[0] == "assets":
+			modname = fn[1]
+			if modname not in moditems.keys():
+				moditems[modname] = {}
+			if len(fn) >= 5 and fn[2] == "textures":
+				if fn[3] in ("block", "item"):
+					with zf.open("/".join(fn), "r") as f:
+						idata = f.read()
+					imgfname = "/".join([d["project_path"], "textures", "imported", modname, fn[3], "/".join(fn[4:])])
+					make_dirs(os.path.dirname(imgfname))
+					with open(imgfname, "wb") as f:
+						f.write(idata)
+			elif len(fn) >= 5:
+				if fn[2] == "models" and fn[-1].endswith(".json") and fn[3] in ("block", "item"):
+					with zf.open("/".join(fn)) as f:
+						moditems[modname][fn[-1].rsplit(".",maxsplit=1)[0]] = json.load(f)
+					numitems += 1
 
 	for modname in moditems.keys():
 		mod = moditems[modname]
 		for item in mod.keys():
+			nd = {}
 			dd = mod[item]
-			if "textures" not in dd.keys():
-				while "parent" in dd.keys():
-					try:
-						with zf.open("/".join(["assets", dd["parent"].split(":", maxsplit=1)[0], "models", dd["parent"].split(":", maxsplit=1)[1]+".json"])) as f:
-							dd = json.load(f)
-					except Exception as e:
-						print(f"Exception loading parent json: {e}")
-						dd["icon"] = ""
-						dd = {}
-						break
 			if "textures" in dd.keys():
 				if "all" in dd.keys():
 					tname = dd["textures"]["all"]
@@ -1458,7 +1456,7 @@ def _ImportFromJar(fname, d):
 					dd["icon"] = ""
 					continue
 				try:
-					with zf.open("/".join(["assets", tname.split(":", maxsplit=1)[0], "textures", tname.split(":", maxsplit=1)[1]]), 'rb') as f:
+					with zf.open("/".join(["assets", tname.split(":", maxsplit=1)[0], "textures", tname.split(":", maxsplit=1)[1]]), 'r') as f:
 						dd["icon"] = b64encode(f.read())
 				except:
 					print(f"Exception loading icon: {e}")
@@ -1599,10 +1597,12 @@ def RenameValueWindow(old, valuetype="", parent=None):
 			return values[0]
 
 def InfoWindow(text, title="Info", parent=None):
+	if "\n" in text:
+		return sg.Window(title, [([sg.Text(t)] for t in text.split("\n")),[sg.Ok()]], icon=ICON_FILE).read(close=True)
 	return sg.Window(title, [[sg.Text(text)],[sg.Ok()]], icon=ICON_FILE).read(close=True)
 
 def ErrorWindow(text, title="Error", parent=None):
-	return sg.Window(title, [[sg.Text(text)],[sg.Ok()]], icon=ICON_FILE).read(close=True)
+	return InfoWindow(text, title, parent)
 
 def MissingValueWindow(title, longtitle="", default="", parent=None):
 	return sg.Window("Missing Value", [[sg.Text(f"{title} is not yet defined. Please define it below.")],[sg.Text(longtitle)],[sg.Input(default_text=default)],[sg.Submit(),sg.Cancel()]], icon=ICON_FILE).read(close=True)
