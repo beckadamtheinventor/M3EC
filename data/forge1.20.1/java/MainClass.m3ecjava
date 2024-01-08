@@ -50,6 +50,7 @@ public class ${mod.class} {
 
         ModItems.register(eventBus);
         ModBlocks.register(eventBus);
+		ModCreativeModeTab.register(eventBus);
 
 ---iter mainclass.onInitialize
 		$%v---end
