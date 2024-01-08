@@ -20,6 +20,10 @@ public class ModCreativeModeTab {
                     .displayItems((pParameters, pOutput) -> {
 ---iter mod.registry.item.names
 						pOutput.accept(ModItems.${mod.item.$%v^upper}.get());---end
+---iter mod.registry.food.names
+						pOutput.accept(ModItems.${mod.food.$%v^upper}.get());---end
+---iter mod.registry.tool.names
+						pOutput.accept(ModItems.${mod.tool.$%v^upper}.get());---end
 ---iter mod.registry.block.names
 						pOutput.accept(ModBlocks.${mod.block.$%v^upper}.get());---end
                     })
