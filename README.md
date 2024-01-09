@@ -1,7 +1,7 @@
 # M3EC
 
 ## Minecraft Multi Mod Environment Compiler
-Version 0.7
+Version 0.8
 
 This compiler/script operates on the mentality of "as few files as possible" to create a mod.
 Check out the `testrubymod` folder for usage examples.
@@ -40,12 +40,18 @@ Example:
 - 1.17.x
 - 1.18.x
 - 1.19
+- 1.19.2
+- 1.19.3
+- 1.19.4
+- 1.20.1
 
 ### Supported Versions (Forge)
 - 1.16.5
 - 1.18.1
 - 1.18.2
 - 1.19
+- 1.19.2
+- 1.20.1
 
 ### Planned Versions (Forge)
 - 1.12.2
