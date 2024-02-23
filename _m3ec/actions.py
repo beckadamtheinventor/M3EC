@@ -38,8 +38,8 @@ def execActions(actions, d, accumulator=None):
 					value = accumulator
 				if "iterate" in ak:
 					l = action["iterate"]
-					if type(l) is not list:
-						l = d[l]
+					if type(l) is str:
+						l = d[readf(l, d).lower()]
 					for i in range(len(l)):
 						d["%i"] = i
 						d["%v"] = l[i]
@@ -90,8 +90,8 @@ def execActions(actions, d, accumulator=None):
 			if "iterate" in ak:
 				accumulator = []
 				l = action["iterate"]
-				if type(l) is not list:
-					l = d[l]
+				if type(l) is str:
+					l = d[readf(l, d).lower()]
 				for i in range(len(l)):
 					d["%i"] = i
 					d["%v"] = l[i]
@@ -147,7 +147,7 @@ def execActions(actions, d, accumulator=None):
 				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
-						l = d[l]
+						l = d[readf(l, d).lower()]
 					iterating = True
 				else:
 					l = [None]
@@ -162,7 +162,7 @@ def execActions(actions, d, accumulator=None):
 				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
-						l = d[l]
+						l = d[readf(l, d).lower()]
 					iterating = True
 				else:
 					l = [None]
@@ -246,7 +246,7 @@ def execActions(actions, d, accumulator=None):
 					iterating = True
 					l = action["iterate"]
 					if type(l) is str:
-						l = d[l]
+						l = d[readf(l, d).lower()]
 				else:
 					iterating = False
 					l = [action["source"]]
@@ -333,6 +333,8 @@ def execActions(actions, d, accumulator=None):
 			if "var" in ak:
 				if action["var"] in d.keys():
 					print(readf(d[action["var"]], d), end=" ")
+				else:
+					print("None")
 			if "value" in ak:
 				print(readf(action["value"], d), end=" ")
 			print()

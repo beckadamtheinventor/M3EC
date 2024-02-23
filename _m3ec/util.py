@@ -143,6 +143,8 @@ def checkConditionString(condition, d):
 					return not inverted
 				elif condition[1] == "iterable" and (type(val) is list or type(val) is tuple):
 					return not inverted
+				elif condition[1] == "none" and val is None:
+					return not inverted
 			elif condition[0] == "#startswith":
 				if type(val) is str:
 					if val.startswith(condition[1]):
@@ -160,6 +162,8 @@ def checkConditionString(condition, d):
 						return not inverted
 					elif condition[1] == "zero" and len(val) <= 0:
 						return not inverted
+					else:
+						val = len(val)
 			elif condition[0] == ">":
 				if toNumber(val, default=0) > toNumber(condition[1], default=0):
 					return not inverted
@@ -683,6 +687,8 @@ def readf(data, d):
 							data2.append(block.replace("$%v", l[i]).replace("$%i", str(i)))
 				else:
 					j = data.find(itrend, n)+len(itrend)
+					if data[j] == '\n':
+						j += 1
 			data2.append(data[j:])
 			data = "".join(data2)
 
@@ -713,6 +719,8 @@ def readf(data, d):
 						data2.append(",".join(lst))
 				else:
 					j = data.find(lstrend, n) + len(lstrend)
+					if data[j] == '\n':
+						j += 1
 			data2.append(data[j:])
 			data = "".join(data2)
 
@@ -728,7 +736,10 @@ def readf(data, d):
 			j = 0
 			while istr in data[j:]:
 				i = data.find(istr, j)
-				data2.append(data[j:i])
+				if i > 0 and data[i-1] == '\n':
+					data2.append(data[j:i-1])
+				else:
+					data2.append(data[j:i])
 				n = data.find("\n", i+len(istr))
 				if data[i+len(istr)] == '!':
 					inverted = True
@@ -770,6 +781,8 @@ def readf(data, d):
 					data2.append(data[n:j])
 					# print(data2[-1])
 				j += len(istrend)
+				if data[j] == '\n':
+					j += 1
 			data2.append(data[j:])
 			data = "".join(data2)
 
@@ -837,7 +850,24 @@ def readf(data, d):
 							if type(w) is not str:
 								w = str(w)
 							try:
-								args = [int(a) for a in fn.lower()[6:-1].split(",")]
+								args = [int(a) for a in fn.lower()[10:-1].split(",")]
+							except:
+								print("Error parsing integer argument in key function arguments ${"+word+"}")
+								exit(1)
+							if len(args) < 1 or len(args) > 2:
+								print("Wrong number of arguments to key function ^split in ${"+word+"} (minimum 1, maximum 2 arguments)")
+								exit(1)
+							w = w.split(fn[6:9].strip("'\""), args[0])
+							if len(args) == 2:
+								if args[1] < len(w):
+									w = w[args[1]]
+								else:
+									w = None
+						elif fn.lower().startswith("substring(") and fn.endswith(")"):
+							if type(w) is not str:
+								w = str(w)
+							try:
+								args = [int(a) for a in fn.lower()[10:-1].split(",")]
 							except:
 								print("Error parsing integer argument in key function arguments ${"+word+"}")
 								exit(1)
@@ -848,7 +878,7 @@ def readf(data, d):
 							elif len(args) == 3:
 								w = w[args[0]:args[1]:args[2]]
 							else:
-								print("Wrong number of arguments to key function ^split in ${"+word+"} (minimum 1, maximum 3 arguments)")
+								print("Wrong number of arguments to key function ^substring in ${"+word+"} (minimum 1, maximum 3 arguments)")
 								exit(1)
 						elif fn.lower().startswith("replace(") and fn.endswith(")"):
 							if type(w) is not str:

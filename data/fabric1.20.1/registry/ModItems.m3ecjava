@@ -31,10 +31,18 @@ ${mod.item.$%v.extraItemSettings}---fi);---end
 
 	//Food
 ---iter mod.registry.food.names
-	public static final Item ${mod.food.$%v.uppercased} = new Item(new FabricItemSettings().food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})---if mod.food.$%v.snack
-.snack()---fi---if mod.food.$%v.alwaysEdible
-.alwaysEdible()---fi---if mod.food.$%v.statusEffects
-${mod.food.$%v.statusEffects}---fi.build()));---end
+	public static final Item ${mod.food.$%v.uppercased} = new Item(new FabricItemSettings().food(new FoodComponent.Builder()
+---if mod.food.$%v.hunger
+.hunger(${mod.food.$%v.hunger})---fi
+---if mod.food.$%v.saturation
+.saturationModifier(${mod.food.$%v.saturation})---fi
+---if mod.food.$%v.snack
+.snack()---fi
+---if mod.food.$%v.alwaysEdible
+.alwaysEdible()---fi
+---if mod.food.$%v.statusEffects
+${mod.food.$%v.statusEffects}---fi
+.build()));---end
 
     //Block Items
 ---iter mod.registry.blockitem.names

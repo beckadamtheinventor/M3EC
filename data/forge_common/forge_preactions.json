@@ -35,5 +35,9 @@
 		"action": "setdictkey",
 		"key": "mod.creativemodetab",
 		"value": "ModCreativeModeTab.TAB"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/common/actions/food_status_effects.json"
 	}
 ]

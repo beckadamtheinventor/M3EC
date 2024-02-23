@@ -5,9 +5,14 @@ title:        Ruby Apple
 texture:      ruby_apple.png
 
 hunger:       4
-saturation:   8
+saturation:   2
 alwaysEdible: true
 snack:        true
+
+# regeneration level 2 for 200 ticks (10 seconds), 100% chance of triggering (optional parameter)
++statusEffects: REGENERATION 2 200 1
+# haste level 2 for 600 ticks (30 seconds), 100% chance of triggering
++statusEffects: HASTE 2 600
 
 +langs:  fr_ca
 +langs:  fr_fr
