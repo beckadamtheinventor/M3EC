@@ -101,6 +101,12 @@ def joinDicts(a, b):
 		c[k] = b[k]
 	return c
 
+def getDictKeyLen(d, key):
+	if key.lower() in d.keys():
+		if type(d[key.lower()]) is str:
+			return len(d[key.lower()])
+	return 0
+
 def checkDictKeyTrue(d, key):
 	if key.lower() in d.keys():
 		if type(d[key.lower()]) is str:
@@ -521,7 +527,7 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 	if "_" in cidlow:
 		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = "".join([word.capitalize() for word in cidlow.split("_")])
 	else:
-		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = cid
+		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = cid.capitalize()
 
 	# if f"mod.{content_type}.{cidlow}.class" in manifest_dict.keys():
 		# print(manifest_dict[f"mod.{content_type}.{cidlow}.class"])
@@ -532,7 +538,9 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 	if content_type == "recipe":
 		manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = d["result"]
 	else:
-		if f"mod.{content_type}.{cidlow}.texture" not in manifest_dict.keys():
+		if "title" not in d.keys() or getDictKeyLen(d, "title") < 1:
+			manifest_dict["title"] = " ".join([word.capitalize() for word in cidlow.split("_")])
+		if "texture" not in d.keys() or getDictKeyLen(d, "texture") < 1:
 			if f"mod.{content_type}.{cidlow}.texture_top" in manifest_dict.keys():
 				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = manifest_dict[f"mod.{content_type}.{cidlow}.texture_top"]
 			elif f"mod.{content_type}.{cidlow}.texture_side" in manifest_dict.keys():
@@ -542,7 +550,7 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 			elif f"mod.{content_type}.{cidlow}.texture_front" in manifest_dict.keys():
 				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = manifest_dict[f"mod.{content_type}.{cidlow}.texture_front"]
 			else:
-				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = None
+				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = cidlow
 
 	return True
 

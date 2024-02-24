@@ -243,8 +243,11 @@ def build_mod(modloader, version, modenv, manifest_dict):
 								add_content(cid, "item", dictinst, manifest_dict, fname)
 							continue
 						if "contentid" not in d.keys():
-							print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
-							continue
+							if "cid" in d.keys():
+								d["contentid"] = d["cid"]
+							else:
+								print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
+								continue
 						if content_type == "recipe":
 							if "contentid" in d.keys():
 								cid = d["contentid"]

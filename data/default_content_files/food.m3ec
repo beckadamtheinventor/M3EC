@@ -4,12 +4,17 @@ contentid:
 title:
 texture:
 
+# Hunger restore. Player has 20 hunger points.
 hunger:
+# Saturation modifier. Multiplied by hunger to get actual value
 saturation:
 # true, false
 alwaysEdible: true
 # true, false
 snack:        false
+
+# Haste 2 effect for 15 seconds with a 50% chance of triggering
+# +statusEffects: HASTE 2 300 0.5
 
 # customclass:
 # +langs: fr_ca
