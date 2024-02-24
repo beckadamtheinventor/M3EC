@@ -28,10 +28,20 @@ ${mod.item.$%v.extraItemSettings}---fi);---end
 
 	//Food
 ---iter mod.registry.food.names
-	public static final Item ${mod.food.$%v.uppercased} = new Item(new Item.Settings().group(${mod.creativemodetab}).food(new FoodComponent.Builder().hunger(${mod.food.$%v.hunger}).saturationModifier(${mod.food.$%v.saturation})---if mod.food.$%v.snack
-.snack()---fi---if mod.food.$%v.alwaysEdible
-.alwaysEdible()---fi---if mod.food.$%v.statusEffects
-${mod.food.$%v.statusEffects}---fi.build()));---end
+	public static final Item ${mod.food.$%v.uppercased} = new FoodItem(Item.Settings().group(${mod.creativemodetab}).food(new FoodComponent.Builder()
+---if mod.food.$%v.hunger
+.hunger(${mod.food.$%v.hunger})---fi
+---if mod.food.$%v.saturation
+.saturationModifier(${mod.food.$%v.saturation})---fi
+---if mod.food.$%v.snack
+.snack()---fi
+---if mod.food.$%v.alwaysEdible
+.alwaysEdible()---fi
+---if mod.food.$%v.statusEffects
+${mod.food.$%v.statusEffects}---fi
+.build())
+---if mod.food.$%v.returnitem
+, ${mod.food.$%v.returnItem}---fi);---end
 
     //Block Items
 ---iter mod.registry.blockitem.names

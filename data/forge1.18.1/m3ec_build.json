@@ -3,6 +3,10 @@
   "minecraftVersion": "1.18.1",
   "javaVersion": "17.",
   "firstActions": [
+  {
+	  "action": "print",
+	  "string": "[!] Building for Forge 1.16.5 is currently *very* broken [!]"
+  },
     {
       "if": [
         "^OR",

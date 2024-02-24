@@ -31,7 +31,7 @@ ${mod.item.$%v.extraItemSettings}---fi);---end
 
 	//Food
 ---iter mod.registry.food.names
-	public static final Item ${mod.food.$%v.uppercased} = new Item(new FabricItemSettings().food(new FoodComponent.Builder()
+	public static final Item ${mod.food.$%v.uppercased} = new FoodItem(new FabricItemSettings().food(new FoodComponent.Builder()
 ---if mod.food.$%v.hunger
 .hunger(${mod.food.$%v.hunger})---fi
 ---if mod.food.$%v.saturation
@@ -42,7 +42,9 @@ ${mod.item.$%v.extraItemSettings}---fi);---end
 .alwaysEdible()---fi
 ---if mod.food.$%v.statusEffects
 ${mod.food.$%v.statusEffects}---fi
-.build()));---end
+.build())
+---if mod.food.$%v.returnitem
+, ${mod.food.$%v.returnItem}---fi);---end
 
     //Block Items
 ---iter mod.registry.blockitem.names

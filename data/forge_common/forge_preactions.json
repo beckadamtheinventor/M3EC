@@ -38,6 +38,11 @@
 	},
 	{
 		"action": "execactions",
-		"file": "${source_path}/common/actions/food_status_effects.json"
-	}
+		"file": "${source_path}/forge_common/food_status_effects.json"
+	},
+    {
+      "action": "copyf",
+      "source": "${source_path}/forge_common/classes/FoodItem.m3ecjava",
+      "dest": "${build_path}/src/main/java/${mod.packagedir}/item/FoodItem.java"
+    }
 ]

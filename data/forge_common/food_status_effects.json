@@ -30,7 +30,7 @@
 							{
 								"action": "setdictkey",
 								"key": "effect",
-								"value": "${%v^split(' ',3,0)}"
+								"value": "${%v^split(' ',3,0)^upper}"
 							},
 							{
 								"action": "setdictkey",
@@ -66,9 +66,32 @@
 								"value": "1"
 							},
 							{
+								"action": "getdictkey",
+								"key": "${effect}",
+								"dict": {
+									"HASTE": "DIG_SPEED",
+									"MINING_FATIGUE": "DIG_SLOWDOWN",
+									"SPEED": "MOVEMENT_SPEED",
+									"NAUSEA": "CONFUSION",
+									"INSTANT_HEALTH": "HEAL",
+									"STRENGTH": "DAMAGE_BOOST",
+									"RESISTANCE": "DAMAGE_RESISTANCE",
+									"INSTANT_DAMAGE": "HARM",
+									"JUMP_BOOST": "JUMP",
+									"REGEN": "REGENERATION"
+								},
+								"var": "convertedeffect"
+							},
+							{
+								"if": "?!convertedeffect #typeis none",
+								"action": "setdictkey",
+								"key": "effect",
+								"value": "${convertedeffect}"
+							},
+							{
 								"action": "setdictkey",
 								"key": "statusstring",
-								"value": "${statusstring}.statusEffect(new StatusEffectInstance(StatusEffects.${effect^upper}, ${duration}, ${level}-1), ${chance})\n"
+								"value": "${statusstring}.effect(() -> new MobEffectInstance(MobEffects.${effect}, ${duration}, ${level}-1), ${chance})\n"
 							}
 						]
 					},

@@ -18,7 +18,9 @@ public class ModItems {
 
 ---iter mod.registry.food.names
 	public static final RegistryObject<Item> ${mod.food.$%v.uppercased} = ITEMS.register("$%v",
-            () -> new Item(new Item.Properties().food(ModFoods.${mod.food.$%v.uppercased})));---end
+            () -> new FoodItem(new Item.Properties().food(ModFoods.${mod.food.$%v.uppercased}))
+---if mod.food.$%v.returnItem
+, ${mod.food.$%v.returnItem}---fi);---end
 
 ---iter mod.registry.tool.names
 	public static final RegistryObject<Item> ${mod.tool.$%v.uppercased} = ITEMS.register("$%v",

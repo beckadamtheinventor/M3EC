@@ -1,9 +1,14 @@
 package ${mod.package}.item;
 
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 
 public class ModFoods {
 ---iter mod.registry.food.names
     public static final FoodProperties ${mod.food.$%v.uppercased} = (new FoodProperties.Builder())---if mod.food.$%v.snack
-.fast()---fi.nutrition(${mod.food.$%v.hunger}).saturationMod(${mod.food.$%v.saturation}).build();---end
+.fast()---fi.nutrition(${mod.food.$%v.hunger}).saturationMod(${mod.food.$%v.saturation})
+---if mod.food.$%v.statusEffects
+${mod.food.$%v.statusEffects}---fi.build();---end
 }

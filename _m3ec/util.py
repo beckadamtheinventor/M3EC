@@ -126,6 +126,10 @@ def checkConditionString(condition, d):
 				if condition[1] in val:
 					return not inverted
 				return inverted
+			elif condition[0] == "#containskey":
+				if condition[1] in val.keys():
+					return not inverted
+				return inverted
 			elif condition[0] == "#typeis":
 				if condition[1] == "int" and type(val) is int:
 					return not inverted

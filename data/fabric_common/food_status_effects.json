@@ -1,0 +1,108 @@
+[
+	{
+		"iterate": "mod.registry.food.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"if": "?!mod.food.${%v}.saturation #endswith f",
+				"action": "setdictkey",
+				"key": "mod.food.${%v}.saturation",
+				"value": "${mod.food.${%v}.saturation}f"
+			},
+			{
+				"action": "setdictkey",
+				"key": "outer",
+				"value": "${%v}"
+			},
+			{
+				"if": "?mod.food.${%v}.statuseffects #typeis list",
+				"action": "execactions",
+				"actions": [
+					{
+						"action": "setdictkey",
+						"key": "statusstring",
+						"value": ""
+					},
+					{
+						"iterate": "mod.food.${outer}.statusEffects",
+						"action": "execactions",
+						"actions": [
+							{
+								"action": "setdictkey",
+								"key": "effect",
+								"value": "${%v^split(' ',3,0)^upper}"
+							},
+							{
+								"action": "setdictkey",
+								"key": "level",
+								"value": "${%v^split(' ',3,1)}"
+							},
+							{
+								"action": "setdictkey",
+								"key": "duration",
+								"value": "${%v^split(' ',3,2)}"
+							},
+							{
+								"action": "setdictkey",
+								"key": "chance",
+								"value": "${%v^split(' ',3,3)}"
+							},
+							{
+								"if": "?level == none",
+								"action": "setdictkey",
+								"key": "level",
+								"value": "2"
+							},
+							{
+								"if": "?duration == none",
+								"action": "setdictkey",
+								"key": "duration",
+								"value": "600"
+							},
+							{
+								"if": "?chance == none",
+								"action": "setdictkey",
+								"key": "chance",
+								"value": "1"
+							},
+							{
+								"action": "getdictkey",
+								"key": "effect",
+								"dict": {
+									"DIG_SPEED": "HASTE",
+									"DIG_SLOWDOWN": "MINING_FATIGUE",
+									"MOVEMENT_SPEED": "SPEED",
+									"CONFUSION": "NAUSEA",
+									"HEAL": "INSTANT_HEALTH",
+									"DAMAGE_BOOST": "STRENGTH",
+									"DAMAGE_RESISTANCE": "RESISTANCE",
+									"HARM": "INSTANT_DAMAGE",
+									"JUMP": "JUMP_BOOST",
+									"REGEN": "REGENERATION"
+									
+								},
+								"var": "convertedeffect"
+							},
+							{
+								"if": "?convertedeffect != none",
+								"action": "setdictkey",
+								"key": "effect",
+								"value": "${convertedeffect}"
+							},
+							{
+								"action": "setdictkey",
+								"key": "statusstring",
+								"value": "${statusstring}.statusEffect(new StatusEffectInstance(StatusEffects.${effect}, ${duration}, ${level}-1), ${chance})\n"
+							}
+						]
+					},
+					{
+						"action": "setdictkey",
+						"key": "mod.food.${outer}.statuseffects",
+						"value": "${statusstring}"
+					}
+				]
+			}
+		]
+	}
+]
