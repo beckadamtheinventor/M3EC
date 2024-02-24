@@ -10,7 +10,7 @@ def interpret_args(argv):
 	if argv[0].lower() == "help":
 		print("""Usage:
 project_path all|fabric|forge[gameversion]|fabric[gameversion]
-gen|generate item|food|fuel|block|sapling|ore|(shaped|shapeless|smelting|stonecutting|smithing)recipe|armor[material]|tool[material] [output_file]
+gen|generate manifest|item|food|fuel|block|sapling|ore|(shaped|shapeless|smelting|stonecutting|smithing)recipe|armor[material]|tool[material] [output_file]
 """)
 	elif len(argv) > 1:
 		if argv[0].lower() in ("generate", "gen"):
