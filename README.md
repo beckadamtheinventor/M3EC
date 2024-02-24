@@ -1,7 +1,7 @@
 # M3EC
 
 ## Minecraft Multi Mod Environment Compiler
-Version 0.8
+Version 0.9
 
 This compiler/script operates on the mentality of "as few files as possible" to create a mod.
 Check out the `testrubymod` folder for usage examples.

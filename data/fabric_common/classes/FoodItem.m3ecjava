@@ -1,5 +1,6 @@
 package ${mod.package}.registry;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,13 +23,14 @@ public class FoodItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        TypedActionResult<ItemStack> result = super.use(world, user, hand);
-        if (result.getResult() == ActionResult.SUCCESS) {
-            if (returnItem != null) {
-                user.giveItemStack(new ItemStack(returnItem, 1));
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        ItemStack rval = super.finishUsing(stack, world, user);
+        if (this.isFood() && returnItem != null) {
+            if (user.isPlayer()) {
+                PlayerEntity player = world.getPlayerByUuid(user.getUuid());
+                player.giveItemStack(new ItemStack(returnItem, 1));
             }
         }
-        return result;
+        return rval;
     }
 }

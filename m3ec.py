@@ -765,7 +765,7 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 if __name__=='__main__':
 	if len(sys.argv) < 2:
 		print("""
-Minecraft Multiple Mod Environment Compiler v0.7
+Minecraft Multiple Mod Environment Compiler v0.9
 Usage:
 	python m3ec.py path modenv
 where modenv can be any combination of:
