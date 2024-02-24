@@ -4,6 +4,12 @@
 		"action": "execactions",
 		"actions": [
 			{
+				"if": "?!mod.food.${%v}.saturation #endswith f",
+				"action": "setdictkey",
+				"key": "mod.food.${%v}.saturation",
+				"value": "${mod.food.${%v}.saturation}f"
+			},
+			{
 				"action": "setdictkey",
 				"key": "outer",
 				"value": "${%v}"
@@ -62,7 +68,7 @@
 							{
 								"action": "setdictkey",
 								"key": "statusstring",
-								"value": "${statusstring}.statusEffect(new StatusEffectInstance(StatusEffects.${effect}, ${duration}, ${level}-1), ${chance})\n"
+								"value": "${statusstring}.statusEffect(new StatusEffectInstance(StatusEffects.${effect^upper}, ${duration}, ${level}-1), ${chance})\n"
 							}
 						]
 					},
