@@ -539,7 +539,7 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 		manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = d["result"]
 	else:
 		if "title" not in d.keys() or getDictKeyLen(d, "title") < 1:
-			manifest_dict["title"] = " ".join([word.capitalize() for word in cidlow.split("_")])
+			manifest_dict[f"mod.{content_type}.{cidlow}.title"] = " ".join([word.capitalize() for word in cidlow.split("_")])
 		if "texture" not in d.keys() or getDictKeyLen(d, "texture") < 1:
 			if f"mod.{content_type}.{cidlow}.texture_top" in manifest_dict.keys():
 				manifest_dict[f"mod.{content_type}.{cidlow}.texture"] = manifest_dict[f"mod.{content_type}.{cidlow}.texture_top"]
