@@ -89,6 +89,12 @@
 								"value": "${convertedeffect}"
 							},
 							{
+								"if": "?!chance #endswith f",
+								"action": "setdictkey",
+								"key": "chance",
+								"value": "${chance}f"
+							},
+							{
 								"action": "setdictkey",
 								"key": "statusstring",
 								"value": "${statusstring}.effect(() -> new MobEffectInstance(MobEffects.${effect}, ${duration}, ${level}-1), ${chance})\n"

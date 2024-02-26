@@ -84,10 +84,16 @@
 								"var": "convertedeffect"
 							},
 							{
-								"if": "?convertedeffect != none",
+								"if": "?!convertedeffect #typeis none",
 								"action": "setdictkey",
 								"key": "effect",
 								"value": "${convertedeffect}"
+							},
+							{
+								"if": "?!chance #endswith f",
+								"action": "setdictkey",
+								"key": "chance",
+								"value": "${chance}f"
 							},
 							{
 								"action": "setdictkey",
