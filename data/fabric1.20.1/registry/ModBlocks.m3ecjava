@@ -20,7 +20,7 @@ import net.minecraft.registry.Registry;
 public class ModBlocks {
 ---iter mod.registry.block.names
 	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
-${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSettings
+${mod.block.$%v.BlockMaterialBlock^upper}.getDefaultState(), ---fiFabricBlockSettings
 		.copyOf(${mod.block.$%v.copyblock})
 		---if mod.block.$%v.requiresTool
 		.requiresTool()---fi
@@ -38,11 +38,15 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 		.sounds(BlockSoundGroup.${mod.sapling.$%v.sounds})---if mod.block.$%v.lightlevel
 		.luminance(${mod.block.$%v.lightlevel})---fi);---end
 
+	public static void RegisterBlock(String name, Block block) {
+		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, name), block);
+	}
+
     public static void RegisterBlocks() {
 ---iter mod.registry.block.names
-		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v^upper});---end
+		RegisterBlock("$%v", ${mod.block.$%v^upper});---end
 ---iter mod.registry.sapling.names
-		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v^upper});---end
+		RegisterBlock("$%v", ${mod.sapling.$%v^upper});---end
     }
 
 }

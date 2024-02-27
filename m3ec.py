@@ -594,7 +594,7 @@ def build_resources(project_path, builddir, manifest_dict):
 	includedClasses = []
 	for content_type in manifest_dict["mod.content_types"]:
 		for cid in manifest_dict[f"mod.registry.{content_type}.names"]:
-			nscid = manifest_dict["mod.mcpath"]+":"+cid
+			nscid = manifest_dict["mod.mcpath"]+":"+cid.lower()
 			tname = manifest_dict[f"mod.{content_type}.{cid}.{content_type}"]
 			# print(cid, content_type, tname)
 			# print(manifest_dict[f"mod.{content_type}.{cid}.keys"])

@@ -38,11 +38,15 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 		.sounds(BlockSoundGroup.${mod.sapling.$%v.sounds})---if mod.block.$%v.lightlevel
 		.luminance(${mod.block.$%v.lightlevel})---fi);---end
 
+	public static void RegisterBlock(String name, Block block) {
+		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, name), block);
+	}
+
     public static void RegisterBlocks() {
 ---iter mod.registry.block.names
-		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v^upper});---end
+		RegisterBlock("$%v", ${mod.block.$%v^upper});---end
 ---iter mod.registry.sapling.names
-		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v^upper});---end
+		RegisterBlock("$%v", ${mod.sapling.$%v^upper});---end
     }
 
 }

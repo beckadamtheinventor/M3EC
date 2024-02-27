@@ -7,6 +7,7 @@ import ${mod.package}.blocks.${mod.sapling.$%v.class}SaplingBlock;---end
 import ${mod.package}.${mod.class};
 import ${mod.package}.blocks.ModStairBlock;
 
+import com.google.gson.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
@@ -16,8 +17,14 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class ModBlocks {
+---if mod.configfile
+	private static JsonObject disabledBlocks;---fi
+
 ---iter mod.registry.block.names
 	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.BlockClass}(---if mod.block.$%v.BlockMaterialBlock
 ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSettings
@@ -38,12 +45,47 @@ ${mod.block.$%v.BlockMaterialBlock^UPPER}.getDefaultState(), ---fiFabricBlockSet
 		.sounds(BlockSoundGroup.${mod.sapling.$%v.sounds})---if mod.block.$%v.lightlevel
 		.luminance(${mod.block.$%v.lightlevel})---fi);---end
 
-    public static void RegisterBlocks() {
----iter mod.registry.block.names
-		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.block.$%v^upper});---end
----iter mod.registry.sapling.names
-		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v^upper});---end
-    }
+---if mod.configfile
+	public static boolean IsBlockDisabled(String item) {
+		if (disabledBlocks.has(item)) {
+			if (disabledBlocks.get(item).getAsBoolean()) {
+				return true;
+			}
+		}
+		return false;
+	}---fi
 
+	
+	public static void RegisterBlock(String name, Block block) {
+---if mod.configfile
+		if (!IsBlockDisabled(name))---fi
+		Registry.register(Registries.BLOCK, new Identifier(${mod.class}.MOD_ID, name), block);
+	}
+
+    public static void RegisterBlocks() {
+---if mod.configfile
+		Gson gson = new Gson();
+		FileReader reader = null;
+		try {
+			reader = new FileReader(${mod.class}.CONFIG_FILE_PATH);
+		} catch	(IOException ignored) {
+			try {
+				FileWriter writer = new FileWriter(${mod.class}.CONFIG_FILE_PATH);
+				writer.write("{\"disabledItems\":{},\"disabledBlocks\":{}}");
+				writer.flush(); writer.close();
+				reader = new FileReader(${mod.class}.CONFIG_FILE_PATH);
+			} catch (IOException exception) {
+				${mod.class}.LOGGER.error(exception.getMessage());
+				return;
+			}
+		}
+		if (reader == null) return;
+		JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject();
+		disabledBlocks = obj.getAsJsonObject("disabledBlocks");---fi
+---iter mod.registry.block.names
+		RegisterBlock("$%v", ${mod.block.$%v^upper});---end
+---iter mod.registry.sapling.names
+		RegisterBlock("$%v", ${mod.sapling.$%v^upper});---end
+    }
 }
 

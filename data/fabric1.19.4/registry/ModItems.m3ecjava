@@ -2,6 +2,7 @@ package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
 
+import com.google.gson.*;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ToolMaterial;
@@ -13,6 +14,9 @@ import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 ---iter moditems.imports
 	import $%v;---end
@@ -65,21 +69,26 @@ ${mod.food.$%v.statusEffects}---fi
 ---iter moditems.extra
 	$%v---end
 
+	
+	public static void RegisterItem(String name, Item item) {
+		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, name), item);
+	}
+
     public static void RegisterItems() {
 ---iter mod.registry.item.names
-		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.item.$%v.uppercased});---end
+		RegisterItem("$%v", ${mod.item.$%v.uppercased});---end
 ---iter mod.registry.food.names
-		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.food.$%v.uppercased});---end
+		RegisterItem("$%v", ${mod.food.$%v.uppercased});---end
 ---iter mod.registry.blockitem.names
-		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.blockitem.$%v.uppercased});---end
+		RegisterItem("$%v", ${mod.blockitem.$%v.uppercased});---end
 ---iter mod.registry.fuel.names
 		FuelRegistry.INSTANCE.add(${mod.fuel.$%v.uppercased}, ${mod.fuel.$%v.burntime});---end
 ---iter mod.registry.armor.names
-		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.armor.$%v.uppercased});---end
+		RegisterItem("$%v", ${mod.armor.$%v.uppercased});---end
 ---iter mod.registry.tool.names
-		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.tool.$%v.uppercased});---end
+		RegisterItem("$%v", ${mod.tool.$%v.uppercased});---end
 ---iter mod.registry.sapling.names
-		Registry.register(Registries.ITEM, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.sapling.$%v.uppercased});---end
+		RegisterItem("$%v", ${mod.sapling.$%v.uppercased});---end
 
 ---iter moditems.registeritems.extra
 		$%v---end

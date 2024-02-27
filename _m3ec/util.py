@@ -416,6 +416,7 @@ def readDictString(data, d=None, f=None, md=None):
 			md["%v"] = value
 			values.append(readf(d, md))
 		return {"@iterate": values}
+	# print('--------------------------------\n', d)
 	return d
 
 
@@ -511,8 +512,9 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 		while cid.lower() in manifest_dict[f"mod.registry.{content_type}.names"]:
 			cid = f"{original}_{n}"
 			n += 1
-		
 	cidlow = cid.lower()
+	if content_type.lower() in ("toolmaterial", "armormaterial"):
+		cidlow = cid
 	manifest_dict[f"mod.registry.{content_type}.names"].append(cidlow)
 	manifest_dict[f"mod.{content_type}.{cidlow}.keys"] = list(d.keys())
 	for key in d.keys():
@@ -521,13 +523,16 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 		if type(v) is str:
 			v = readf(v, manifest_dict)
 		manifest_dict[f"mod.{content_type}.{cidlow}.{key}"] = v
-	# print(cid)
+	# print(cid, cidlow)
 	manifest_dict[f"mod.{content_type}.{cidlow}.uppercased"] = cid.upper()
 	manifest_dict[f"mod.{content_type}.{cidlow}"] = manifest_dict[f"mod.{content_type}.{cidlow}.mcpath"] = cidlow
-	if "_" in cidlow:
-		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = "".join([word.capitalize() for word in cidlow.split("_")])
-	else:
-		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = cid.capitalize()
+	if content_type.lower() in ("toolmaterial", "armormaterial"):
+		manifest_dict[f"mod.{content_type}.{cidlow}.class"] = cid
+	elif "class" not in d.keys():
+		if "_" in cidlow:
+			manifest_dict[f"mod.{content_type}.{cidlow}.class"] = "".join([word.capitalize() for word in cidlow.split("_")])
+		else:
+			manifest_dict[f"mod.{content_type}.{cidlow}.class"] = cid
 
 	# if f"mod.{content_type}.{cidlow}.class" in manifest_dict.keys():
 		# print(manifest_dict[f"mod.{content_type}.{cidlow}.class"])
@@ -688,9 +693,13 @@ def readf(data, d):
 				i = data.find(itr, j)
 				data2.append(data[j:i])
 				n = data.find("\n", i+len(itr))
-				key = data[i+len(itr):n].lower()
+				key = data[i+len(itr):n]
+				l = None
 				if key in d.keys():
 					l = d[key]
+				elif key.lower() in d.keys():
+					l = d[key.lower()]
+				if l != None:
 					j = data.find(itrend, n)
 					block = data[n:j]
 					j += len(itrend)
@@ -718,9 +727,13 @@ def readf(data, d):
 				i = data.find(lstr, j)
 				data2.append(data[j:i])
 				n = data.find("\n", i+len(lstr))
-				key = data[i+len(lstr):n].lower()
+				key = data[i+len(lstr):n]
+				l = None
 				if key in d.keys():
 					l = d[key]
+				elif key.lower() in d.keys():
+					l = d[key.lower()]
+				if l != None:
 					j = data.find(lstrend,n)
 					block = data[n:j]
 					j += len(lstrend)
@@ -765,10 +778,12 @@ def readf(data, d):
 				else:
 					tail = []
 				condtrue = False
-				key = readf(key.lower(), d).lower()
+				key = readf(key, d)
 				# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
 				if len(tail) < 1:
 					if key in d.keys():
+						condtrue = True
+					elif key.lower() in d.keys():
 						condtrue = True
 				elif tail[0].lower() == "#contains":
 					if len(tail):
@@ -823,10 +838,12 @@ def readf(data, d):
 			word, tail = word[:rb], word[rb+1:]
 			w = "${"+word+"}"
 			if "^" in word:
-				w = word.split("^", maxsplit=1)[0].lower()
+				w = word.split("^", maxsplit=1)[0]
 				fns = word.split("^")[1:]
 				if w in d.keys():
 					w = d[w]
+				elif w.lower() in d.keys():
+					w = d[w.lower()]
 				if type(w) is str:
 					for fn in fns:
 						# if fn.startswith("("):
@@ -903,6 +920,8 @@ def readf(data, d):
 							else:
 								print("Wrong number of arguments to key function ^replace in ${"+word+"} (minimum 1, maximum 2 arguments)")
 								exit(1)
+			elif word in d.keys():
+				w = d[word]
 			elif word.lower() in d.keys():
 				w = d[word.lower()]
 			data = head + str(w) + tail
