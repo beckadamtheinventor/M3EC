@@ -30,14 +30,14 @@
 				"actions": [
 					{
 						"action": "getdictkey",
-						"key": "mod.block.${%v}.toollevel",
+						"key": "${mod.block.${%v}.toollevel^upper}",
 						"dict": {"-1": null, "0":"WOOD", "1":"STONE", "2":"IRON", "3":"DIAMOND", "4":"NETHERITE"},
 						"default": "${mod.block.${%v}.toollevel}",
 						"var": "toollevel"
 					},
 					{
 						"action": "getdictkey",
-						"key": "mod.block.${%v}.toolclass",
+						"key": "${mod.block.${%v}.toolclass^upper}",
 						"dict": {"PICKAXES":"PICKAXE", "AXES":"AXE", "SHOVELS":"SHOVEL", "HOES": "HOE"},
 						"default": "${mod.block.${%v}.toolclass}",
 						"var": "toolclass"

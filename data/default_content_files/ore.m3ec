@@ -1,17 +1,25 @@
-@: ore
+@:          ore
 ore:
+
+# This ore spawns in the overworld
+# other options: NetherOre, EndOre
+OverworldOre:
+
+# suffix block contentid with "_ore"
 contentid:
 name:
 title:
-maxy:
+# min/max y levels
 miny:
+maxy:
+# ${mod.mcpath}:block, yourmod:block
+blockid:
+# Set this if you want your ore to spawn in deepslate
+# deepslateblockid:
 vein:
-# .atbedrock: true
-# ModBlocks.BLOCK
-# Blocks.BLOCK
+# ModBlocks.BLOCK, Blocks.BLOCK
 .block:
+# vein size in blocks
 .size:
 .perchunk:
-OverworldOre:
-# NetherOre:
-# EndOre:
+.count:

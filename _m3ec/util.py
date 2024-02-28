@@ -385,6 +385,7 @@ def readDictString(data, d=None, f=None, md=None):
 							d[f"{k}.list.{n}"] = v
 							d[k].append(v)
 						else:
+							n = len(d[k])
 							d[f"{k}.list.{n}"] = v
 							d[k] += v
 					else:
