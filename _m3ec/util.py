@@ -50,6 +50,12 @@ def ImageOperation(d, img, op):
 		print(f"Warning: failed to apply image operation {op}\nOriginal error: {str(e)}")
 	return img
 
+def try_load_resource(path, file, method=json.load, default=None):
+	try:
+		return load_resource(path, file, method)
+	except:
+		return default
+
 def load_resource(path, file, method=json.load):
 	with open(os.path.join(path, file)) as f:
 		return method(f)
@@ -112,8 +118,9 @@ def checkDictKeyTrue(d, key):
 		if type(d[key.lower()]) is str:
 			if d[key].lower() in ["true", "yes", "1"]:
 				return True
-		else:
-			return d[key]
+			elif d[key].lower() in ["false", "no", "0"]:
+				return False
+		return d[key]
 	return False
 
 def checkConditionString(condition, d):
@@ -129,13 +136,11 @@ def checkConditionString(condition, d):
 			val = d[val]
 			# print(val, condition)
 			if condition[0] == "#contains":
-				if condition[1] in val:
+				if type(val) is str and condition[1] in val:
 					return not inverted
-				return inverted
 			elif condition[0] == "#containskey":
-				if condition[1] in val.keys():
+				if type(val) is dict and condition[1] in val.keys():
 					return not inverted
-				return inverted
 			elif condition[0] == "#typeis":
 				if condition[1] == "int" and type(val) is int:
 					return not inverted
@@ -156,24 +161,20 @@ def checkConditionString(condition, d):
 				elif condition[1] == "none" and val is None:
 					return not inverted
 			elif condition[0] == "#startswith":
-				if type(val) is str:
-					if val.startswith(condition[1]):
-						return not inverted
+				if type(val) is str and val.startswith(condition[1]):
+					return not inverted
 			elif condition[0] == "#equals":
 				if val == condition[1]:
 					return not inverted
 			elif condition[0] == "#endswith":
-				if type(val) is str:
-					if val.endswith(condition[1]):
-						return not inverted
+				if type(val) is str and val.endswith(condition[1]):
+					return not inverted
 			elif condition[0] == "#length":
 				if type(val) is str or type(val) is list or type(val) is tuple:
 					if condition[1] == "nonzero" and len(val) > 0:
 						return not inverted
 					elif condition[1] == "zero" and len(val) <= 0:
 						return not inverted
-					else:
-						val = len(val)
 			elif condition[0] == ">":
 				if toNumber(val, default=0) > toNumber(condition[1], default=0):
 					return not inverted
@@ -208,8 +209,8 @@ def checkConditionString(condition, d):
 				return False
 		elif type(c) is bool:
 			return c
-		else:
-			return True
+		elif type(c) is int or type(c) is float:
+			return c > 0
 	return False
 
 def checkTrue(condition, d):
@@ -581,6 +582,24 @@ def texture_pathify(d, tex, ct, cid):
 		else:
 			return f"{mod}:{ct}s/{os.path.basename(tex)}"
 	return tex
+
+def splitPrefix(s, n=0, p=None):
+	l = prefixLen(s, p)
+	yield s[:l]
+	n -= 1
+	if n > 1:
+		for v in splitPrefix(s[l:], n, p):
+			yield v
+	else:
+		yield s[l:]
+
+def prefixLen(s, p=None):
+	if p == None:
+		p = "".join([chr(c+0x41)+chr(c+0x61) for c in range(26)])
+	for i in range(len(s)):
+		if s[i] not in p:
+			return i
+	return len(s)
 
 def toNumber(val, default=None):
 	if type(val) is int or type(val) is float:

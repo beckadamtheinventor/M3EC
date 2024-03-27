@@ -103,70 +103,41 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	if "mod.iconitem" not in manifest_dict.keys():
 		print("Warning: Icon item for custom creative tab unspecified. Defaulting to none.")
 
-	source_path = manifest_dict["source_path"] = os.path.join(os.path.dirname(__file__), "data")
+	manifest_dict["default_source_path"] = source_path = os.path.join(os.path.dirname(__file__), "data")
+	if "mod.sourcepath" in manifest_dict.keys():
+		source_path = manifest_dict["mod.sourcepath"]
+
+	manifest_dict["source_path"] = source_path
 
 
 	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
 		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
 
-	manifest_dict["version_past_1.19.3"] = False
+	reserved_modenv_words = ["build", "buildjar", "runclient", "runserver"]
 
-	if "forge1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.16.5", modenv, manifest_dict.copy())
+	mod_builds = {}
+	for word in modenv:
+		word = word.lower()
+		if word not in reserved_modenv_words:
+			try:
+				loader, version = splitPrefix(word, 2)
+			except:
+				continue
+			if len(loader) and len(version):
+				mod_builds[word] = [loader, version]
+			else:
+				for loader, version in try_load_resource(os.path.join(source_path, "versions"), word, default={}).values():
+					mod_builds[str(loader)+str(version)] = [str(loader), str(version)]
 
-	if "forge1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.18.1", modenv, manifest_dict.copy())
+	for loader, version in mod_builds.values():
+		if os.path.isdir(os.path.join(source_path, loader+version)):
+			build_mod(loader, version, modenv, manifest_dict.copy())
+		else:
+			print(f"Failed to find build config for target \"{loader}\" version \"{version}\"")
 
-	if "forge1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.18.2", modenv, manifest_dict.copy())
+	if not len(mod_builds.keys()):
+		print("No valid build targets specified.")
 
-	if "forge1.19" in modenv or "1.19" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.19", modenv, manifest_dict.copy())
-
-	if "forge1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.19.2", modenv, manifest_dict.copy())
-
-
-	if "fabric1.16.5" in modenv or "1.16.5" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.16.5", modenv, manifest_dict.copy())
-
-	if "fabric1.17" in modenv or "1.17" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17", modenv, manifest_dict.copy())
-
-	if "fabric1.17.1" in modenv or "1.17.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.17.1", modenv, manifest_dict.copy())
-
-	if "fabric1.18" in modenv or "1.18" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18", modenv, manifest_dict.copy())
-
-	if "fabric1.18.1" in modenv or "1.18.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18.1", modenv, manifest_dict.copy())
-
-	if "fabric1.18.2" in modenv or "1.18.2" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.18.2", modenv, manifest_dict.copy())
-
-	if "fabric1.19" in modenv or "1.19" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.19", modenv, manifest_dict.copy())
-
-	if "fabric1.19.2" in modenv or "1.19.2" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.19.2", modenv, manifest_dict.copy())
-
-	manifest_dict["version_past_1.19.3"] = True
-
-	if "forge1.20.1" in modenv or "1.20.1" in modenv or "all" in modenv or "forge" in modenv:
-		build_mod("forge", "1.20.1", modenv, manifest_dict.copy())
-
-	if "fabric1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.19.3", modenv, manifest_dict.copy())
-
-	if "fabric1.19.4" in modenv or "1.19.4" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.19.4", modenv, manifest_dict.copy())
-
-	if "fabric1.20.1" in modenv or "1.20.1" in modenv or "all" in modenv or "fabric" in modenv:
-		build_mod("fabric", "1.20.1", modenv, manifest_dict.copy())
-
-	# if "forge1.19.3" in modenv or "1.19.3" in modenv or "all" in modenv or "forge" in modenv:
-		# build_mod("forge", "1.19.3", modenv, manifest_dict.copy())
 
 def build_mod(modloader, version, modenv, manifest_dict):
 	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool",
@@ -765,7 +736,7 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 if __name__=='__main__':
 	if len(sys.argv) < 2:
 		print("""
-Minecraft Multiple Mod Environment Compiler v0.9
+Minecraft Multiple Mod Environment Compiler v0.10
 Usage:
 	python m3ec.py path modenv
 where modenv can be any combination of:
@@ -784,8 +755,8 @@ where modenv can be any combination of:
 + forge1.18.2
 + forge1.19
 + forge1.19.2
++ forge1.20.1
 + fabric
-+ fabric1.16.5
 + fabric1.17
 + fabric1.17.1
 + fabric1.18
@@ -793,10 +764,13 @@ where modenv can be any combination of:
 + fabric1.18.2
 + fabric1.19
 + fabric1.19.2
++ fabric1.19.3
++ fabric1.19.4
++ fabric1.20.1
 
 Note: Not all the game versions/modloaders listed are implemented to the same degree.
       If a feature is present in your mod that is not yet supported by the version/modloader implementation,
-	  those features will be skipped and a warning will be printed to the console.
+	  those features will be skipped. Some will print a warning to the console.
 
 Additionally, modenv may be appended with any combination of:
 + buildjar (builds mod into a jar file)

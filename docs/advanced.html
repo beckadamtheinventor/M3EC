@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>M3EC Docs</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header>
+		<h1>M3EC documentation</h1>
+	</header>
+	<main>
+		<div class="fullwidth">
+			<p>
+				Welcome to the M3EC Advanced Documentation.<br>
+				M3EC is built to be very extensible, and has its own scripting language in addition to dictionary and template file formats.<br>
+				<br><br>
+				<b>This documentation is currently incomplete!</b>
+			</p><br>
+			<p>
+				Individual loader/version builds are largely configurable.<br>
+				See m3ec_build.json files within loader/version folders in the data folder for examples.<br>
+				<i>Example: data/forge1.20.1/m3ec_build.json</i><br>
+			</p>
+		</div><br>
+		<br>
+		<hr>
+		<div class="quarterwidth"><h2>M3EC Template Syntax</h2></div><br>
+		<div class="threequarterwidth">
+			<div class="subtitle_tqw">Specific patterns within template strings are replaced using values from the global dictionary.</div>
+			<dl>
+				<dt>${key}</dt><dd>Resolves to the value of the key if it exists.</dd>
+				<dt>---if key\n ... ---fi</dt><dd>Only writes the data if the key/expression is true.</dd>
+			</dl>
+		</div><br>
+		<div class="threequarterwidth">
+			<div class="subtitle_tqw">Notes:</div>
+			<dl>
+				<dt>...</dt><dd>corresponds to any text data.</dd>
+				<dt>\n</dt><dd>corresponds to a newline character</dd>
+			</dl>
+		</div>
+		<br><br>
+		<hr>
+		<div class="quarterwidth"><h2>M3EC Actions Scripting Syntax</h2></div><br>
+		<div class="threequarterwidth">
+			<div class="subtitle_tqw">
+				Actions are written as json files containing an array of action steps, any of which can iterate and be conditional.
+			</div>
+		</div>
+		<div class="quarterwidth"><h3>Keys Valid for all Actions</h3></div>
+		<div class="threequarterwidth">
+			<dl>
+				<dt>iterate</dt><dd>Repeat this step for each entry of the specified key, setting the keys %i and %v to the current index and value respectively.</dd>
+				<dt>if</dt><dd>Execute this step if the condition is true. See below for condition syntax.</dd>
+				<dt>action</dt><dd>Set the action that this step performs.</dd>
+			</dl>
+		</div>
+		<hr>
+		<div class="quarterwidth"><h3>List of Actions</h3></div>
+		<div class="threequarterwidth">
+			<dl>
+				<dt></dt><dd></dd>
+			</dl>
+		</div>
+		<hr>
+		<div class="quarterwidth"><h3>Conditions Syntax</h3></div>
+		<div class="threequarterwidth">
+			<div class="subtitle_tqw">
+				A condition can be a string or a list of conditions. (recursive)<br>
+				Each string can be a single key to check, or a special condition.<br>
+				Condition strings are run through the template system before being evaluated.
+			</div>
+			<dl>
+				<dt>!</dt><dd>Prefix to invert the condition.</dd>
+				<dt>keyexists key</dt><dd>Evaluates to true if the key exists.</dd>
+				<dt>?key</dt><dd>Evaluates to true if the key's value evaluates to true. (bool or number>0 or str==true/yes)</dd>
+				<dt>?key [#...]</dt><dd>Checks the value of the key using other methods. See Below.</dd>
+			</dl>
+		</div>
+		<hr>
+		<div class="quarterwidth"><h4>Condition String Methods</h4></div>
+		<div class="threequarterwidth">
+			<div class="subtitle_tqw">
+				Only one method will be executed if more than one is present.<br>
+				These methods are applied on the value of the key.
+			</div>
+			<dl>
+				<dt>#contains str</dt><dd>Evaluates to true if the string is contained in the value. (false if not a string)</dd>
+				<dt>#containskey key</dt><dd>Evaluates to true if the key is defined in the value. (false if not a dictionary) </dd>
+				<dt>#equals value</dt><dd>Evaluates to true if the values are equal.</dd>
+				<dt>#length zero</dt><dd>Evaluates to true if the length of the string is 0.</dd>
+				<dt>#length nonzero</dt><dd>Evaluates to true if the length of the data is greater than 0. (false if not a string, list, tuple, or iterable)</dd>
+				<dt>#startswith str</dt><dd>Evaluates to true if the value starts with the string. (false if not a string)</dd>
+				<dt>#typeis type</dt><dd>Evaluates to true if the value is of type type. Types: int float str list tuple dict number iterable none</dd>
+			</dl>
+		</div>
+		<hr>
+		<div class="quarterwidth"><h4>Condition List Special Operators</h4></div>
+		<div class="threequarterwidth">
+			<div class="subtitle_tqw">
+				These operators are used to determine the result of the list of conditions.
+			</div>
+			<dl>
+				<dt>^OR</dt><dd>Logical OR conditions together</dd>
+				<dt>^AND</dt><dd>Logical AND conditions together</dd>
+				<dt>^XOR</dt><dd>Logical XOR (one but not the other) conditions together</dd>
+				<dt>^XNOR</dt><dd>Logical XNOR (both or neither) conditions together</dd>
+			</dl><br>
+			<div class="subtitle_tqw">
+				Operators are applied sequentially. For AND and OR operators this doesn't matter, but XOR and XNOR might give unexpected results for more than two items.
+			</div>
+		</div>
+	</main>
+</html>

@@ -3,10 +3,15 @@
   "minecraftVersion": "1.18.1",
   "javaVersion": "17.",
   "firstActions": [
-  {
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.19.3",
+		"value": false
+	},
+	{
 	  "action": "print",
 	  "string": "[!] Building for Forge 1.18.1 is currently *very* broken [!]"
-  },
+	},
     {
       "if": [
         "^OR",

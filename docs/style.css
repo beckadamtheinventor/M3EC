@@ -1,26 +1,43 @@
 
 html {
-	text-align: center;
+	text-align: left;
 }
 
 body {
-	width: 80%;
+	width: 90%;
 	margin: auto;
 }
 
 header {
-	background-color: #CCC;
+	background-color: #AAA;
 	padding: 4px;
-	margin: 1px;
+	margin: auto;
+	margin-bottom: 5px;
 	border: 8px 4px 8px 4px;
 	border-color: black;
 	border-style: solid;
 }
 
 main {
-	margin: auto;
 	background-color: #EEE;
-	padding: 4px;
+	padding: 2%;
+	border: 1px 1px 1px 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+hr {
+	width: 90%;
+}
+
+h2 {
+	text-align: center;
+	background-color: #bbe;
+	border-bottom: 1px solid black;
+}
+
+h3 {
+	color: #222;
 }
 
 .fullwidth {
@@ -32,13 +49,21 @@ main {
 }
 
 .quarterwidth {
-	text-align: left;
 	padding-left: 10%;
-	width: 25%;
+	width: 40%;
 }
 
 .threequarterwidth {
-	width: 75%;
+	width: 50%;
+}
+
+.subtitle_tqw {
+	margin-left: 16%;
+	padding-left: 2%;
+	padding-right: 2%;
+	background-color: #CCC;
+	border-bottom: 2px solid black;
+	width: 85%;
 }
 
 .listtitle {
@@ -52,15 +77,13 @@ dl {
 }
 
 dt {
-	background-color: #DDD;
+	background-color: #CCC;
 	font-family: monospace;
-	font-size: 1.1em;
 }
 
 i {
-	background-color: #DDD;
+	background-color: #CCC;
 	font-family: monospace;
-	font-size: 1em;
 }
 
 .linkbutton {
@@ -83,5 +106,3 @@ i {
 		background-color: #999;
 	}
 }
-
-

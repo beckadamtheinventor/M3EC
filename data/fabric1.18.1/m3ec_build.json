@@ -3,6 +3,11 @@
   "minecraftVersion": "1.18.1",
   "javaVersion": "17.",
   "firstActions": [
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.19.3",
+		"value": false
+	},
     {
       "if": "?mod.registry.enchantment.names #length nonzero",
       "action": "print",

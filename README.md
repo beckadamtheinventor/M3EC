@@ -1,7 +1,7 @@
 # M3EC
 
 ## Minecraft Multi Mod Environment Compiler
-Version 0.9
+Version 0.10
 
 This compiler/script operates on the mentality of "as few files as possible" to create a mod.
 Check out the `testrubymod` folder for usage examples.
@@ -13,7 +13,7 @@ M3EC is Licensed under the GPL version 3.
 M3EC is a script that turns a series of simple content manifest files into the code required to build a Minecraft Mod. It has support for a variety of content types, such as simple blocks/items, tools/tool materials, ores, and more.
 M3EC mod building is designed to require as few files as possible. Have you ever found yourself adding countless files to countless nested directories just to make a simple content mod? M3EC can build a working content mod for all the versions and modloaders it supports with only 3 files: the mod's main manifest, a png image, and a content manifest!
 
-M3EC supports building for a wide variety of modloaders and game versions from fabric 1.16.5 to 1.19 and forge 1.16.5, 1.18.2, and 1.19. (with 1.12.2 support planned) It can even build and launch the mod for you and select the appropriate JDK automatically!
+M3EC supports building for a wide variety of modloaders and game versions from fabric 1.17 to 1.20 and forge 1.16.5, 1.18.2, 1.19, and 1.20. (with 1.12.2 support planned) It can even build and launch the mod for you, and (usually) will select the appropriate JDK automatically!
 
 
 ## Prerequisites
@@ -36,7 +36,6 @@ Example:
 
 
 ### Supported Versions (Fabric)
-- 1.16.5
 - 1.17.x
 - 1.18.x
 - 1.19
@@ -53,9 +52,11 @@ Example:
 - 1.19.2
 - 1.20.1
 
-### Planned Versions (Forge)
-- 1.12.2
-- 1.17.x
+### Planned Versions
+- Fabric 1.20.4
+- Forge 1.12.2
+- Forge 1.20.4
+
 
 Once the mod project is built, you can use your choice of java IDEs (such as IntelliJ) to build the mod's jar file, or build and/or test the mod from the terminal by appending to the end of the M3EC build command with the any of the following:
 - `buildjar` build the mod jar file.

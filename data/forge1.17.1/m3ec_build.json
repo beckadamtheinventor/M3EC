@@ -3,6 +3,11 @@
   "minecraftVersion": "1.17.1",
   "javaVersion": "16.",
   "firstActions": [
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.19.3",
+		"value": false
+	},
     {
       "if": [
         "^OR",

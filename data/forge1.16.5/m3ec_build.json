@@ -3,36 +3,41 @@
   "minecraftVersion": "1.16.5",
   "javaVersion": "8.",
   "firstActions": [
-  {
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.19.3",
+		"value": false
+	},
+	{
 	  "action": "print",
 	  "string": "[!] Building for Forge 1.16.5 is currently broken [!]"
-  },
-    {
-      "if": [
-        "^OR",
-        "?mod.registry.armor.names #length nonzero",
-        "?mod.registry.armormaterial.names #length nonzero"
-      ],
-      "action": "print",
-      "string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": [
-        "?mod.registry.food.names #length nonzero"
-      ],
-      "action": "print",
-      "string": "Food is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": "?mod.registry.enchantment.names #length nonzero",
-      "action": "print",
-      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": "?mod.registry.sapling.names #length nonzero",
-      "action": "print",
-      "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
-    }
+	},
+	{
+	  "if": [
+		"^OR",
+		"?mod.registry.armor.names #length nonzero",
+		"?mod.registry.armormaterial.names #length nonzero"
+	  ],
+	  "action": "print",
+	  "string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+	},
+	{
+	  "if": [
+		"?mod.registry.food.names #length nonzero"
+	  ],
+	  "action": "print",
+	  "string": "Food is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+	},
+	{
+	  "if": "?mod.registry.enchantment.names #length nonzero",
+	  "action": "print",
+	  "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+	},
+	{
+	  "if": "?mod.registry.sapling.names #length nonzero",
+	  "action": "print",
+	  "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
+	}
   ],
   "preActions": [
     {
