@@ -198,7 +198,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	for path in manifest_dict["mod.paths"]:
 		for fname in walk(os.path.normpath(os.path.join(manifest_dict["project_path"], path))):
-			if fname.endswith(".txt") or fname.endswith(".m3ec"):
+			if fname.endswith(".txt") or fname.endswith(".m3ec") or fname.endswith(".json"):
 				dlist = readDictFile(fname, md=manifest_dict)
 				if "@iterate" not in dlist.keys():
 					dlist = {"@iterate": [dlist]}
