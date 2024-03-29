@@ -126,8 +126,13 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 			if len(loader) and len(version):
 				mod_builds[word] = [loader, version]
 			else:
-				for loader, version in try_load_resource(os.path.join(source_path, "versions"), word, default={}).values():
-					mod_builds[str(loader)+str(version)] = [str(loader), str(version)]
+				for s in try_load_resource(os.path.join(source_path, "versions"), word+".json", default=[]):
+					try:
+						loader, version = splitPrefix(s, 2)
+					except:
+						continue
+					if len(loader) and len(version):
+						mod_builds[str(loader)+str(version)] = [str(loader), str(version)]
 
 	for loader, version in mod_builds.values():
 		if os.path.isdir(os.path.join(source_path, loader+version)):
@@ -156,7 +161,8 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		manifest_dict["gameversion.minor"] = 0
 	source_path = manifest_dict["source_path"]
 	project_path = manifest_dict["project_path"]
-	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"{modloader}{version}_build")
+	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"build/{modloader}{version}")
+	make_dirs(build_path)
 
 	# TODO: build stuff that needs to be in MainClass.java here
 
@@ -465,7 +471,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
 
 	if "javaVersion" in versionbuilder.keys():
-		maybe_run_gradle(os.path.join(project_path, f"{modloader}{version}_build"), modenv, versionbuilder["javaVersion"], manifest_dict)
+		maybe_run_gradle(build_path, modenv, versionbuilder["javaVersion"], manifest_dict)
 
 	if "finalActions" in versionbuilder.keys():
 		execActions(versionbuilder["finalActions"], manifest_dict)
@@ -487,11 +493,10 @@ def build_mod(modloader, version, modenv, manifest_dict):
 def build_resources(project_path, builddir, manifest_dict):
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 	src = os.path.join(source_path, builddir, "gradle")
-	dest = os.path.join(project_path, builddir+"_build")
 	commons_path = os.path.join(source_path, "common")
 	modmcpath = manifest_dict["mod.mcpath"]
 	sourcesdir = os.path.join(source_path, builddir)
-	builddir = os.path.join(project_path, builddir+"_build")
+	dest = builddir = manifest_dict["build_path"]
 	build_java_dir = os.path.join(builddir, "src", "main", "java", manifest_dict["mod.prefix"], manifest_dict["mod.author"], manifest_dict["mod.class"])
 	block_models_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "block")
 	blockstates_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "blockstates")

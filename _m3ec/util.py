@@ -305,6 +305,15 @@ def readDictFile(fname, d=None, md=None):
 		return None
 
 def readDictString(data, d=None, f=None, md=None):
+	# strip leading and trailing whitespace
+	data = data.strip(" \t\n")
+	# try to load as json if it looks like json
+	if data.startswith("{") or data.startswith("["):
+		try:
+			return json.loads(data)
+		except:
+			pass
+
 	if md is not None:
 		isthisapplicable = True
 		hasversionselector = False
