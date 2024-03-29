@@ -1,0 +1,34 @@
+[
+{
+	"iterate": "mod.registry.block.names",
+	"action": "execactions",
+	"actions": [
+		{
+			"comment": "for now, really hacky because of how condition strings handle string to number comparisons",
+			"_comment": "This should only be true if the toollevel string cannot be converted to a number",
+			"if": "?mod.block.${%v}.toollevel > -1",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "getdictkey",
+					"key": "${mod.block.${%v}.toollevel^upper}",
+					"default": "0",
+					"var": "level",
+					"dict": {
+						"WOOD": 0,
+						"GOLD": 0,
+						"STONE": 1,
+						"IRON": 2,
+						"DIAMOND": 3
+					}
+				},
+				{
+					"action": "setdictkey",
+					"key": "mod.block.${%v}.toollevel",
+					"value": "${level}"
+				}
+			]
+		}
+	]
+}
+]

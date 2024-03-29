@@ -1,0 +1,69 @@
+[
+{
+	"iterate": "mod.registry.block.names",
+	"action": "execactions",
+	"actions": [
+		{
+			"action": "getdictkey",
+			"key": "${mod.block.${%v}.material^upper}",
+			"default": "ROCK",
+			"var": "material",
+			"dict": {
+				"AGGREGATE": "AIR",
+				"AIR": "AIR",
+				"AMETHYST": "ROCK",
+				"BAMBOO_SAPLING": "PLANTS",
+				"BAMBOO": "PLANTS",
+				"BARRIER": "BARRIER",
+				"BUBBLE_COLUMN": "WATER",
+				"CACTUS": "CACTUS",
+				"CAKE": "CAKE",
+				"CARPET": "CARPET",
+				"COBWEB": "WEB",
+				"DECORATION": "PLANTS",
+				"DENSE_ICE": "PACKED_ICE",
+				"EGG": "DRAGON_EGG",
+				"FIRE": "FIRE",
+				"GLASS": "GLASS",
+				"GOURD": "GOURD",
+				"ICE": "ICE",
+				"LAVA": "LAVA",
+				"LEAVES": "LEAVES",
+				"METAL": "IRON",
+				"MOSS_BLOCK": "LEAVES",
+				"NETHER_SHOOTS": "VINE",
+				"NETHER_WOOD": "GROUND",
+				"ORGANIC_PRODUCT": "LEAVES",
+				"PISTON": "PISTON",
+				"PLANT": "PLANTS",
+				"PORTAL": "PORTAL",
+				"POWDER_SNOW": "SNOW",
+				"REDSTONE_LAMP": "REDSTONE_LIGHT",
+				"REPAIR_STATION": "ANVIL",
+				"REPLACEABLE_NETHER_PLANT": "VINE",
+				"REPLACEABLE_PLANT": "VINE",
+				"SCULK": "CLAY",
+				"SHULKER_BOX": "CLAY",
+				"SNOW_BLOCK": "CRAFTED_SNOW",
+				"SNOW_LAYER": "SNOW",
+				"SOIL": "GROUND",
+				"SOLID_ORGANIC": "PLANTS",
+				"SPONGE": "SPONGE",
+				"STONE": "ROCK",
+				"STRUCTURE_VOID": "STRUCTURE_VOID",
+				"TNT": "TNT",
+				"UNDERWATER_PLANT": "VINE",
+				"WATER": "WATER",
+				"WOOD": "WOOD",
+				"WOOL": "CLOTH"
+			}
+		},
+		{
+			"action": "setdictkey",
+			"key": "mod.block.${%v}.material",
+			"value": "${material}"
+		}
+	
+	]
+}
+]

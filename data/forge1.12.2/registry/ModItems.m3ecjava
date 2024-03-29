@@ -1,4 +1,4 @@
-package ${mod.package}.init;
+package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
 ---iter mod.registry.enum.names

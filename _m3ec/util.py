@@ -114,8 +114,9 @@ def getDictKeyLen(d, key):
 	return 0
 
 def checkDictKeyTrue(d, key):
-	if key.lower() in d.keys():
-		if type(d[key.lower()]) is str:
+	key = key.lower()
+	if key in d.keys():
+		if type(d[key]) is str:
 			if d[key].lower() in ["true", "yes", "1"]:
 				return True
 			elif d[key].lower() in ["false", "no", "0"]:
@@ -690,10 +691,10 @@ def readf_file(path, d):
 def readf(data, d):
 	NUM_ITERATOR_NUMBERS = 10
 
-	if type(data) is list:
-		return [readf(i, d) for i in data]
-	if type(data) is dict:
-		return {k:readf(data[k], d) for k in data.keys()}
+	# if type(data) is list:
+		# return [readf(i, d) for i in data]
+	# if type(data) is dict:
+		# return {k:readf(data[k], d) for k in data.keys()}
 	if type(data) is not str:
 		return data
 	if "$%f" in d.keys():
@@ -786,45 +787,10 @@ def readf(data, d):
 				else:
 					data2.append(data[j:i])
 				n = data.find("\n", i+len(istr))
-				if data[i+len(istr)] == '!':
-					inverted = True
-					key = data[i+len(istr)+1:n]
-				else:
-					inverted = False
-					key = data[i+len(istr):n]
-				if " " in key:
-					key, tail = key.split(" ", maxsplit=1)
-					tail = tail.split(" ")
-				else:
-					tail = []
-				condtrue = False
-				key = readf(key, d)
-				# print(key, tail, "#contains" in tail, [w in key for w in tail[1:]])
-				if len(tail) < 1:
-					if key in d.keys():
-						condtrue = True
-					elif key.lower() in d.keys():
-						condtrue = True
-				elif tail[0].lower() == "#contains":
-					if len(tail):
-						if all([w in key for w in tail[1:]]):
-							condtrue = True
-							for w in tail[1:]:
-								key = key.replace(w.lower(), "")
-					elif len(key):
-						condtrue = True
-				elif tail[0].lower() == "#startswith":
-					if len(tail) > 1:
-						if key.startswith(tail[1]):
-							condtrue = True
-				elif key in d.keys():
-					condtrue = True
-				if inverted:
-					condtrue = not condtrue
 				# print(f"Checking if {key} is defined. ",end="")
+				condtrue = checkTrue(data[i+len(istr):n], d)
 				j = data.find(istrend, n)
 				if condtrue:
-					# print("key found.")
 					data2.append(data[n:j])
 					# print(data2[-1])
 				j += len(istrend)

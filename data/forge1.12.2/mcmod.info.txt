@@ -8,5 +8,5 @@
   "url": "minecraftforge.net/",
   "updateJSON": "minecraftforge.net/versions.json",
   "authorList": ["${mod.author}"],
-  "credits": "Made with M3EC!"
+  "credits": "${mod.credits}"
 }]

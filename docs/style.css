@@ -33,7 +33,7 @@ hr {
 h2 {
 	text-align: center;
 	background-color: #bbe;
-	border-bottom: 1px solid black;
+	border: 1px solid black;
 }
 
 h3 {
@@ -49,36 +49,64 @@ h3 {
 }
 
 .quarterwidth {
-	padding-left: 10%;
-	width: 40%;
+	padding-left: 20%;
+	width: 60%;
 }
 
 .threequarterwidth {
-	width: 50%;
+	width: 95%;
 }
 
-.subtitle_tqw {
-	margin-left: 16%;
+.text_tqw {
+	margin-left: 4%;
+	padding: 0.5%;
 	padding-left: 2%;
 	padding-right: 2%;
 	background-color: #CCC;
+	border: 3px solid black;
+}
+
+
+.subtitle_tqw {
+	margin-left: 2%;
+	padding: 0.5%;
+	padding-left: 2%;
+	padding-right: 2%;
+	background-color: #CCE;
 	border-bottom: 2px solid black;
-	width: 85%;
 }
 
 .listtitle {
+	padding-left: 6%;
 	text-align: left;
-	padding-left: 20%;
 }
 
 dl {
+	border: 10px solid #EEE;
 	text-align: left;
-	padding-left: 20%;
+	margin-left: 6%;
+	border-left: 10px solid #888;
+	border-right: 10px solid #888;
 }
 
 dt {
 	background-color: #CCC;
+	border: 2px solid #CCC;
 	font-family: monospace;
+	padding-left: 2%;
+}
+
+dt:hover {
+	border-color: black;
+}
+
+dd {
+	border: 2px solid #EEE;
+	padding-left: 1%;
+}
+
+dd:hover {
+	border-color: black;
 }
 
 i {

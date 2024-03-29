@@ -4,7 +4,14 @@ from PIL import Image
 from PIL import ImageChops
 from .util import *
 
-def execActions(actions, d, accumulator=None):
+def actionWarning(s):
+	if "$%f" in d.keys():
+		f = d["$%f"]
+	else:
+		f = ""
+	print(f"Warning: action {f} "+str(s)+". Ignoring.")
+
+def execActions(actions, d):
 	for action in actions:
 		if type(action) is not dict:
 			continue
@@ -29,13 +36,13 @@ def execActions(actions, d, accumulator=None):
 					v = readf(v, d)
 				d[readf(action["name"], d)] = v
 
-		elif a in ("setdictkey", "appenddictkey"):
+		elif a in ("setdictkey", "appenddictkey", "setkey", "appendkey"):
 			# print(action)
 			if "key" in ak:
 				if "value" in ak:
 					value = action["value"]
 				else:
-					value = accumulator
+					value = d["%a"]
 				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
@@ -48,47 +55,47 @@ def execActions(actions, d, accumulator=None):
 						else:
 							v = value
 						if "dict" in ak:
-							accumulator = action["dict"]
+							d["%a"] = action["dict"]
 						else:
-							accumulator = d
+							d["%a"] = d
 
 						k = readf(action["key"], d)
-						if a == "appenddictkey":
-							if k in accumulator.keys():
-								if type(accumulator[k]) is not list:
-									accumulator[k] = list()
-								accumulator[k].append(v)
+						if "append" in a:
+							if k in d["%a"].keys():
+								if type(d["%a"][k]) is not list:
+									d["%a"][k] = list()
+								d["%a"][k].append(v)
 							else:
-								accumulator[k] = [v]
+								d["%a"][k] = [v]
 						else:
-							accumulator[k] = v
+							d["%a"][k] = v
 				else:
 					if type(value) is str:
 						v = readf(value, d)
 					else:
 						v = value
 					if "dict" in ak:
-						accumulator = action["dict"]
+						d["%a"] = action["dict"]
 					else:
-						accumulator = d
+						d["%a"] = d
 					k = readf(action["key"], d)
-					if a == "appenddictkey":
-						if k in accumulator.keys():
-							if type(accumulator[k]) is not list:
-								accumulator[k] = list()
-							accumulator[k].append(v)
+					if "append" in a:
+						if k in d["%a"].keys():
+							if type(d["%a"][k]) is not list:
+								d["%a"][k] = list()
+							d["%a"][k].append(v)
 						else:
-							accumulator[k] = [v]
+							d["%a"][k] = [v]
 					else:
-						accumulator[k] = v
+						d["%a"][k] = v
 
-		elif a == "getdictkey":
+		elif a in ("getdictkey", "getkey"):
 			if "key" in ak:
 				key = action["key"]
 			else:
-				key = accumulator
+				key = d["%a"]
 			if "iterate" in ak:
-				accumulator = []
+				d["%a"] = []
 				l = action["iterate"]
 				if type(l) is str:
 					l = d[readf(l, d).lower()]
@@ -98,53 +105,57 @@ def execActions(actions, d, accumulator=None):
 					k = readf(key, d)
 					if "dict" in ak:
 						if k in action["dict"].keys():
-							accumulator.append(action["dict"][k])
+							d["%a"].append(action["dict"][k])
 						elif "default" in ak:
-							accumulator.append(action["default"])
+							d["%a"].append(action["default"])
 						else:
-							accumulator.append(None)
+							d["%a"].append(None)
 					elif k in d.keys():
-						accumulator.append(d[k])
+						d["%a"].append(d[k])
 					elif "default" in ak:
-						accumulator.append(action["default"])
+						d["%a"].append(action["default"])
 					else:
-						accumulator.append(None)
+						d["%a"].append(None)
 			else:
 				k = readf(key, d)
-				accumulator = None
+				d["%a"] = None
 				if "dict" in ak:
 					if k in action["dict"].keys():
-						accumulator = action["dict"][k]
+						d["%a"] = action["dict"][k]
 					elif "default" in ak:
-						accumulator = action["default"]
+						d["%a"] = action["default"]
 					else:
-						accumulator = None
+						d["%a"] = None
 				elif k in d.keys():
-					accumulator = d[k]
+					d["%a"] = d[k]
 				elif "default" in ak:
-					accumulator = action["default"]
+					d["%a"] = action["default"]
 				else:
-					accumulator = None
+					d["%a"] = None
 
 			if "var" in ak:
-				d[readf(action["var"], d)] = readf(accumulator, d)
+				d[readf(action["var"], d)] = readf(d["%a"], d)
 
 
 		elif a == "if":
 			if "condition" in ak and "actions" in ak:
 				if checkActionConditions(action["condition"], d):
-					execActions(action["actions"], d, accumulator)
+					execActions(action["actions"], d)
 
 		elif a == "doactions":
-			cond = None
-			if "while" in ak and "var" in ak:
-				cond = action["var"]
+			rep = 0
 			while True:
-				execActions(action["actions"], d, accumulator)
-				if cond is None:
+				d["%i"] = rep
+				rep += 1
+				shouldexit = True
+				if "while" in ak:
+					shouldexit = not checkActionConditions(action["while"], d)
+				if shouldexit:
 					break
-				if not d[cond]:
-					break
+				execActions(action["actions"], d)
+				if "until" in ak:
+					if checkActionConditions(action["until"], d):
+						break
 
 		elif a == "execactions":
 			if "actions" in ak:
@@ -160,7 +171,7 @@ def execActions(actions, d, accumulator=None):
 					if iterating:
 						d["%i"] = i
 						d["%v"] = l[i]
-					execActions(action["actions"], d, accumulator)
+					execActions(action["actions"], d)
 
 			if "file" in ak:
 				if "iterate" in ak:
@@ -176,27 +187,41 @@ def execActions(actions, d, accumulator=None):
 						d["%i"] = i
 						d["%v"] = l[i]
 					fname = readf(action["file"], d)
-					if os.path.exists(fname):
-						with open(fname) as f:
-							tmp = d["curdir"]
-							d["curdir"] = os.path.dirname(fname)
-							execActions(json.load(f), d, accumulator)
-							d["curdir"] = tmp
+					if fname.startswith(d["project_path"]) or fname.startswith(d["source_path"]):
+						if os.path.exists(fname):
+							with open(fname) as f:
+								tmp = d["curdir"]
+								d["curdir"] = os.path.dirname(fname)
+								execActions(json.load(f), d)
+								d["curdir"] = tmp
+						else:
+							print(f"Failed to locate actions json file \"{fname}\"")
 					else:
-						print(f"Failed to locate actions json file \"{fname}\"")
+						actionWarning("attempted to access file outside of project directory and source directory", d)
 
 		elif a == "repeatactions":
 			if "repeat" in ak:
 				rep = int(action["repeat"])
 				for i in range(rep):
-					execActions(action["actions"], d, accumulator)
+					d["%i"] = i
+					execActions(action["actions"], d)
 
 		elif a == "readf":
+			if "dict" in ak:
+				d2 = action["dict"]
+			else:
+				d2 = d
+
 			if "file" in ak:
 				d["$%f"] = action["file"]
-				accumulator = readf_file(readf(action["file"], d), d)
+				d["%a"] = readf_file(readf(action["file"], d), d2)
 			elif "data" in ak:
-				accumulator = readf(action["data"], d)
+				d["%a"] = readf(action["data"], d2)
+
+			if "key" in ak:
+				d[readf(action["key"], d)] = d["%a"]
+			elif "var" in ak:
+				d[readf(action["key"], d)] = d["%a"]
 
 		elif a == "copy" or a == "move":
 			if "source" in ak and "dest" in ak:
@@ -205,32 +230,38 @@ def execActions(actions, d, accumulator=None):
 					dname = readf(action["dest"], d)
 					if not os.path.isabs(dname):
 						dname = os.path.join(d["curdir"], dname)
-					if a == "copy":
-						if os.path.isdir(fname):
-							shutil.copytree(fname, dname)
-						else:
-							shutil.copy(fname, dname)
-					elif a == "move":
-						shutil.move(fname, dname)
-					accumulator = fname
+					if (fname.startswith(d["project_path"]) or fname.startswith(d["source_path"])) and dname.startswith(d["project_path"]):
+						if a == "copy":
+							if os.path.isdir(fname):
+								shutil.copytree(fname, dname)
+							else:
+								shutil.copy(fname, dname)
+						elif a == "move":
+							shutil.move(fname, dname)
+						d["%a"] = fname
+					else:
+						actionWarning("attempted to copy/move to/from a file/directory outside of the project directory or tried to write a file in the source directory", d)
 				else:
-					accumulator = None
+					d["%a"] = None
 			else:
 				if "file" in ak:
 					fname = action["file"]
 				elif "filevar" in ak:
 					fname = d[action["filevar"]]
 				else:
-					fname = accumulator
+					fname = d["%a"]
 
 				fname = readf(fname, d)
 				if not os.path.isabs(fname):
 					fname = os.path.join(d["curdir"], fname)
-				if os.path.exists(fname):
-					with open(fname) as f:
-						accumulator = f.read()
+				if fname.startswith(d["project_path"]) or fname.startswith(d["source_path"]):
+					if os.path.exists(fname):
+						with open(fname) as f:
+							d["%a"] = f.read()
+					else:
+						d["%a"] = None
 				else:
-					accumulator = None
+					actionWarning("attempted to access file outside of project directory and source directory", d)
 
 		elif a == "delete" or a == "remove":
 			if "source" in ak:
@@ -242,9 +273,9 @@ def execActions(actions, d, accumulator=None):
 						else:
 							os.remove(fname)
 				else:
-					print("Warning: action attempted to delete file outside of project directory. Ignoring.")
+					actionWarning("attempted to delete file outside of project directory", d)
 
-		elif a == "copyf":
+		elif a in ("copyf", "movef"):
 			if "source" in ak and "dest" in ak:
 				if "iterate" in ak:
 					iterating = True
@@ -265,58 +296,70 @@ def execActions(actions, d, accumulator=None):
 					if not os.path.isabs(dname):
 						dname = os.path.join(d["curdir"], dname)
 					# print("copyf", fname, "-->", dname)
-					if os.path.exists(fname):
-						with open(fname) as f:
-							accumulator = readf(f.read(), d)
-						try:
-							with open(dname, 'w') as f:
-								f.write(accumulator)
-							WRITTEN_FILES_LIST.append(dname)
-						except:
-							pass
-						if a == "movef":
-							os.remove(fname)
-							if fname in WRITTEN_FILES_LIST:
-								WRITTEN_FILES_LIST.remove(WRITTEN_FILES_LIST.index(fname))
+					if (fname.startswith(d["project_path"]) or fname.startswith(d["source_path"])) and dname.startswith(d["project_path"]):
+						if os.path.exists(fname):
+							with open(fname) as f:
+								d["%a"] = readf(f.read(), d)
+							try:
+								with open(dname, 'w') as f:
+									f.write(d["%a"])
+								# WRITTEN_FILES_LIST.append(dname)
+							except:
+								pass
+							if a == "movef":
+								if fname.startswith(d["project_path"]):
+									os.remove(fname)
+									# if fname in WRITTEN_FILES_LIST:
+										# WRITTEN_FILES_LIST.remove(WRITTEN_FILES_LIST.index(fname))
+								else:
+									actionWarning("attempted to delete (move) a file outside of the project directory", d)
+						else:
+							d["%a"] = None
 					else:
-						accumulator = None
+						actionWarning("attempted to copy/move to/from a file/directory outside of the project directory or tried to write a file in the source directory", d)
 			else:
 				if "file" in ak:
 					fname = action["file"]
 				elif "filevar" in ak:
 					fname = d[action["filevar"]]
 				else:
-					fname = accumulator
+					fname = d["%a"]
 
 				fname = readf(fname, d)
 				if not os.path.isabs(fname):
 					fname = os.path.join(d["curdir"], fname)
-				if os.path.exists(fname):
-					with open(fname) as f:
-						accumulator = f.read()
+				if fname.startswith(d["project_path"]) or fname.startswith(d["source_path"]):
+					if os.path.exists(fname):
+						with open(fname) as f:
+							d["%a"] = f.read()
+					else:
+						d["%a"] = None
 				else:
-					accumulator = None
+					actionWarning("attempted to access file outside of project directory and source directory", d)
 
 		elif a == "write":
 			if "dest" in ak or "file" in ak:
 				if "data" in ak:
-					accumulator = action["data"]
+					d["%a"] = action["data"]
 				elif "var" in ak:
 					if action["var"] in d.keys():
-						accumulator = d[action["var"]]
+						d["%a"] = d[action["var"]]
 					else:
-						accumulator = None
+						d["%a"] = None
 				if "dest" in ak:
 					fname = action["dest"]
 				if "file" in ak:
 					fname = action["file"]
 				fname = readf(fname, d)
-				with open(fname, 'w') as f:
-					if type(accumulator) is dict:
-						json.dump(accumulator, f)
-					elif accumulator is not None:
-						f.write(str(accumulator))
-					WRITTEN_FILES_LIST.append(fname)
+				if fname.startswith(d["project_path"]):
+					with open(fname, 'w') as f:
+						if type(d["%a"]) is dict:
+							json.dump(d["%a"], f)
+						elif d["%a"] is not None:
+							f.write(str(d["%a"]))
+						# WRITTEN_FILES_LIST.append(fname)
+				else:
+					actionWarning("attempted to write to a file outside of the project directory", d)
 
 		elif a in ("makedir", "make_dir"):
 			if type(action["value"]) is list:
@@ -324,12 +367,18 @@ def execActions(actions, d, accumulator=None):
 					dname = readf(value, d)
 					if not os.path.isabs(dname):
 						dname = os.path.join(d["build_path"], dname)
-					make_dir(dname)
+					if dname.startswith(d["project_path"]):
+						make_dir(dname)
+					else:
+						actionWarning("attempted to create a directory outside of the project directory", d)
 			else:
 				dname = readf(action["value"], d)
 				if not os.path.isabs(dname):
 					dname = os.path.join(d["build_path"], dname)
-				make_dir(dname)
+				if dname.startswith(d["project_path"]):
+					make_dir(dname)
+				else:
+					actionWarning("attempted to create a directory outside of the project directory", d)
 		
 		elif a in ("print", "display", "error"):
 			if "string" in ak:
@@ -344,16 +393,33 @@ def execActions(actions, d, accumulator=None):
 			print()
 			if a == "error":
 				exit(1)
+		
+		elif a == "exit":
+			if "string" in ak:
+				print(readf(action["string"], d))
+			if "code" in ak:
+				exit(action["code"])
+			else:
+				exit(1)
+
+		elif a == "return":
+			if "value" in ak:
+				d["%a"] = readf(action["value"], d)
+			break
 
 		elif a in ("makeimage", "maketexture"):
 			if "source" in ak:
 				fname = action["source"]
 				if not os.path.isabs(fname):
 					fname = os.path.join(d["curdir"], fname)
-				try:
-					srcimg = Image.open(fname).convert("RGBA")
-				except FileNotFoundError:
-					print(f"Warning: Image file \"{fname}\" does not exist.")
+				if fname.startswith(d["project_path"]) or fname.startswith(d["source_path"]):
+					try:
+						srcimg = Image.open(fname).convert("RGBA")
+					except FileNotFoundError:
+						print(f"Warning: Image file \"{fname}\" does not exist.")
+						continue
+				else:
+					actionWarning("attempted to read image outside of project directory and source directory.")
 					continue
 			elif "color" in ak and "width" in ak and "height" in ak:
 				srcimg = Image.new("RGBA", (width, height), action["color"])
@@ -368,7 +434,7 @@ def execActions(actions, d, accumulator=None):
 					print(f"Warning: Image operation failed.\nOriginal error: {e}")
 					continue
 			elif "operations" in ak:
-				for op in action["operation"]:
+				for op in action["operations"]:
 					try:
 						srcimg = ImageOperation(srcimg, op)
 					except Exception as e:
@@ -382,13 +448,17 @@ def execActions(actions, d, accumulator=None):
 				fname = readf(action["dest"], d)
 				if not os.path.isabs(fname):
 					fname = os.path.join(d["curdir"], fname)
-				try:
-					srcimg.save(fname)
-				except Exception as e:
-					print(f"Warning: Failed to save image \"{fname}\".\nOriginal error: {e}")
+				if fname.startswith(d["project_path"]):
+					try:
+						srcimg.save(fname)
+					except Exception as e:
+						print(f"Warning: Failed to save image \"{fname}\".\nOriginal error: {e}")
+						continue
+				else:
+					actionWarning("attempted to write image outside of project directory.")
 					continue
 			else:
-				accumulator = srcimg
+				d["%a"] = srcimg
 
 
 

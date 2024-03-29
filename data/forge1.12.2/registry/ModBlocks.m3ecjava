@@ -1,24 +1,30 @@
-package ${mod.package}.init;
+package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
----iter mod.registry.block.names
-import ${mod.package}.block.${$%v.class};
----end
 
-import ${mod.package}.blocks.RubyBlock;
-import ${mod.package}.blocks.RubyOre;
 import net.minecraft.block.Block;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ModBlocks {
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ${mod.class}.MOD_ID);
-
     // Blocks
 ---iter mod.registry.block.names
-	public static final RegistryObject<Block> ${mod.block.$%v.uppercased} = BLOCKS.register("$%v", ${mod.block.$%v.class}::new);
+	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.blockclass}(Material.${mod.block.$%v.material})
+		.setRegistryName(${mod.class}.MOD_ID, "$%v")
+---if mod.block.$%v.lightlevel
+		.setLightLevel(${mod.block.$%v.lightlevel})---fi
+		.setHardness(${mod.block.$%v.hardness})
+		.setResistance(${mod.block.$%v.resistance});
 ---end
+
+	public static void register() {
+---iter mod.registry.block.names
+		${mod.block.$%v.uppercased}.setHarvestLevel("${mod.block.$%v.toolclass^lower}", ${mod.block.$%v.toollevel});
+---end
+---iter mod.registry.block.names
+		ForgeRegistries.BLOCKS.register(${mod.block.$%v.uppercased});
+---end
+	}
 
 }
