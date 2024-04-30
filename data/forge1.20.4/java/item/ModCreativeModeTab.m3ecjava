@@ -1,0 +1,36 @@
+package ${mod.package}.item;
+
+import ${mod.package}.${mod.class};
+import ${mod.package}.block.ModBlocks;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+
+public class ModCreativeModeTab {
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ${mod.class}.MOD_ID);
+
+    public static final RegistryObject<CreativeModeTab> TAB = CREATIVE_MODE_TABS.register("${mod.mcpath}_tab",
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.${mod.iconitem^upper}.get()))
+                    .title(Component.translatable("itemGroup.${mod.mcpath}tab"))
+                    .displayItems((pParameters, pOutput) -> {
+---iter mod.registry.item.names
+						pOutput.accept(ModItems.${mod.item.$%v^upper}.get());---end
+---iter mod.registry.food.names
+						pOutput.accept(ModItems.${mod.food.$%v^upper}.get());---end
+---iter mod.registry.tool.names
+						pOutput.accept(ModItems.${mod.tool.$%v^upper}.get());---end
+---iter mod.registry.block.names
+						pOutput.accept(ModBlocks.${mod.block.$%v^upper}.get());---end
+                    })
+                    .build());
+
+
+    public static void register(IEventBus eventBus) {
+        CREATIVE_MODE_TABS.register(eventBus);
+    }
+}

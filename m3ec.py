@@ -458,6 +458,8 @@ def build_mod(modloader, version, modenv, manifest_dict):
 				print(f"Error: Failed to copy custom file \"{source}\"")
 				return False
 
+	build_tags_and_lang(manifest_dict)
+
 	if "postActions" in versionbuilder.keys():
 		execActions(versionbuilder["postActions"], manifest_dict)
 
@@ -703,6 +705,19 @@ def build_resources(project_path, builddir, manifest_dict):
 	langdict["en_us"][f"itemGroup.{modmcpath}.general"] = manifest_dict["mod.title"]
 	langdict["en_us"][f"itemGroup.{modmcpath}tab"] = manifest_dict["mod.title"]
 
+	manifest_dict["langdict"] = langdict
+	manifest_dict["tagdict"] = tagdict
+	manifest_dict["blocktagdict"] = blocktagdict
+
+
+def build_tags_and_lang(manifest_dict):
+	langdict = manifest_dict["langdict"]
+	tagdict = manifest_dict["tagdict"]
+	blocktagdict = manifest_dict["blocktagdict"]
+
+	lang_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "assets", manifest_dict["mod.mcpath"], "lang")
+	build_data_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "data")
+
 	for lang in langdict.keys():
 		with open(os.path.join(lang_dir, lang+".json"),"w") as f:
 			json.dump(langdict[lang], f)
@@ -711,7 +726,7 @@ def build_resources(project_path, builddir, manifest_dict):
 		if ":" in tag:
 			ns, t = tag.split(":")
 		else:
-			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
+			print(f"Error: tags should always be namespaced. Example: \"c:ingots\"\nBad tag: \"{tag}\"")
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "items"))
 		with open(os.path.join(build_data_dir, ns, "tags", "items", t+".json"), "w") as f:
@@ -721,7 +736,7 @@ def build_resources(project_path, builddir, manifest_dict):
 		if ":" in tag:
 			ns, t = tag.split(":")
 		else:
-			print("Error: tags should always be namespaced. Example: \"c:ingots\"")
+			print(f"Error: tags should always be namespaced. Example: \"c:ingots\"\nBad tag: \"{tag}\"")
 			exit(1)
 		make_dir(os.path.join(build_data_dir, ns, "tags", "blocks"))
 		with open(os.path.join(build_data_dir, ns, "tags", "blocks", t+".json"), "w") as f:

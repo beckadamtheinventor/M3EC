@@ -1,0 +1,25 @@
+[
+	{
+		"iterate": "mod.registry.armor.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "getdictkey",
+				"key": "${mod.armor.${%v}.slot^upper}",
+				"default": "${mod.armor.${%v}.slot^upper}",
+				"var": "slot",
+				"dict": {
+					"FEET": "BOOTS",
+					"LEGS": "LEGGINGS",
+					"HEAD": "HELMET",
+					"CHEST": "CHESTPLATE"
+				}
+			},
+			{
+				"action": "setdictkey",
+				"key": "mod.armor.${%v}.slot",
+				"value": "${slot}"
+			}
+		]
+	}
+]

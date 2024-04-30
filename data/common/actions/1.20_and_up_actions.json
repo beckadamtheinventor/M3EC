@@ -85,5 +85,24 @@
 				]
 			}
 		]
+	},
+	{
+		"iterate": "mod.registry.armor.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"comment": "Make the armor trimmable unless trimmable is explicitly set to false",
+				"if": [
+					"^OR",
+					"${mod.armor.${%v}.trimmable}",
+					"!keyexists mod.armor.${%v}.trimmable"
+				],
+				"comment2": "append into a key of the specified dictionary instead of the global one",
+				"action": "appenddictkey",
+				"dict": "tagdict",
+				"key": "minecraft:trimmable_armor",
+				"value": "${mod.mcpath}:${%v}"
+			}
+		]
 	}
 ]

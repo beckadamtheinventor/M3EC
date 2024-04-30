@@ -76,6 +76,12 @@ def execActions(actions, d):
 						v = value
 					if "dict" in ak:
 						d["%a"] = action["dict"]
+						if type(d["%a"]) is str:
+							s = readf(d["%a"], d)
+							if s in d.keys():
+								d["%a"] = d[s]
+							else:
+								d["%a"] = {}
 					else:
 						d["%a"] = d
 					k = readf(action["key"], d)
@@ -104,8 +110,15 @@ def execActions(actions, d):
 					d["%v"] = l[i]
 					k = readf(key, d)
 					if "dict" in ak:
-						if k in action["dict"].keys():
-							d["%a"].append(action["dict"][k])
+						d2 = action["dict"]
+						if type(d2) is str:
+							d2 = readf(d2, d)
+							if d2 in d.keys():
+								d2 = d[d2]
+							else:
+								d2 = {}
+						if k in d2.keys():
+							d["%a"].append(d2[k])
 						elif "default" in ak:
 							d["%a"].append(action["default"])
 						else:
@@ -120,8 +133,15 @@ def execActions(actions, d):
 				k = readf(key, d)
 				d["%a"] = None
 				if "dict" in ak:
-					if k in action["dict"].keys():
-						d["%a"] = action["dict"][k]
+					d2 = action["dict"]
+					if type(d2) is str:
+						d2 = readf(d2, d)
+						if d2 in d.keys():
+							d2 = d[d2]
+						else:
+							d2 = {}
+					if k in d2.keys():
+						d["%a"] = d2[k]
 					elif "default" in ak:
 						d["%a"] = action["default"]
 					else:

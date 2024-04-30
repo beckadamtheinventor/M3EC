@@ -1,0 +1,116 @@
+{
+  "modloader": "forge",
+  "minecraftVersion": "1.20.4",
+  "javaVersion": "17.",
+  "firstActions": [
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.19.3",
+		"value": true
+	},
+    {
+      "if": [
+        "^OR",
+        "?mod.registry.armor.names #length nonzero",
+        "?mod.registry.armormaterial.names #length nonzero"
+      ],
+      "action": "print",
+      "string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be broken in this build."
+    },
+    {
+      "if": "?mod.registry.enchantment.names #length nonzero",
+      "action": "print",
+      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
+    },
+    {
+      "if": "?mod.registry.sapling.names #length nonzero",
+      "action": "print",
+      "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
+    }
+  ],
+  "preActions": [
+    {
+      "action": "makedir",
+      "value": [
+        "src/main/resources/assets/minecraft",
+        "src/main/resources/assets/minecraft/textures",
+        "src/main/resources/assets/minecraft/textures/models",
+        "src/main/resources/assets/minecraft/textures/models/armor"
+      ]
+    },
+    {
+      "action": "execactions",
+      "file": "${source_path}/forge_common/forge_preactions.json"
+    },
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/block_mining_requirements.json"
+    },
+    {
+      "iterate": "mod.registry.armormaterial.names",
+      "action": "execactions",
+      "actions": [
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
+          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
+        },
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
+          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
+        }
+      ]
+    },
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/1.20_and_up_actions.json"
+    }
+  ],
+  "postActions": [
+    {
+      "action": "copy",
+      "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/items/${mod.iconItem}.png",
+      "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+    }
+  ],
+  "sources": [
+    {
+      "source": "resources/pack.mcmeta",
+      "dest": "src/main/resources/pack.mcmeta"
+    },
+    {
+      "source": "resources/META-INF/mods.toml",
+      "dest": "src/main/resources/META-INF/mods.toml"
+    },
+    {
+      "source": "java/MainClass.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+    },
+    {
+      "source": "java/block/ModBlocks.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/block/ModBlocks.java"
+    },
+    {
+      "source": "java/item/ModItems.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/item/ModItems.java"
+    },
+    {
+      "source": "java/item/ModFoods.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/item/ModFoods.java"
+    },
+    {
+      "source": "java/item/ModTiers.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/item/ModTiers.java"
+    },
+	{
+      "source": "java/item/ModCreativeModeTab.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/item/ModCreativeModeTab.java"
+	},
+	{
+		"iterate": "mod.registry.armormaterial.names",
+		"source": "java/item/ArmorMaterial.m3ecjava",
+		"dest": "src/main/java/${mod.packagedir}/item/${mod.armormaterial.${%v}.class}.java"
+	}
+  ]
+}

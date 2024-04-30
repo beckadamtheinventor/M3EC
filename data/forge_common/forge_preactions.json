@@ -32,6 +32,10 @@
 		"file": "${source_path}/forge_common/substitute_class_names.json"
 	},
 	{
+		"action": "execactions",
+		"file": "${source_path}/forge_common/substitute_armor_slot_names.json"
+	},
+	{
 		"action": "setdictkey",
 		"key": "mod.creativemodetab",
 		"value": "ModCreativeModeTab.TAB"

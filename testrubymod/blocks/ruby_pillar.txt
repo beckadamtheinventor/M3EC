@@ -1,10 +1,11 @@
 @:               block
 block:           ColumnBlock
 blockstatetype:  3Axis
+blockclass:      PillarBlock
 contentid:         ruby_pillar
 title:             Ruby Pillar
-texture_top:       ruby_pillar_top
-texture_side:      ruby_pillar_side
+texture_top:       ruby_pillar_top.png
+texture_side:      ruby_pillar_side.png
 
 droptype:          Self
 

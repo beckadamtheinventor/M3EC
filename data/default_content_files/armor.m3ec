@@ -3,7 +3,10 @@ armor: SimpleItem
 contentid:
 # FEET, LEGS, CHEST, HEAD
 slot:
+# item texture
 texture:
 title:
 # armor material contentid
 material: RubyArmorMaterial
+# (1.20+) whether or not the armor is trimmable. Defaults to true if unspecified.
+trimmable: true
