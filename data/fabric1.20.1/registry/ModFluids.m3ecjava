@@ -1,7 +1,8 @@
 package ${mod.package}.registry;
 
 import ${mod.package}.${mod.class};
-import ${mod.package}.fluids.*;
+---if mod.registry.fluid.names #length nonzero
+import ${mod.package}.fluids.*;---fi
 import net.fabricmc.fabric.api.block.v1.FabricBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -27,9 +28,11 @@ public class ModFluids {
     public static final Block ${mod.fluid.$%v^upper}_FLUID_BLOCK = Registry.register(Registries.BLOCK,
             new Identifier(TestRubyMod.MOD_ID, "${mod.fluid.$%v}_block"),
             new FluidBlock(ModFluids.STILL_${mod.fluid.$%v^upper}, FabricBlockSettings.copyOf(${mod.fluid.$%v.copyblock})));
+---if mod.fluid.$%v.bucketable
     public static final Item ${mod.fluid.$%v^upper}_BUCKET = Registry.register(Registries.ITEM,
             new Identifier(TestRubyMod.MOD_ID, "${mod.fluid.$%v}_bucket"),
             new BucketItem(ModFluids.STILL_${mod.fluid.$%v^upper}, new FabricItemSettings().recipeRemainder(Items.BUCKET).maxCount(1)));
+---fi
 ---end
 
     public static void RegisterFluids() {}

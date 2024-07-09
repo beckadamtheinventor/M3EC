@@ -4,6 +4,9 @@ contentid:
 title:
 texture:
 
+# whether the fluid should have a bucket
+bucketable: true
+
 # block to copy properties from
 copyblock: Blocks.WATER
 
