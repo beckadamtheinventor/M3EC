@@ -11,36 +11,36 @@ def ImageOperation(d, img, op):
 		if type(op) is list:
 			o = op[0]
 			if o == "alpha_composite":
-				return img.alpha_composite(Image.open(os.path.join(d["project_path"], o[1])))
+				return img.alpha_composite(Image.open(os.path.join(d["project_path"], op[1])))
 			if o == "rotate":
-				return img.rotate(int(o[1]))
+				return img.rotate(int(op[1]))
 			if o == "blend":
-				return img.blend(Image.open(os.path.join(d["project_path"], o[1])), float(o[2]))
+				return img.blend(Image.open(os.path.join(d["project_path"], op[1])), float(op[2]))
 			if o == "composite":
-				return img.composite(Image.open(os.path.join(d["project_path"], o[1])), Image.open(os.path.join(d["project_path"], o[2])))
+				return img.composite(Image.open(os.path.join(d["project_path"], op[1])), Image.open(os.path.join(d["project_path"], op[2])))
 			if o == "crop":
-				return img.crop(tuple(o[1]))
+				return img.crop(tuple(op[1]))
 			if o == "effect_spread":
-				return img.effect_spread(float(o[1]))
+				return img.effect_spread(float(op[1]))
 			if o == "filter":
 				filters = ["BLUR","CONTOUR","DETAIL","EDGE_ENHANCE","EDGE_ENHANCE_MORE","EMBOSS","FIND_EDGES","SHARPEN","SMOOTH","SMOOTH_MORE"]
-				if o[1] in filters:
-					return img.filter(getattr(ImageFilter, o[1])(float(o[2])))
-				print(f"Warning: undefined filter type \"{o[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
+				if op[1].upper() in filters:
+					return img.filter(getattr(ImageFilter, op[1])(float(op[2])))
+				print(f"Warning: undefined filter type \"{op[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
 				return img
 			if o == "transpose":
 				filters = ["FLIP_LEFT_RIGHT", "FLIP_TOP_BOTTOM", "ROTATE_90", "ROTATE_180", "ROTATE_270", "TRANSPOSE", "TRANSVERSE"]
-				if o[1] in filters:
-					return img.filter(getattr(Transpose, o[1]))
-				print(f"Warning: undefined filter type \"{o[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
+				if op[1].upper() in filters:
+					return img.filter(getattr(Transpose, op[1]))
+				print(f"Warning: undefined filter type \"{op[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
 				return img
 			if o == "paste":
-				if len(o) == 2:
-					return img.paste(Image.open(os.path.join(d["project_path"], o[1])))
-				elif len(o) == 3:
-					return img.paste(Image.open(os.path.join(d["project_path"], o[1])), tuple(o[2]))
-				elif len(o) >= 4:
-					return img.paste(Image.open(os.path.join(d["project_path"], o[1])), tuple(o[2]), Image.open(os.path.join(d["project_path"], o[3])))
+				if len(op) == 2:
+					return img.paste(Image.open(os.path.join(d["project_path"], op[1])))
+				elif len(op) == 3:
+					return img.paste(Image.open(os.path.join(d["project_path"], op[1])), tuple(op[2]))
+				elif len(op) >= 4:
+					return img.paste(Image.open(os.path.join(d["project_path"], op[1])), tuple(op[2]), Image.open(os.path.join(d["project_path"], op[3])))
 			print(f"Warning: undefined image operation: {o}, ignoring.")
 			return img
 		else:

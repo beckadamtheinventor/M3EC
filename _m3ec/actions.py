@@ -456,7 +456,7 @@ def execActions(actions, d):
 			elif "operations" in ak:
 				for op in action["operations"]:
 					try:
-						srcimg = ImageOperation(srcimg, op)
+						srcimg = ImageOperation(d, srcimg, op)
 					except Exception as e:
 						print(f"Warning: Image operation failed.\nOriginal error: {e}")
 						continue
