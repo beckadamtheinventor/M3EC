@@ -10,7 +10,7 @@ def interpret_args(argv):
 	if argv[0].lower() == "help":
 		print("""Usage:
 project_path all|fabric|forge[gameversion]|fabric[gameversion]
-gen|generate manifest|item|food|fuel|block|sapling|ore|(shaped|shapeless|smelting|stonecutting|smithing)recipe|armor[material]|tool[material] [output_file]
+gen|generate manifest|item|food|fuel|block|fluid|sapling|ore|(shaped|shapeless|smelting|stonecutting|smithing)recipe|armor[material]|tool[material] [output_file]
 """)
 	elif len(argv) > 1:
 		if argv[0].lower() in ("generate", "gen"):
@@ -145,7 +145,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 
 def build_mod(modloader, version, modenv, manifest_dict):
-	content_types_list = ["item", "food", "fuel", "block", "ore", "recipe", "armor", "tool",
+	content_types_list = ["item", "food", "fuel", "block", "fluid", "ore", "recipe", "armor", "tool",
 		"armormaterial", "toolmaterial", "enchantment", "recipetype", "sapling"]
 	print(f"\n\
 \n\

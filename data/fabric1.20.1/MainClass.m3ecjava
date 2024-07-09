@@ -2,10 +2,9 @@ package ${mod.package};
 
 import ${mod.package}.registry.ModBlocks;
 import ${mod.package}.registry.ModItems;
----iter mod.registry.recipetype.names
-import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Serializer;
-import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Recipe;---end
-
+import ${mod.package}.registry.ModFluids;
+---if mod.registry.recipetype #length nonzero
+import ${mod.package}.recipetype.*;---fi
 ---iter mainclass.imports
 import $%v;---end
 import net.fabricmc.loader.api.FabricLoader;
@@ -67,6 +66,7 @@ public class ${mod.class} implements ModInitializer {
 		$%v---end
 		ModItems.RegisterItems();
 		ModBlocks.RegisterBlocks();
+		ModFluids.RegisterFluids();
 ---iter mod.registry.recipetype.names
 		Registry.register(Registry.RECIPE_SERIALIZER, ${mod.recipetype.$%v.class}Serializer.ID, ${mod.recipetype.$%v.class}Serializer.INSTANCE);
 		Registry.register(Registry.RECIPE_TYPE, new Identifier(${mod.class}.MOD_ID, "$%v"), ${mod.recipetype.$%v.class}Recipe.Type.INSTANCE);---end
@@ -87,6 +87,8 @@ public class ${mod.class} implements ModInitializer {
 				entries.add(ModItems.${mod.tool.$%v^upper});---end
 ---iter mod.registry.sapling.names
 				entries.add(ModItems.${mod.sapling.$%v^upper});---end
+---iter mod.registry.fluid.names
+				entries.add(ModFluids.${mod.fluid.$%v^upper}_BUCKET);---end
 			})
 		   .build()
 		);---fi

@@ -1,0 +1,26 @@
+@: fluid
+fluid: SimpleFluid
+contentid:
+title:
+texture:
+
+# block to copy properties from
+copyblock: Blocks.WATER
+
+# update speed of the fluid?
+# probably measured in ticks
+tickrate: 5
+
+# fluid level decrease per block spread
+decreaseperblock: 1
+
+# flow speed of the fluid.
+# probably measured in ticks
+flowspeed: 4
+
+# Whether the fluid creates source blocks like water
+isinfinite: false
+
+# Hex color of fluid.
+# 2 digits for each Red, Green, Blue, Alpha
+color: 0x808080D0

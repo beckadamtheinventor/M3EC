@@ -19,6 +19,7 @@
       "action": "makedir",
       "value": [
         "src/main/java/${mod.packagedir}/blocks",
+        "src/main/java/${mod.packagedir}/fluids",
         "src/main/java/${mod.packagedir}/features",
         "src/main/java/${mod.packagedir}/recipetype",
         "src/main/resources/assets/minecraft",
@@ -120,12 +121,20 @@
       "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
     },
     {
+      "source": "MainClassClient.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/${mod.class}Client.java"
+    },
+    {
       "source": "registry/ModBlocks.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
     },
     {
       "source": "registry/ModItems.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+    },
+    {
+      "source": "registry/ModFluids.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModFluids.java"
     },
     {
       "iterate": "mod.registry.toolmaterial.names",
@@ -157,6 +166,11 @@
       "source": "recipetype/RecipeSerializer.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
     },
+	{
+		"iterate": "mod.registry.fluid.names",
+		"source": "registry/Fluid.m3ecjava",
+		"dest": "src/main/java/${mod.packagedir}/fluids/${mod.fluid.${%v}.class}Fluid.java"
+	},
 	{
 		"iterate": "mod.registry.sapling.names",
 		"source": "registry/SaplingBlock.m3ecjava",

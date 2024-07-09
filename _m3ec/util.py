@@ -857,6 +857,10 @@ def readf(data, d):
 							w = w.capitalize()
 						elif fn.lower() == "title":
 							w = w.title()
+						elif fn.lower() == "class":
+							w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
+						elif fn.lower() == "bool":
+							w = "true" if w else "false"
 						elif fn.lower() == "float":
 							if type(w) is str:
 								if not w.endswith("f"):

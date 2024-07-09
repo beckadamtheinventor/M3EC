@@ -49,6 +49,7 @@ mod:
 #paths to mod items, blocks, recipes, etc
 +.paths: items
 +.paths: blocks
++.paths: fluids
 +.paths: recipes
 +.paths: foods
 +.paths: armor
