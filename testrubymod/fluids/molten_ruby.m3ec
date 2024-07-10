@@ -4,6 +4,10 @@ contentid: molten_ruby
 title: Molten Ruby
 texture: molten_ruby.png
 
+# whether the fluid can be picked up with a bucket
+# and has a corresponding bucket item
+bucketable: false
+
 # block to copy properties from
 copyblock: Blocks.LAVA
 

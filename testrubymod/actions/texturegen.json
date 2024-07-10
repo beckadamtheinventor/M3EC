@@ -1,0 +1,55 @@
+[
+	{
+		"iterate": [
+			"sword", "axe", "pickaxe", "hoe", "shovel"
+		],
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "maketexture",
+				"sources": [
+					{
+						"file": "${texture_templates}/${%v}.png",
+						"operation": ["multiply", [243, 20, 60]]
+					},
+					{
+						"file": "${texture_templates}/${%v}_handle.png"
+					}
+				],
+				"dest": "${project_path}/textures/ruby_${%v}.png"
+			}
+		]
+	},
+	{
+		"action": "maketexture",
+		"sources": [
+			{
+				"file": "${texture_templates}/stone_1.png"
+			},
+			{
+				"file": "${texture_templates}/gem_ore_3.png",
+				"operations": [
+					["multiply", [255, 0, 40]],
+					["rotate", -60]
+				]
+			}
+		],
+		"dest": "${project_path}/textures/ruby_ore.png"
+	},
+	{
+		"action": "maketexture",
+		"sources": [
+			{
+				"file": "${texture_templates}/deep_stone_1.png"
+			},
+			{
+				"file": "${texture_templates}/gem_ore_3.png",
+				"operations": [
+					["multiply", [255, 0, 40]],
+					["rotate", -60]
+				]
+			}
+		],
+		"dest": "${project_path}/textures/deepslate_ruby_ore.png"
+	}
+]

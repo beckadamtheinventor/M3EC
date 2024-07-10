@@ -1,20 +1,28 @@
 @:          ore
-OverworldOre:
+overworldore: true
 ore:
 contentid:  ruby_ore_ore
 name:       ruby_ore_ore
 title:      ruby_ore_ore
-@if gameversion.major >= 17
-maxy:      12
-@else
+
+# different min/max Y levels for versions after/before 1.18
+@if gameversion.major >= 18
+miny:     -64
 maxy:      8
+@else
+miny       0
+maxy:      12
 @endif
+
 vein:
 .atbedrock:
 .block:     ModBlocks.RUBY_ORE
 .size:      6
 .perchunk:  6
+
 # required for versions 1.19.3 and up
 .count: 25
+
 # required for versions 1.19.3 and up
-blockid:    ${mod.mcpath}:ruby_ore
+blockid:          ${mod.mcpath}:ruby_ore
+deepslateblockid: ${mod.mcpath}:deepslate_ruby_ore

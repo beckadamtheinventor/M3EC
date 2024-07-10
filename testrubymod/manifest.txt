@@ -21,32 +21,32 @@
 @: manifest
 
 mod:
-#prefix of mod class namespace
+# prefix of mod class namespace
 .prefix: com
-#mod author
+# mod author
 .author: BeckATI
-#mod main class name
+# mod main class name
 .class: TestRubyMod
-#mod title
+# mod title
 .title: Test Ruby Mod
-#mod version number
+# mod version number
 .version: 0.1
-#mod description
+# mod description
 .description: An example mod built with M3EC!
-#web url to your mod's homepage
+# web url to your mod's homepage
 .homepage:
-#web url to your mod's sources
+# web url to your mod's sources
 .sources: https://github.com/beckadamtheinventor/M3EC/tree/master/testrubymod
-#credits
+# credits
 .credits:
 
-#path to mod textures directory.
+# path to mod textures directory.
 .textures: textures
 
-#project license. Change this and add a license file for your own project
+# project license. Change this and add a license file for your own project
 .license: Public Domain
 
-#paths to mod items, blocks, recipes, etc
+# paths to mod items, blocks, recipes, etc
 +.paths: items
 +.paths: blocks
 +.paths: fluids
@@ -56,8 +56,32 @@ mod:
 +.paths: tools
 +.paths: ores
 
-#mod item to be displayed on the mod's creative tab, uppercased
+# mod item to be displayed on the mod's creative tab, uppercased
 .iconItem: RUBY
 
 .+langs: fr_fr
 .fr_fr: Tester Module Ruby
+
+#---------------------------------------------------
+# action scripting (advanced usage)
+#---------------------------------------------------
+# the next few lines are listed in the order they are executed
+# between certain project build stages.
+
+# actions to run before reading the project
++firstexecactions: actions/first.json
+
+# actions to run directly before project resource generation
++preexecactions: actions/first.json
+
+# actions to run directly after resource generation
++resourceexecactions: actions/resource.json
+
+# actions to run before code generation
++preexecactions: actions/pre.json
+
+# actions to run after code generation
++postexecactions: actions/post.json
+
+# actions to run after building the JAR and caching changed files
++finalexecactions: actions/final.json

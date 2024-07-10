@@ -108,6 +108,8 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		source_path = manifest_dict["mod.sourcepath"]
 
 	manifest_dict["source_path"] = source_path
+	manifest_dict["texture_templates"] = os.path.join(source_path, "common", "texture_templates")
+
 
 
 	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:

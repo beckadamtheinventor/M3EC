@@ -2,8 +2,10 @@
 ore:
 
 # This ore spawns in the overworld
-# other options: NetherOre, EndOre
-OverworldOre:
+# but not the nether or end
+OverworldOre: true
+NetherOre: false
+EndOre: false
 
 # suffix block contentid with "_ore"
 contentid:

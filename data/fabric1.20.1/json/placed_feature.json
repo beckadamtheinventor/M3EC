@@ -11,9 +11,12 @@
 		{
 			"type": "minecraft:height_range",
 			"height": {
-				"type": "minecraft:trapezoid",
+				"type": "minecraft:uniform",
 				"min_inclusive": {
-					"absolute": -63
+---if mod.ore.${%v}.vein.atbedrock
+					"above_bottom": 0---fi
+---if !mod.ore.${%v}.vein.atbedrock
+					"absolute": ${mod.ore.${%v}.miny}---fi
 				},
 				"max_inclusive": {
 					"absolute": ${mod.ore.${%v}.maxy}

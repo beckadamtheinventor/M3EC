@@ -1,0 +1,23 @@
+@:               block
+block:           SimpleBlock
+blockstatetype:  Single
+contentid:         deepslate_ruby_ore
+title:             Deepslate Ruby Ore
+texture:           deepslate_ruby_ore
+
+droptype:          Fortunable
+drops:             testrubymod:ruby
+
+hardness:          ${mc.deepslate_emerald_ore.hardness}
+resistance:        ${mc.deepslate_emerald_ore.resistance}
+material:          STONE
+toolclass:         PICKAXES
+toollevel:         IRON
+requiresTool:      yes
+sounds:            STONE
+
++langs:   fr_ca
++langs:   fr_fr
+fr_ca:   Minerai de Rubis d'ardoise
+fr_fr:   Minerai de Rubis d'ardoise
+

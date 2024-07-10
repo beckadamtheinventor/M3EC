@@ -98,9 +98,15 @@ public class ${mod.class} implements ModInitializer {
 
 ---iter mod.registry.ore.names
 ---if mod.ore.$%v.overworldore
-		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v^upper}_PLACED_KEY);---fi---if mod.ore.$%v.netherore
-		BiomeModifications.addFeature(BiomeSelectors.foundInTheNether(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v^upper}_PLACED_KEY);---fi---if mod.ore.$%v.endore
-		BiomeModifications.addFeature(BiomeSelectors.foundInTheEnd(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v^upper}_PLACED_KEY);---fi---end
+		BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v^upper}_PLACED_KEY);
+---fi
+---if mod.ore.$%v.netherore
+		BiomeModifications.addFeature(BiomeSelectors.foundInTheNether(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v^upper}_PLACED_KEY);
+---fi
+---if mod.ore.$%v.endore
+		BiomeModifications.addFeature(BiomeSelectors.foundInTheEnd(), GenerationStep.Feature.UNDERGROUND_ORES, ${mod.ore.$%v^upper}_PLACED_KEY);
+---fi
+---end
 
 ---iter mainclass.onInitialize
 		$%v---end
