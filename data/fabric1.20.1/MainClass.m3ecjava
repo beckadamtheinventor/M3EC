@@ -2,9 +2,9 @@ package ${mod.package};
 
 import ${mod.package}.registry.ModBlocks;
 import ${mod.package}.registry.ModItems;
----if mod.registry.fluid.names #length nonzero
+---if mod.registry.fluid.names
 import ${mod.package}.registry.ModFluids;---fi
----if mod.registry.recipetype.names #length nonzero
+---if mod.registry.recipetype.names
 import ${mod.package}.recipetype.*;---fi
 ---iter mainclass.imports
 import $%v;---end
@@ -67,7 +67,7 @@ public class ${mod.class} implements ModInitializer {
 		$%v---end
 		ModItems.RegisterItems();
 		ModBlocks.RegisterBlocks();
----if mod.registry.fluid.names #length nonzero
+---if mod.registry.fluid.names
 		ModFluids.RegisterFluids();---fi
 ---iter mod.registry.recipetype.names
 		Registry.register(Registry.RECIPE_SERIALIZER, ${mod.recipetype.$%v.class}Serializer.ID, ${mod.recipetype.$%v.class}Serializer.INSTANCE);
@@ -90,7 +90,8 @@ public class ${mod.class} implements ModInitializer {
 ---iter mod.registry.sapling.names
 				entries.add(ModItems.${mod.sapling.$%v^upper});---end
 ---iter mod.registry.fluid.names
-				entries.add(ModFluids.${mod.fluid.$%v^upper}_BUCKET);---end
+---if1 mod.fluid.$%v.bucketable
+				entries.add(ModFluids.${mod.fluid.$%v^upper}_BUCKET);---1fi---end
 			})
 		   .build()
 		);---fi

@@ -4,12 +4,29 @@ from PIL import Image
 from PIL import ImageChops
 from .util import *
 
-def actionWarning(s):
+def actionWarning(s, d={}):
 	if "$%f" in d.keys():
-		f = d["$%f"]
+		f = str(d["$%f"])+" "
 	else:
 		f = ""
-	print(f"Warning: action {f} "+str(s)+". Ignoring.")
+	print(f"Warning: action {f}"+str(s)+".\nIgnoring.")
+
+def actionAccessWarning(fname, d):
+	actionWarning(f"attempted to access file outside of project directory and source directory.\n\
+Path: \"{fname}\"\nProject Path: \"{d['project_path']}\"\nSource Path: \"{d['source_path']}\"", d)
+	raise Exception
+
+def try_load_image(fname, d):
+	if not fname.startswith(d["project_path"]) and not fname.startswith(d["source_path"]):
+		if os.path.isabs(fname):
+			actionAccessWarning(fname, d)
+			return None
+		fname = os.path.join(d["project_path"], fname)
+	try:
+		return Image.open(fname).convert("RGBA")
+	except FileNotFoundError:
+		actionWarning(f"Warning: Image file \"{fname}\" does not exist.", d)
+		return None
 
 def execActions(actions, d):
 	for action in actions:
@@ -207,17 +224,19 @@ def execActions(actions, d):
 						d["%i"] = i
 						d["%v"] = l[i]
 					fname = readf(action["file"], d)
-					if fname.startswith(d["project_path"]) or fname.startswith(d["source_path"]):
-						if os.path.exists(fname):
-							with open(fname) as f:
-								tmp = d["curdir"]
-								d["curdir"] = os.path.dirname(fname)
-								execActions(json.load(f), d)
-								d["curdir"] = tmp
-						else:
-							print(f"Failed to locate actions json file \"{fname}\"")
+					if not fname.startswith(d["project_path"]) and not fname.startswith(d["source_path"]):
+						if os.path.isabs(fname):
+							actionAccessWarning(fname, d)
+							continue
+						fname = os.path.join(d["project_path"], fname)
+					if os.path.exists(fname):
+						with open(fname) as f:
+							tmp = d["curdir"]
+							d["curdir"] = os.path.dirname(fname)
+							execActions(json.load(f), d)
+							d["curdir"] = tmp
 					else:
-						actionWarning("attempted to access file outside of project directory and source directory", d)
+						print(f"Failed to locate actions json file \"{fname}\"")
 
 		elif a == "repeatactions":
 			if "repeat" in ak:
@@ -281,7 +300,7 @@ def execActions(actions, d):
 					else:
 						d["%a"] = None
 				else:
-					actionWarning("attempted to access file outside of project directory and source directory", d)
+					actionAccessWarning(fname, d)
 
 		elif a == "delete" or a == "remove":
 			if "source" in ak:
@@ -355,7 +374,7 @@ def execActions(actions, d):
 					else:
 						d["%a"] = None
 				else:
-					actionWarning("attempted to access file outside of project directory and source directory", d)
+					actionAccessWarning(fname, d)
 
 		elif a == "write":
 			if "dest" in ak or "file" in ak:
@@ -428,18 +447,46 @@ def execActions(actions, d):
 			break
 
 		elif a in ("makeimage", "maketexture"):
-			if "source" in ak:
-				fname = action["source"]
+			if "sources" in ak:
+				fail = False
+				srcimg = None
+				if type(action["sources"]) is list:
+					for fn in action["sources"]:
+						if type(fn) is not dict:
+							actionWarning(f"Warning: makeimage action key \"sources\" must be an array of objects.")
+							fail = True
+							break
+						if "file" in fn.keys():
+							img = try_load_image(readf(fn["file"], d), d)
+							if img is None:
+								continue
+							if "operation" in fn.keys():
+								try:
+									img = ImageOperation(d, img, fn["operation"])
+								except Exception as e:
+									print(f"Warning: Image operation failed.\nOriginal error: {e}")
+									continue
+							elif "operations" in fn.keys():
+								for op in fn["operations"]:
+									try:
+										img = ImageOperation(d, img, op)
+									except Exception as e:
+										print(f"Warning: Image operation failed.\nOriginal error: {e}")
+										continue
+							if srcimg is None:
+								srcimg = img
+							else:
+								srcimg.alpha_composite(img)
+				else:
+					fail = True
+				if fail:
+					actionWarning(f"Warning: makeimage action key \"sources\" must be an array of objects.")
+			elif "source" in ak:
+				fname = readf(action["source"], d)
 				if not os.path.isabs(fname):
 					fname = os.path.join(d["curdir"], fname)
-				if fname.startswith(d["project_path"]) or fname.startswith(d["source_path"]):
-					try:
-						srcimg = Image.open(fname).convert("RGBA")
-					except FileNotFoundError:
-						print(f"Warning: Image file \"{fname}\" does not exist.")
-						continue
-				else:
-					actionWarning("attempted to read image outside of project directory and source directory.")
+				srcimg = try_load_image(readf(fname, d), d)
+				if srcimg is None:
 					continue
 			elif "color" in ak and "width" in ak and "height" in ak:
 				srcimg = Image.new("RGBA", (width, height), action["color"])
@@ -461,21 +508,33 @@ def execActions(actions, d):
 						print(f"Warning: Image operation failed.\nOriginal error: {e}")
 						continue
 			if "color" in ak:
-				color = tuple(int(c) for c in readf(action["color"], d).strip("()").split(","))
+				if type(action["color"]) is str:
+					color = tuple(int(c) for c in readf(action["color"], d).strip("()").split(","))
+				elif type(action["color"]) is list:
+					color = tuple(action["color"])
+				elif type(action["color"]) is int:
+					color = tuple([action["color"]]*3+[255])
+				else:
+					print(f"Warning: Wrong data type for color. Must be list, string, or integer.")
+					continue
 				srcimg = ImageChops.multiply(Image.new("RGBA", srcimg.size, color), srcimg)
 
 			if "dest" in ak:
 				fname = readf(action["dest"], d)
 				if not os.path.isabs(fname):
 					fname = os.path.join(d["curdir"], fname)
-				if fname.startswith(d["project_path"]):
-					try:
-						srcimg.save(fname)
-					except Exception as e:
-						print(f"Warning: Failed to save image \"{fname}\".\nOriginal error: {e}")
+				if not fname.startswith(d["project_path"]):
+					if os.path.isabs(fname):
+						print(f"Warning: Failed to save image to \"{fname}\" because the path is outside the project directory")
 						continue
-				else:
-					actionWarning("attempted to write image outside of project directory.")
+					fname = os.path.join(d["project_path"], fname)
+				if srcimg is None:
+					print(f"Warning: Failed to create image for file \"{fname}\"")
+					continue
+				try:
+					srcimg.save(fname)
+				except Exception as e:
+					print(f"Warning: Failed to save image \"{fname}\".\nOriginal error: {e}")
 					continue
 			else:
 				d["%a"] = srcimg

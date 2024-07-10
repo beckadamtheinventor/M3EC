@@ -51,7 +51,11 @@ public abstract class ${mod.fluid.${%v}^class}Fluid extends FlowableFluid {
 
     @Override
     public Item getBucketItem() {
+---if mod.fluid.$%v.bucketable
         return ModFluids.${mod.fluid.${%v}^upper}_BUCKET;
+---fi---if !mod.fluid.$%v.bucketable
+		return null;
+---fi
     }
 
     @Override

@@ -1,7 +1,6 @@
 
 import os, json
-from PIL import Image
-from PIL import ImageFilter
+from PIL import Image, ImageChops, ImageFilter
 from PIL.Image import Transpose
 
 WRITTEN_FILES_LIST = []
@@ -12,35 +11,45 @@ def ImageOperation(d, img, op):
 			o = op[0]
 			if o == "alpha_composite":
 				return img.alpha_composite(Image.open(os.path.join(d["project_path"], op[1])))
-			if o == "rotate":
+			elif o == "rotate":
 				return img.rotate(int(op[1]))
-			if o == "blend":
+			elif o == "blend":
 				return img.blend(Image.open(os.path.join(d["project_path"], op[1])), float(op[2]))
-			if o == "composite":
+			elif o == "composite":
 				return img.composite(Image.open(os.path.join(d["project_path"], op[1])), Image.open(os.path.join(d["project_path"], op[2])))
-			if o == "crop":
+			elif o == "crop":
 				return img.crop(tuple(op[1]))
-			if o == "effect_spread":
+			elif o == "effect_spread":
 				return img.effect_spread(float(op[1]))
-			if o == "filter":
+			elif o == "filter":
 				filters = ["BLUR","CONTOUR","DETAIL","EDGE_ENHANCE","EDGE_ENHANCE_MORE","EMBOSS","FIND_EDGES","SHARPEN","SMOOTH","SMOOTH_MORE"]
 				if op[1].upper() in filters:
-					return img.filter(getattr(ImageFilter, op[1])(float(op[2])))
+					return img.filter(getattr(ImageFilter, op[1])())
 				print(f"Warning: undefined filter type \"{op[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
 				return img
-			if o == "transpose":
+			elif o == "transpose":
 				filters = ["FLIP_LEFT_RIGHT", "FLIP_TOP_BOTTOM", "ROTATE_90", "ROTATE_180", "ROTATE_270", "TRANSPOSE", "TRANSVERSE"]
 				if op[1].upper() in filters:
-					return img.filter(getattr(Transpose, op[1]))
+					return img.transpose(getattr(Transpose, op[1]))
 				print(f"Warning: undefined filter type \"{op[1]}\", ignoring.\nValid filters: {', '.join(filters)}\n")
 				return img
-			if o == "paste":
+			elif o == "paste":
 				if len(op) == 2:
-					return img.paste(Image.open(os.path.join(d["project_path"], op[1])))
+					img.paste(Image.open(os.path.join(d["project_path"], op[1])))
 				elif len(op) == 3:
-					return img.paste(Image.open(os.path.join(d["project_path"], op[1])), tuple(op[2]))
+					img.paste(Image.open(os.path.join(d["project_path"], op[1])), tuple(op[2]))
 				elif len(op) >= 4:
-					return img.paste(Image.open(os.path.join(d["project_path"], op[1])), tuple(op[2]), Image.open(os.path.join(d["project_path"], op[3])))
+					img.paste(Image.open(os.path.join(d["project_path"], op[1])), tuple(op[2]), Image.open(os.path.join(d["project_path"], op[3])))
+				return img
+			elif o == "multiply":
+				if len(op) == 2:
+					color = op[1]
+					if len(color) < 4:
+						color += [255] * (4 - len(color))
+					return ImageChops.multiply(img.convert("RGBA"), Image.new("RGBA", img.size, tuple(color)))
+				else:
+					print(f"Warning: wrong number of arguments (expected 1, got {len(op)-1}) for image operation \"multiply\"")
+					return
 			print(f"Warning: undefined image operation: {o}, ignoring.")
 			return img
 		else:
@@ -49,6 +58,7 @@ def ImageOperation(d, img, op):
 	except Exception as e:
 		print(f"Warning: failed to apply image operation {op}\nOriginal error: {str(e)}")
 	return img
+
 
 def try_load_resource(path, file, method=json.load, default=None):
 	try:
@@ -698,7 +708,7 @@ def readf_file(path, d):
 		return None
 
 def readf(data, d):
-	NUM_ITERATOR_NUMBERS = 10
+	NUM_ITERATOR_NUMBERS = 9
 
 	# if type(data) is list:
 		# return [readf(i, d) for i in data]
