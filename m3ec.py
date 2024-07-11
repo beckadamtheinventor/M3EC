@@ -190,7 +190,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		manifest_dict["curdir"] = manifest_dict["project_path"]
 		file = readf(file, manifest_dict)
 		try:
-			with open(file) as f:
+			with open(os.path.join(manifest_dict["curdir"], file)) as f:
 				j = json.load(f)
 			execActions(j, manifest_dict)
 		except FileNotFoundError as e:
@@ -373,7 +373,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	for file in manifest_dict["preexecactions"]:
 		file = readf(file, manifest_dict)
 		try:
-			with open(file) as f:
+			with open(os.path.join(manifest_dict["curdir"], file)) as f:
 				j = json.load(f)
 			execActions(j, manifest_dict)
 		except FileNotFoundError:
@@ -394,7 +394,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	for file in manifest_dict["resourceexecactions"]:
 		file = readf(file, manifest_dict)
 		try:
-			with open(file) as f:
+			with open(os.path.join(manifest_dict["curdir"], file)) as f:
 				j = json.load(f)
 			execActions(j, manifest_dict)
 		except FileNotFoundError:
@@ -468,11 +468,11 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	for file in manifest_dict["postexecactions"]:
 		file = readf(file, manifest_dict)
 		try:
-			with open(file) as f:
+			with open(os.path.join(manifest_dict["curdir"], file)) as f:
 				j = json.load(f)
 			execActions(j, manifest_dict)
 		except FileNotFoundError:
-			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
+			print(f"Warning: file \"{file}\" listed in postexecactions does not exist.")
 
 	if "javaVersion" in versionbuilder.keys():
 		maybe_run_gradle(build_path, modenv, versionbuilder["javaVersion"], manifest_dict)
@@ -486,7 +486,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 	for file in manifest_dict["finalexecactions"]:
 		file = readf(file, manifest_dict)
 		try:
-			with open(file) as f:
+			with open(os.path.join(manifest_dict["curdir"], file)) as f:
 				j = json.load(f)
 			execActions(j, manifest_dict)
 		except FileNotFoundError:
@@ -716,6 +716,24 @@ def build_tags_and_lang(manifest_dict):
 	langdict = manifest_dict["langdict"]
 	tagdict = manifest_dict["tagdict"]
 	blocktagdict = manifest_dict["blocktagdict"]
+
+	if "mod.itemtags" in manifest_dict:
+		for tag in manifest_dict["mod.itemtags"]:
+			if tag in manifest_dict:
+				fulltag = manifest_dict["mod.mcpath"] + ":" + tag
+				if fulltag not in tagdict.keys():
+					tagdict[fulltag] = []
+				for cid in manifest_dict[tag]:
+					tagdict[fulltag].append(readf(cid, manifest_dict))
+
+	if "mod.blocktags" in manifest_dict:
+		for tag in manifest_dict["mod.blocktags"]:
+			if tag in manifest_dict:
+				fulltag = manifest_dict["mod.mcpath"] + ":" + tag
+				if fulltag not in blocktagdict.keys():
+					blocktagdict[fulltag] = []
+				for cid in manifest_dict[tag]:
+					blocktagdict[fulltag].append(readf(cid, manifest_dict))
 
 	lang_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "assets", manifest_dict["mod.mcpath"], "lang")
 	build_data_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "data")

@@ -3,8 +3,8 @@
     "ingredients": [
 ---list ingredients
 		{
----if $%v #startswith #
-			"tag": "${$%v^split(1)}"---fi---if !$%v #startswith #
+---if ?$%v #startswith #
+			"tag": "${$%v^substring(1)}"---fi---if ?!$%v #startswith #
 			"item": "$%v"---fi
 		}---end
     ],

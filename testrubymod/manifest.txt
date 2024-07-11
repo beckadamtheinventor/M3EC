@@ -63,6 +63,23 @@ mod:
 .fr_fr: Tester Module Ruby
 
 #---------------------------------------------------
+# block/item tags
+#---------------------------------------------------
+# note: tag names will be automatically prefixed
+# with the mod id. The following syntax is due to
+# keys not being able to contain colon (':') characters.
+
+# define tag lists
++.itemtags: ruby_ores
++.blocktags: ruby_ore_blocks
+
+# add to tag lists
++ruby_ores: ${mod.mcpath}:ruby_ore
++ruby_ores: ${mod.mcpath}:deepslate_ruby_ore
++ruby_ore_blocks: ${mod.mcpath}:ruby_ore
++ruby_ore_blocks: ${mod.mcpath}:deepslate_ruby_ore
+
+#---------------------------------------------------
 # action scripting (advanced usage)
 #---------------------------------------------------
 # the next few lines are listed in the order they are executed
@@ -72,13 +89,10 @@ mod:
 +firstexecactions: actions/first.json
 
 # actions to run directly before project resource generation
-+preexecactions: actions/first.json
-
-# actions to run directly after resource generation
-+resourceexecactions: actions/resource.json
-
-# actions to run before code generation
 +preexecactions: actions/pre.json
+
+# actions to run directly after resource generation, before code generation
++resourceexecactions: actions/resource.json
 
 # actions to run after code generation
 +postexecactions: actions/post.json

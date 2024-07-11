@@ -1,8 +1,8 @@
 {
     "type": "minecraft:campfire_cooking",
     "ingredient": {
----if ${ingredient} #startswith #
-		"tag": "${ingredient^split(1)}"---fi---if !${ingredient} #startswith #
+---if ?ingredient #startswith #
+		"tag": "${ingredient^substring(1)}"---fi---if ?!ingredient #startswith #
         "item": "${ingredient}"---fi
     },
     "result": "${result}",
