@@ -720,20 +720,24 @@ def build_tags_and_lang(manifest_dict):
 	if "mod.itemtags" in manifest_dict:
 		for tag in manifest_dict["mod.itemtags"]:
 			if tag in manifest_dict:
-				fulltag = manifest_dict["mod.mcpath"] + ":" + tag
+				fulltag = ":".join(tag.split("/", maxsplit=1))
 				if fulltag not in tagdict.keys():
 					tagdict[fulltag] = []
 				for cid in manifest_dict[tag]:
-					tagdict[fulltag].append(readf(cid, manifest_dict))
+					t, cid = cid.split(":", maxsplit=1)
+					if "item" in t:
+						tagdict[fulltag].append(readf(cid, manifest_dict))
 
 	if "mod.blocktags" in manifest_dict:
 		for tag in manifest_dict["mod.blocktags"]:
 			if tag in manifest_dict:
-				fulltag = manifest_dict["mod.mcpath"] + ":" + tag
+				fulltag = ":".join(tag.split("/", maxsplit=1))
 				if fulltag not in blocktagdict.keys():
 					blocktagdict[fulltag] = []
 				for cid in manifest_dict[tag]:
-					blocktagdict[fulltag].append(readf(cid, manifest_dict))
+					t, cid = cid.split(":", maxsplit=1)
+					if "block" in t:
+						blocktagdict[fulltag].append(readf(cid, manifest_dict))
 
 	lang_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "assets", manifest_dict["mod.mcpath"], "lang")
 	build_data_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "data")

@@ -337,21 +337,30 @@ def execActions(actions, d):
 					# print("copyf", fname, "-->", dname)
 					if (fname.startswith(d["project_path"]) or fname.startswith(d["source_path"])) and dname.startswith(d["project_path"]):
 						if os.path.exists(fname):
-							with open(fname) as f:
-								d["%a"] = readf(f.read(), d)
-							try:
-								with open(dname, 'w') as f:
-									f.write(d["%a"])
-								# WRITTEN_FILES_LIST.append(dname)
-							except:
-								pass
-							if a == "movef":
-								if fname.startswith(d["project_path"]):
-									os.remove(fname)
-									# if fname in WRITTEN_FILES_LIST:
-										# WRITTEN_FILES_LIST.remove(WRITTEN_FILES_LIST.index(fname))
+							if os.path.isdir(fname):
+								fnames = list(walk(fname))
+							else:
+								fnames = [fname]
+							for fn in fnames:
+								with open(fn) as f:
+									d["%a"] = readf(f.read(), d)
+								if os.path.isdir(fname):
+									dn = os.path.join(dname, os.path.basename(fn))
 								else:
-									actionWarning("attempted to delete (move) a file outside of the project directory", d)
+									dn = dname
+								try:
+									with open(dn, 'w') as f:
+										f.write(d["%a"])
+									# WRITTEN_FILES_LIST.append(dname)
+								except:
+									pass
+								if a == "movef":
+									if fn.startswith(d["project_path"]):
+										os.remove(fn)
+										# if fn in WRITTEN_FILES_LIST:
+											# WRITTEN_FILES_LIST.remove(WRITTEN_FILES_LIST.index(fn))
+									else:
+										actionWarning("attempted to delete (move) a file outside of the project directory", d)
 						else:
 							d["%a"] = None
 					else:
