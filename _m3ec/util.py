@@ -584,6 +584,16 @@ def add_content(cid, content_type, d, manifest_dict, fname=None):
 def VerifyMCName(name):
 	return all([c in "abcdefghijklmnopqrstuvwxyz0123456789_" for c in name])
 
+def MCNameify(name):
+	name = "".join([" "+c if c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" else c for c in name])
+	return name.strip(" ").replace(" ", "_").lower()
+
+def Classify(name):
+	return "".join([s.capitalize() for s in name.replace(" ", "_").split("_")])
+
+def Titleify(name):
+	return name.strip(" ").replace("_", " ").title()
+
 def ParseContentTitle(title):
 	if title.isupper():
 		return title.replace("_"," ").capitalize(), title.lower(), title

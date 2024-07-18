@@ -27,6 +27,12 @@ gen|generate manifest|item|food|fuel|block|fluid|sapling|ore|(shaped|shapeless|s
 					if os.path.exists(name):
 						if "n" in input("File exists. Replace? (y/n) ").lower():
 							return
+					cid = MCNameify(os.path.basename(name).rsplit(".", maxsplit=1)[0])
+					data = data.replace("title:\n", f"title: {Titleify(cid)}\n").replace("texture:\n", f"texture: {cid}\n")
+					if "material" in fname.lower():
+						data = data.replace("contentid:\n", f"contentid: {Classify(cid)}\n")
+					else:
+						data = data.replace("contentid:\n", f"contentid: {cid}\n")
 					try:
 						with open(name, "w") as f:
 							f.write(data)

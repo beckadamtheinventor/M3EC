@@ -21,17 +21,17 @@ import net.minecraft.util.Identifier;
 public class ModFluids {
 ---iter mod.registry.fluid.names
     public static final FlowableFluid STILL_${mod.fluid.$%v^upper} = Registry.register(Registries.FLUID,
-            new Identifier(TestRubyMod.MOD_ID, "${mod.fluid.$%v}"),
+            new Identifier(${mod.class}.MOD_ID, "${mod.fluid.$%v}"),
             new ${mod.fluid.$%v^class}Fluid.Still());
     public static final FlowableFluid FLOWING_${mod.fluid.$%v^upper} = Registry.register(Registries.FLUID,
-            new Identifier(TestRubyMod.MOD_ID, "flowing_${mod.fluid.$%v}"),
+            new Identifier(${mod.class}.MOD_ID, "flowing_${mod.fluid.$%v}"),
             new ${mod.fluid.$%v^class}Fluid.Flowing());
     public static final Block ${mod.fluid.$%v^upper}_FLUID_BLOCK = Registry.register(Registries.BLOCK,
-            new Identifier(TestRubyMod.MOD_ID, "${mod.fluid.$%v}_block"),
+            new Identifier(${mod.class}.MOD_ID, "${mod.fluid.$%v}_block"),
             new FluidBlock(ModFluids.STILL_${mod.fluid.$%v^upper}, FabricBlockSettings.copyOf(${mod.fluid.$%v.copyblock})));
 ---if mod.fluid.$%v.bucketable
     public static final Item ${mod.fluid.$%v^upper}_BUCKET = Registry.register(Registries.ITEM,
-            new Identifier(TestRubyMod.MOD_ID, "${mod.fluid.$%v}_bucket"),
+            new Identifier(${mod.class}.MOD_ID, "${mod.fluid.$%v}_bucket"),
             new BucketItem(ModFluids.STILL_${mod.fluid.$%v^upper}, new FabricItemSettings().recipeRemainder(Items.BUCKET).maxCount(1)));
 ---fi
 ---end
