@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "${mod.package}.${mod.class}"
+    ],
+    "client": [
+      "${mod.package}.${mod.class}Client"
     ]
   },
   "mixins": [],

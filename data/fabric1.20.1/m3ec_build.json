@@ -2,17 +2,24 @@
   "modloader": "fabric",
   "minecraftVersion": "1.20.1",
   "javaVersion": "17.",
+  "implementedFeatures": {
+	"block": true,
+	"item": true,
+	"fuel": true,
+	"food": true,
+	"recipe": true,
+	"ore": true,
+	"tool": true,
+	"armor": true,
+	"toolmaterial": true,
+	"armormaterial": true
+  },
   "firstActions": [
 	{
 		"action": "setdictkey",
 		"key": "version_past_1.19.3",
 		"value": true
-	},
-    {
-      "if": "?mod.registry.enchantment.names #length nonzero",
-      "action": "print",
-      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    }
+	}
   ],
   "preActions": [
     {
@@ -102,6 +109,10 @@
 	{
 		"action": "execactions",
 		"file": "${source_path}/fabric_common/1.19.4_and_up_preactions.json"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/fluid_block_models.json"
 	}
   ],
   "postActions": [

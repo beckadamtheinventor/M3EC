@@ -1,7 +1,14 @@
 {
   "modloader": "forge",
-  "minecraftVersion": "1.16.5",
+  "minecraftVersion": "1.12.2",
   "javaVersion": "8.",
+  "implementedFeatures": {
+	"block": true,
+	"item": true,
+	"fuel": true,
+	"food": true,
+	"recipe": true
+  },
   "firstActions": [
 	{
 		"action": "setdictkey",
@@ -9,14 +16,9 @@
 		"value": false
 	},
 	{
-	  "if": "?mod.registry.enchantment.names #length nonzero",
-	  "action": "print",
-	  "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-	},
-	{
-	  "if": "?mod.registry.sapling.names #length nonzero",
-	  "action": "print",
-	  "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
+		"action": "setdictkey",
+		"key": "version_pre_1.13",
+		"value": true
 	}
   ],
   "preActions": [

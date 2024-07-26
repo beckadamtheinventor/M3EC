@@ -2,6 +2,11 @@
 fluid: SimpleFluid
 contentid:
 title:
+
+# name of fluid texture still and flowing
+# loads from (texture)_still.png and (texture)_flowing.png
+# this string must NOT end with the file extension, the file MUST be a png.
+# if you want it to be animated, you will need to create a (texture)_still.png.mcmeta and (texture)_flowing.png.mcmeta
 texture:
 
 # whether the fluid should have a bucket
@@ -25,5 +30,6 @@ flowspeed: 4
 isinfinite: false
 
 # Hex color of fluid.
-# 2 digits for each Red, Green, Blue, Alpha
-color: 0x808080D0
+# 2 digits for each Red, Green, Blue
+# Alpha is required but ignored in practice
+color: 0x808080

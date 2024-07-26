@@ -27,8 +27,9 @@ public class ModFluids {
             new Identifier(${mod.class}.MOD_ID, "flowing_${mod.fluid.$%v}"),
             new ${mod.fluid.$%v^class}Fluid.Flowing());
     public static final Block ${mod.fluid.$%v^upper}_FLUID_BLOCK = Registry.register(Registries.BLOCK,
-            new Identifier(${mod.class}.MOD_ID, "${mod.fluid.$%v}_block"),
-            new FluidBlock(ModFluids.STILL_${mod.fluid.$%v^upper}, FabricBlockSettings.copyOf(${mod.fluid.$%v.copyblock})));
+            new Identifier(${mod.class}.MOD_ID, "${mod.fluid.$%v}"),
+            new FluidBlock(ModFluids.STILL_${mod.fluid.$%v^upper}, FabricBlockSettings.copyOf(${mod.fluid.$%v.copyblock})
+			.replaceable().liquid()));
 ---if mod.fluid.$%v.bucketable
     public static final Item ${mod.fluid.$%v^upper}_BUCKET = Registry.register(Registries.ITEM,
             new Identifier(${mod.class}.MOD_ID, "${mod.fluid.$%v}_bucket"),

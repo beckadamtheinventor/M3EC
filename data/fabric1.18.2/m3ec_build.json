@@ -2,22 +2,24 @@
   "modloader": "fabric",
   "minecraftVersion": "1.18.2",
   "javaVersion": "17.",
+  "implementedFeatures": {
+	"block": true,
+	"item": true,
+	"fuel": true,
+	"food": true,
+	"recipe": true,
+	"ore": true,
+	"tool": true,
+	"armor": true,
+	"toolmaterial": true,
+	"armormaterial": true
+  },
   "firstActions": [
 	{
 		"action": "setdictkey",
 		"key": "version_past_1.19.3",
 		"value": false
-	},
-    {
-      "if": "?mod.registry.enchantment.names #length nonzero",
-      "action": "print",
-      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": "?mod.registry.sapling.names #length nonzero",
-      "action": "print",
-      "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
-    }
+	}
   ],
   "preActions": [
     {

@@ -2,6 +2,12 @@
   "modloader": "forge",
   "minecraftVersion": "1.18.1",
   "javaVersion": "17.",
+  "implementedFeatures": {
+	"block": true,
+	"item": true,
+	"fuel": true,
+	"recipe": true
+  },
   "firstActions": [
 	{
 		"action": "setdictkey",
@@ -11,33 +17,7 @@
 	{
 	  "action": "print",
 	  "string": "[!] Building for Forge 1.18.1 is currently *very* broken [!]"
-	},
-    {
-      "if": [
-        "^OR",
-        "?mod.registry.armor.names #length nonzero",
-        "?mod.registry.armormaterial.names #length nonzero"
-      ],
-      "action": "print",
-      "string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": [
-        "?mod.registry.food.names #length nonzero"
-      ],
-      "action": "print",
-      "string": "Food is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": "?mod.registry.enchantment.names #length nonzero",
-      "action": "print",
-      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": "?mod.registry.sapling.names #length nonzero",
-      "action": "print",
-      "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
-    }
+	}
   ],
   "preActions": [
     {

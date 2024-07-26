@@ -65,19 +65,18 @@ mod:
 #---------------------------------------------------
 # block/item tags
 #---------------------------------------------------
-# note: tag names will be automatically prefixed
-# with the mod id. The following syntax is due to
+# note: The following syntax is due to
 # keys not being able to contain colon (':') characters.
 
 # define tag lists
-+.itemtags: ruby_ores
-+.blocktags: ruby_ore_blocks
++.itemtags: c/ruby_ores
++.blocktags: c/ruby_ore_blocks
 
 # add to tag lists
-+ruby_ores: ${mod.mcpath}:ruby_ore
-+ruby_ores: ${mod.mcpath}:deepslate_ruby_ore
-+ruby_ore_blocks: ${mod.mcpath}:ruby_ore
-+ruby_ore_blocks: ${mod.mcpath}:deepslate_ruby_ore
++c/ruby_ores: item+block:${mod.mcpath}:ruby_ore
++c/ruby_ores: item+block:${mod.mcpath}:deepslate_ruby_ore
++c/ruby_ore_blocks: item+block:${mod.mcpath}:ruby_ore
++c/ruby_ore_blocks: item+block:${mod.mcpath}:deepslate_ruby_ore
 
 #---------------------------------------------------
 # action scripting (advanced usage)

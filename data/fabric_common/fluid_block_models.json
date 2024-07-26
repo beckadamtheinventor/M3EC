@@ -1,0 +1,46 @@
+[{
+	"iterate": "mod.registry.fluid.names",
+	"action": "execactions",
+	"actions": [
+		{
+			"action": "setkey",
+			"key": "fluidname",
+			"value": "${%v}"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/common/blockstates/Fluid.m3ecjson",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/blockstates/${fluidname}.json"
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/common/block_models/Fluid.m3ecjson",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/models/block/${fluidname}.json"
+		},
+		{
+			"action": "copy",
+			"source": "${project_path}/textures/${mod.fluid.${fluidname}.texture}_still.png",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/block/${mod.fluid.${fluidname}.texture}_still.png"
+		},
+		{
+			"action": "copy",
+			"source": "${project_path}/textures/${mod.fluid.${fluidname}.texture}_still.png.mcmeta",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/block/${mod.fluid.${fluidname}.texture}_still.png.mcmeta"
+		},
+		{
+			"action": "copy",
+			"source": "${project_path}/textures/${mod.fluid.${fluidname}.texture}_flowing.png",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/block/${mod.fluid.${fluidname}.texture}_flowing.png"
+		},
+		{
+			"action": "copy",
+			"source": "${project_path}/textures/${mod.fluid.${fluidname}.texture}_flowing.png.mcmeta",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/block/${mod.fluid.${fluidname}.texture}_flowing.png.mcmeta"
+		},
+		{
+			"action": "setkey",
+			"key": "mod.fluid.${fluidname}.color",
+			"value": "0x${mod.fluid.${fluidname}.color^substring(6,8)}${mod.fluid.${fluidname}.color^substring(4,6)}${mod.fluid.${fluidname}.color^substring(2,4)}"
+		}
+	]
+}]

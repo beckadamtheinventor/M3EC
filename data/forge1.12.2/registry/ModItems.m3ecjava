@@ -16,17 +16,17 @@ public class ModItems {
 
     // Items
 ---iter mod.registry.item.names
-	public static final RegistryObject<Item> ${mod.item.$%v.uppercased} = ITEMS.register("$%v", () -> new Item(new Item.Properties().group(${mod.class}.TAB)));
+	public static final RegistryObject<Item> ${mod.item.$%v^upper} = ITEMS.register("$%v", () -> new Item(new Item.Properties().group(${mod.class}.TAB)));
 ---end
 
 /*	// Food
 ---iter mod.registry.food.names
-	public static final RegistryObject<Item> ${mod.item.$%v.uppercased} = ITEMS.register("$%v", ${mod.item.$%v.class}::new);
+	public static final RegistryObject<Item> ${mod.item.$%v^upper} = ITEMS.register("$%v", ${mod.item.$%v.class}::new);
 ---end
 */
 
     // Block Items
 ---iter mod.registry.blockitem.names
-	public static final RegistryObject<Item> ${mod.item.$%v.uppercased} = ITEMS.register("$%v", () -> new BlockItem(ModBlocks.${mod.item.$%v.class}.get(), new Item.Properties().group(${mod.class}.TAB))::new);
+	public static final RegistryObject<Item> ${mod.item.$%v^upper} = ITEMS.register("$%v", () -> new BlockItem(ModBlocks.${mod.item.$%v.class}.get(), new Item.Properties().group(${mod.class}.TAB))::new);
 ---end
 }

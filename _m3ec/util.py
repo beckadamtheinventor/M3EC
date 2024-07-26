@@ -10,7 +10,8 @@ def ImageOperation(d, img, op):
 		if type(op) is list:
 			o = op[0]
 			if o == "alpha_composite":
-				return img.alpha_composite(Image.open(os.path.join(d["project_path"], op[1])))
+				img.alpha_composite(Image.open(os.path.join(d["project_path"], op[1])))
+				return img
 			elif o == "rotate":
 				return img.rotate(int(op[1]))
 			elif o == "blend":
@@ -123,15 +124,22 @@ def getDictKeyLen(d, key):
 			return len(d[key.lower()])
 	return 0
 
+def checkValueTrue(s):
+	if type(s) is str:
+		if s.lower() in ["true", "yes", "1"]:
+			return True
+		elif s.lower() in ["false", "no", "0"]:
+			return False
+	elif type(s) is list or type(s) is tuple:
+		return len(s) > 0
+	elif type(s) is dict:
+		return len(s.keys()) > 0
+	return s
+
 def checkDictKeyTrue(d, key):
 	key = key.lower()
 	if key in d.keys():
-		if type(d[key]) is str:
-			if d[key].lower() in ["true", "yes", "1"]:
-				return True
-			elif d[key].lower() in ["false", "no", "0"]:
-				return False
-		return d[key]
+		return checkValueTrue(d[key])
 	return False
 
 def checkConditionString(condition, d):
@@ -330,7 +338,55 @@ def readDictString(data, d=None, f=None, md=None):
 		for line in data.splitlines():
 			if line.startswith("@gameversion ") or line.startswith("@version "):
 				hasversionselector = True
-				if md["gameversion"] != line.split(" ", maxsplit=1)[1].lower():
+				gameversion = md["gameversion"].split(".")
+				checkverstr = line.split(" ", maxsplit=1)[1]
+				checkver = checkverstr.lstrip("<>= \t").split(".")
+				deltaver = [int(checkver[i])-int(gameversion[i]) for i in range(min(len(gameversion), len(checkver)))]
+				if len(deltaver) < 3:
+					deltaver += [0] * (3 - len(deltaver))
+				if checkverstr.startswith(">="):
+					isver = False
+					if deltaver[0] > 0:
+						isver = True
+					elif deltaver[0] == 0:
+						if deltaver[1] > 0:
+							isver = True
+						elif deltaver[1] == 0:
+							if deltaver[2] >= 0:
+								isver = True
+				elif checkverstr.startswith(">"):
+					isver = False
+					if deltaver[0] > 0:
+						isver = True
+					elif deltaver[0] == 0:
+						if deltaver[1] > 0:
+							isver = True
+						elif deltaver[1] == 0:
+							if deltaver[2] > 0:
+								isver = True
+				elif checkverstr.startswith("<="):
+					isver = False
+					if deltaver[0] < 0:
+						isver = True
+					elif deltaver[0] == 0:
+						if deltaver[1] < 0:
+							isver = True
+						elif deltaver[1] == 0:
+							if deltaver[2] <= 0:
+								isver = True
+				elif checkverstr.startswith("<"):
+					isver = False
+					if deltaver[0] < 0:
+						isver = True
+					elif deltaver[0] == 0:
+						if deltaver[1] < 0:
+							isver = True
+						elif deltaver[1] == 0:
+							if deltaver[2] < 0:
+								isver = True
+				else:
+					isver = all([v==0 for v in deltaver])
+				if isver:
 					isthisapplicable = False
 			if line.startswith("@modloader ") or line.startswith("@loader "):
 				hasversionselector = True
@@ -880,7 +936,7 @@ def readf(data, d):
 						elif fn.lower() == "class":
 							w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
 						elif fn.lower() == "bool":
-							w = "true" if w else "false"
+							w = "true" if checkValueTrue(w) else "false"
 						elif fn.lower() == "float":
 							if type(w) is str:
 								if not w.endswith("f"):

@@ -2,38 +2,19 @@
   "modloader": "forge",
   "minecraftVersion": "1.17.1",
   "javaVersion": "16.",
+  "implementedFeatures": {
+	"block": true,
+	"item": true,
+	"fuel": true,
+	"recipe": true,
+	"ore": true
+  },
   "firstActions": [
 	{
 		"action": "setdictkey",
 		"key": "version_past_1.19.3",
 		"value": false
-	},
-    {
-      "if": [
-        "^OR",
-        "?mod.registry.armor.names #length nonzero",
-        "?mod.registry.armormaterial.names #length nonzero"
-      ],
-      "action": "print",
-      "string": "Armor is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": [
-        "?mod.registry.food.names #length nonzero"
-      ],
-      "action": "print",
-      "string": "Food is not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": "?mod.registry.enchantment.names #length nonzero",
-      "action": "print",
-      "string": "Enchantments are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build."
-    },
-    {
-      "if": "?mod.registry.sapling.names #length nonzero",
-      "action": "print",
-      "string": "Custom saplings are not yet implemented for ${modloader} ${gameversion} and will be skipped in this build"
-    }
+	}
   ],
   "preActions": [
     {

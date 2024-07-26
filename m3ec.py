@@ -376,6 +376,26 @@ def build_mod(modloader, version, modenv, manifest_dict):
 
 	WRITTEN_FILES_LIST.clear()
 
+	try:
+		with open(os.path.join(source_path, f"{modloader}{version}", "m3ec_build.json")) as f:
+			versionbuilder = json.load(f)
+	except FileNotFoundError:
+		print(f"Warning: {modloader} {version} is not yet implemented; skipping build.")
+		return False
+
+	if "implementedFeatures" in versionbuilder.keys():
+		impl = versionbuilder["implementedFeatures"]
+		missing_features = False
+		for content_type in content_types_list:
+			if len(manifest_dict[f"mod.registry.{content_type}.names"]):
+				if content_type not in impl:
+					if not missing_features:
+						print(f"-----------------------------------------------\n   [!] Content Type Build Warnings [!]\n-----------------------------------------------")
+					print(f"\nContent type {content_type} may not be fully implemented if at all for {modloader} {version}\n  {content_type} content will most likely not be present in the build.")
+					missing_features = True
+		if missing_features:
+			print(f"\n-----------------------------------------------\n   End of Content Type Build Warnings\n-----------------------------------------------\n")
+
 	for file in manifest_dict["preexecactions"]:
 		file = readf(file, manifest_dict)
 		try:
@@ -384,13 +404,6 @@ def build_mod(modloader, version, modenv, manifest_dict):
 			execActions(j, manifest_dict)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
-
-	try:
-		with open(os.path.join(source_path, f"{modloader}{version}", "m3ec_build.json")) as f:
-			versionbuilder = json.load(f)
-	except FileNotFoundError:
-		print(f"Warning: {modloader} {version} is not yet implemented; skipping build.")
-		return False
 
 	if "firstActions" in versionbuilder.keys():
 		execActions(versionbuilder["firstActions"], manifest_dict)
