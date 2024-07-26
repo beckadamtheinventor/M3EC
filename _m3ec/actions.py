@@ -63,7 +63,10 @@ def execActions(actions, d):
 				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
-						l = d[readf(l, d).lower()]
+						l = readf(l, d).lower()
+						if l not in d.keys():
+							continue
+						l = d[l]
 					for i in range(len(l)):
 						d["%i"] = i
 						d["%v"] = l[i]
@@ -121,7 +124,10 @@ def execActions(actions, d):
 				d["%a"] = []
 				l = action["iterate"]
 				if type(l) is str:
-					l = d[readf(l, d).lower()]
+					l = readf(l, d).lower()
+					if l not in d.keys():
+						continue
+					l = d[l]
 				for i in range(len(l)):
 					d["%i"] = i
 					d["%v"] = l[i]
@@ -199,7 +205,10 @@ def execActions(actions, d):
 				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
-						l = d[readf(l, d).lower()]
+						l = readf(l, d).lower()
+						if l not in d.keys():
+							continue
+						l = d[l]
 					iterating = True
 				else:
 					l = [None]
@@ -214,7 +223,10 @@ def execActions(actions, d):
 				if "iterate" in ak:
 					l = action["iterate"]
 					if type(l) is str:
-						l = d[readf(l, d).lower()]
+						l = readf(l, d).lower()
+						if l not in d.keys():
+							continue
+						l = d[l]
 					iterating = True
 				else:
 					l = [None]
@@ -320,7 +332,10 @@ def execActions(actions, d):
 					iterating = True
 					l = action["iterate"]
 					if type(l) is str:
-						l = d[readf(l, d).lower()]
+						l = readf(l, d).lower()
+						if l not in d.keys():
+							continue
+						l = d[l]
 				else:
 					iterating = False
 					l = [action["source"]]

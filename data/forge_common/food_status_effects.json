@@ -95,16 +95,30 @@
 								"value": "${chance}f"
 							},
 							{
+								"if": "!version_pre_1.13",
 								"action": "setdictkey",
 								"key": "statusstring",
 								"value": "${statusstring}.effect(() -> new MobEffectInstance(MobEffects.${effect}, ${duration}, ${level}-1), ${chance})\n"
+							},
+							{
+								"if": "version_pre_1.13",
+								"action": "setdictkey",
+								"key": "statusstring",
+								"value": "${statusstring},\n\tnew PotionEffect(Potion.getPotionFromResourceLocation(\"minecraft:${effect^lower}\"), ${duration}, ${level}-1)"
 							}
 						]
 					},
 					{
+						"if": "!version_pre_1.13",
 						"action": "setdictkey",
 						"key": "mod.food.${outer}.statuseffects",
 						"value": "${statusstring}"
+					},
+					{
+						"if": "version_pre_1.13",
+						"action": "setdictkey",
+						"key": "mod.food.${outer}.statuseffects",
+						"value": "new PotionEffect[] {${statusstring^substring(1)}}"
 					}
 				]
 			}

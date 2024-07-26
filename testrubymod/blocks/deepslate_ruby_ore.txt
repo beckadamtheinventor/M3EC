@@ -1,5 +1,5 @@
 # only register this if the game version is 1.17 or newer
-@gamever >= 1.17
+@version >= 1.17
 @:               block
 block:           SimpleBlock
 blockstatetype:  Single

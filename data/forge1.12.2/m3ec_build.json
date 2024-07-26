@@ -26,6 +26,15 @@
       "action": "execactions",
       "file": "${source_path}/forge_common/forge_preactions.json"
     },
+	{
+		"action": "makedir",
+		"value": [
+			"${build_path}/src/main/java/${mod.packagedir}/blocks/custom",
+			"${build_path}/src/main/java/${mod.packagedir}/items/tools",
+			"${build_path}/src/main/java/${mod.packagedir}/items/armor"
+		]
+		
+	},
     {
       "action": "setdictkey",
       "key": "mod.creativemodetab",
@@ -46,30 +55,51 @@
       "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
     },
     {
-      "source": "registry/ModBlocks.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+      "source": "ModCreativeModeTab.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/ModCreativeModeTab.java"
     },
     {
-      "source": "registry/SlabBlock.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/SlabBlock.java"
+      "source": "blocks/ModBlocks.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/ModBlocks.java"
     },
     {
-      "source": "registry/StairBlock.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/StairBlock.java"
+      "source": "blocks/SlabBlock.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/custom/SlabBlock.java"
     },
     {
-      "source": "registry/ModItems.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+      "source": "blocks/StairBlock.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/custom/StairBlock.java"
+    },
+    {
+      "source": "blocks/RotatedPillarBlock.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/custom/RotatedPillarBlock.java"
+    },
+    {
+      "source": "items/ModItems.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/items/ModItems.java"
+    },
+    {
+      "source": "items/ItemBase.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/items/ItemBase.java"
+    },
+    {
+      "source": "items/FoodItem.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/items/FoodItem.java"
     },
     {
       "iterate": "mod.registry.toolmaterial.names",
-      "source": "registry/ToolMaterial.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+      "source": "items/ToolMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/items/tools/${mod.toolmaterial.${%v}.class}.java"
     },
     {
       "iterate": "mod.registry.tool.names",
-      "source": "registry/ToolItem.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+      "source": "items/ToolItem.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/items/tools/${mod.tool.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.armormaterial.names",
+      "source": "items/ArmorMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/items/armor/${mod.armormaterial.${%v}.class}.java"
     }
   ]
 }

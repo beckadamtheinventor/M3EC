@@ -116,11 +116,6 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 	manifest_dict["source_path"] = source_path
 	manifest_dict["texture_templates"] = os.path.join(source_path, "common", "texture_templates")
 
-
-
-	# if "forge1.12.2" in modenv or "1.12.2" in modenv or "all" in modenv or "forge" in modenv:
-		# build_mod("forge", "1.12.2", modenv, manifest_dict.copy())
-
 	reserved_modenv_words = ["build", "buildjar", "runclient", "runserver"]
 
 	mod_builds = {}
@@ -208,6 +203,8 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		for fname in walk(os.path.normpath(os.path.join(manifest_dict["project_path"], path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec") or fname.endswith(".json"):
 				dlist = readDictFile(fname, md=manifest_dict)
+				if type(dlist) is not dict:
+					continue
 				if "@iterate" not in dlist.keys():
 					dlist = {"@iterate": [dlist]}
 				for d in dlist["@iterate"]:
@@ -735,6 +732,14 @@ def build_tags_and_lang(manifest_dict):
 	langdict = manifest_dict["langdict"]
 	tagdict = manifest_dict["tagdict"]
 	blocktagdict = manifest_dict["blocktagdict"]
+
+	if "mod.extralangentries" in manifest_dict:
+		for lang in manifest_dict["mod.extralangentries"]:
+			ldk = f"mod.extralangentries.{lang}"
+			if ldk in manifest_dict.keys():
+				for item in manifest_dict[ldk]:
+					key, value = [s.strip(" \t") for s in item.split(":", maxsplit=1)]
+					langdict[lang][key] = value
 
 	if "mod.itemtags" in manifest_dict:
 		for tag in manifest_dict["mod.itemtags"]:

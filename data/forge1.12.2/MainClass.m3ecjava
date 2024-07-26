@@ -1,12 +1,15 @@
 package ${mod.package};
 
-import ${mod.package}.registry.ModBlocks;
+import ${mod.package}.blocks.*;
+import ${mod.package}.items.*;
 
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 
 @Mod(
 		modid = "${mod.mcpath}",
@@ -17,11 +20,9 @@ import org.apache.logging.log4j.Logger;
 )
 public class ${mod.class} {
 
+	public static final CreativeTabs Tab = new ModCreativeModeTab("${mod.title}");
+
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "${mod.mcpath}";
 
-    public ${mod.class}() {
-        ModBlocks.register();
-        ModItems.register();
-    }
 }

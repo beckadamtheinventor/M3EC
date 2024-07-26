@@ -1,4 +1,4 @@
-package ${mod.package}.blocks;
+package ${mod.package}.blocks.custom;
 
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;

@@ -1,0 +1,5 @@
+package ${mod.package}.util.interfaces;
+
+public interface IsModelLoaded {
+	void registerModels();
+}

@@ -4,6 +4,7 @@
 		"value": "src/main/java/${mod.packagedir}/block"
 	},
 	{
+		"if": "!version_pre_1.13",
 		"action": "makedir",
 		"value": "src/main/java/${mod.packagedir}/item"
 	},
@@ -45,6 +46,7 @@
 		"file": "${source_path}/forge_common/food_status_effects.json"
 	},
     {
+	  "if": "!version_pre_1.13",
       "action": "copyf",
       "source": "${source_path}/forge_common/classes/FoodItem.m3ecjava",
       "dest": "${build_path}/src/main/java/${mod.packagedir}/item/FoodItem.java"

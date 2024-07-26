@@ -1,196 +1,267 @@
 {
-  "modloader": "fabric",
-  "minecraftVersion": "1.20.1",
-  "javaVersion": "17.",
-  "implementedFeatures": {
-	"block": true,
-	"item": true,
-	"fuel": true,
-	"food": true,
-	"recipe": true,
-	"ore": true,
-	"tool": true,
-	"armor": true,
-	"toolmaterial": true,
-	"armormaterial": true
-  },
-  "firstActions": [
-	{
-		"action": "setdictkey",
-		"key": "version_past_1.19.3",
-		"value": true
-	}
-  ],
-  "preActions": [
-    {
-      "action": "makedir",
-      "value": [
-        "src/main/java/${mod.packagedir}/blocks",
-        "src/main/java/${mod.packagedir}/fluids",
-        "src/main/java/${mod.packagedir}/features",
-        "src/main/java/${mod.packagedir}/recipetype",
-        "src/main/resources/assets/minecraft",
-        "src/main/resources/assets/minecraft/textures",
-        "src/main/resources/assets/minecraft/textures/models",
-        "src/main/resources/assets/minecraft/textures/models/armor",
-		"src/main/resources/data",
-		"src/main/resources/data/${mod.mcpath}",
-		"src/main/resources/data/${mod.mcpath}/worldgen",
-		"src/main/resources/data/${mod.mcpath}/worldgen/configured_feature",
-		"src/main/resources/data/${mod.mcpath}/worldgen/placed_feature"
-      ]
-    },
-	{
-		"iterate": "mod.registry.ore.names",
-		"action": "execactions",
-		"actions": [
-			{
-				"action": "setdictkey",
-				"key": "ore",
-				"value": "${%v}"
-			},
-			{
-				"action": "copyf",
-				"source": "${source_path}/${modloader}${gameversion}/json/configured_feature.json",
-				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/configured_feature/${ore}.json"
-			},
-			{
-				"action": "copyf",
-				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
-				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/${ore}.json"
-			},
-			{
-				"if": "exists mod.registry.ore.${%v}.deepslateblockid",
-				"action": "copyf",
-				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
-				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/deepslate_${ore}.json"
-			}
-		]
+	"modloader": "fabric",
+	"minecraftVersion": "1.20.1",
+	"javaVersion": "17.",
+	"implementedFeatures": {
+		"block": true,
+		"item": true,
+		"fuel": true,
+		"food": true,
+		"recipe": true,
+		"ore": true,
+		"fluid": true,
+		"tool": true,
+		"armor": true,
+		"toolmaterial": true,
+		"armormaterial": true
 	},
-	{
-		"if": "!?mod.iconitem #contains .",
-		"action": "setdictkey",
-		"key": "mod.iconitem",
-		"value": "ModItems.${mod.iconitem}"
-	},
-    {
-      "action": "execactions",
-      "file": "${source_path}/common/actions/1.20_and_up_actions.json"
-    },
-    {
-      "action": "execactions",
-      "file": "${source_path}/common/actions/block_mining_requirements.json"
-    },
-    {
-      "iterate": "mod.registry.armormaterial.names",
-      "action": "execactions",
-      "actions": [
-        {
-          "action": "copy",
-          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
-          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
-        },
-        {
-          "action": "copy",
-          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
-          "dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
-        }
-      ]
-    },
-    {
-      "action": "copyf",
-      "source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
-      "dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
-    },
-	{
-		"action": "execactions",
-		"file": "${source_path}/fabric_common/fabric_preactions.json"
-	},
-	{
-		"action": "execactions",
-		"file": "${source_path}/fabric_common/1.19.4_and_up_preactions.json"
-	},
-	{
-		"action": "execactions",
-		"file": "${source_path}/fabric_common/fluid_block_models.json"
-	}
-  ],
-  "postActions": [
-    {
-      "action": "copy",
-      "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item/${mod.iconItem}.png",
-      "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
-    }
-  ],
-  "sources": [
-    {
-      "source": "fabric.mod.m3ecjson",
-      "dest": "src/main/resources/fabric.mod.json"
-    },
-    {
-      "source": "MainClass.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
-    },
-    {
-      "source": "MainClassClient.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/${mod.class}Client.java"
-    },
-    {
-      "source": "registry/ModBlocks.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
-    },
-    {
-      "source": "registry/ModItems.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
-    },
-    {
-      "source": "registry/ModFluids.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/ModFluids.java"
-    },
-    {
-      "iterate": "mod.registry.toolmaterial.names",
-      "source": "../fabric_common/ToolMaterial.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
-    },
-    {
-      "iterate": "mod.registry.tool.names",
-      "source": "registry/ToolItem.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
-    },
-    {
-      "iterate": "mod.registry.armormaterial.names",
-      "source": "registry/ArmorMaterial.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
-    },
-    {
-      "iterate": "mod.registry.recipetype.names",
-      "source": "recipetype/Recipe.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Recipe.java"
-    },
-    {
-      "iterate": "mod.registry.recipetype.names",
-      "source": "recipetype/RecipeBlock.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/blocks/${mod.recipetype.${%v}.BlockClass}.java"
-    },
-    {
-      "iterate": "mod.registry.recipetype.names",
-      "source": "recipetype/RecipeSerializer.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
-    },
-	{
-		"iterate": "mod.registry.fluid.names",
-		"source": "registry/Fluid.m3ecjava",
-		"dest": "src/main/java/${mod.packagedir}/fluids/${mod.fluid.${%v}.class}Fluid.java"
-	},
-	{
-		"iterate": "mod.registry.sapling.names",
-		"source": "registry/SaplingBlock.m3ecjava",
-		"dest": "src/main/java/${mod.packagedir}/blocks/${mod.sapling.${%v}.class}SaplingBlock.java"
-	},
-	{
-		"iterate": "mod.registry.sapling.names",
-		"source": "registry/SaplingGenerator.m3ecjava",
-		"dest": "src/main/java/${mod.packagedir}/features/${mod.sapling.${%v}.class}SaplingGenerator.java"
-	}
-  ]
+	"firstActions": [
+		{
+			"action": "setdictkey",
+			"key": "version_past_1.19.3",
+			"value": true
+		}
+	],
+	"preActions": [
+		{
+			"action": "makedir",
+			"value": [
+				"src/main/java/${mod.packagedir}/blocks",
+				"src/main/java/${mod.packagedir}/fluids",
+				"src/main/java/${mod.packagedir}/features",
+				"src/main/java/${mod.packagedir}/recipetype",
+				"src/main/resources/assets/minecraft",
+				"src/main/resources/assets/minecraft/textures",
+				"src/main/resources/assets/minecraft/textures/models",
+				"src/main/resources/assets/minecraft/textures/models/armor",
+				"src/main/resources/data",
+				"src/main/resources/data/${mod.mcpath}",
+				"src/main/resources/data/${mod.mcpath}/worldgen",
+				"src/main/resources/data/${mod.mcpath}/worldgen/configured_feature",
+				"src/main/resources/data/${mod.mcpath}/worldgen/placed_feature"
+			]
+		},
+		{
+			"iterate": "mod.registry.ore.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "setdictkey",
+					"key": "ore",
+					"value": "${%v}"
+				},
+				{
+					"action": "copyf",
+					"source": "${source_path}/${modloader}${gameversion}/json/configured_feature.json",
+					"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/configured_feature/${ore}.json"
+				},
+				{
+					"action": "copyf",
+					"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+					"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/${ore}.json"
+				},
+				{
+					"if": "exists mod.registry.ore.${%v}.deepslateblockid",
+					"action": "copyf",
+					"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+					"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/deepslate_${ore}.json"
+				}
+			]
+		},
+		{
+			"if": "!?mod.iconitem #contains .",
+			"action": "setdictkey",
+			"key": "mod.iconitem",
+			"value": "ModItems.${mod.iconitem}"
+		},
+		{
+			"action": "execactions",
+			"file": "${source_path}/common/actions/1.20_and_up_actions.json"
+		},
+		{
+			"action": "execactions",
+			"file": "${source_path}/common/actions/block_mining_requirements.json"
+		},
+		{
+			"iterate": "mod.registry.armormaterial.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "copy",
+					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
+					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
+				},
+				{
+					"action": "copy",
+					"source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
+					"dest": "${build_path}/src/main/resources/assets/minecraft/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
+				}
+			]
+		},
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}${gameversion}/ModStairBlock.m3ecjava",
+			"dest": "${build_path}/src/main/java/${mod.packagedir}/blocks/ModStairBlock.java"
+		},
+		{
+			"action": "execactions",
+			"file": "${source_path}/fabric_common/fabric_preactions.json"
+		},
+		{
+			"action": "execactions",
+			"file": "${source_path}/fabric_common/1.19.4_and_up_preactions.json"
+		},
+		{
+			"action": "execactions",
+			"file": "${source_path}/fabric_common/fluid_block_models.json"
+		},
+		{
+			"_comment": "Add extra lang keys for bucketable fluids with names for each language each fluid has listed",
+			"iterate": "mod.registry.fluid.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "setdictkey",
+					"key": "fluid",
+					"value": "${%v}"
+				},
+				{
+					"action": "appenddictkey",
+					"key": "mod.extralangentries.en_us",
+					"value": "item.${mod.mcpath}.${fluid}_bucket:Bucket of ${mod.fluid.${fluid}.title}"
+				},
+				{
+					"if": "?!mod.extralangentries #containskey en_us",
+					"action": "appenddictkey",
+					"key": "mod.extralangentries",
+					"value": "en_us"
+				},
+				{
+					"iterate": "mod.fluid.${fluid}.langs",
+					"action": "execactions",
+					"actions": [
+						{
+							"if": "!mod.extralangentries.${%v}",
+							"action": "setdictkey",
+							"key": "mod.extralangentries.${%v}",
+							"value": {}
+						},
+						{
+							"if": "mod.fluid.${fluid}.${%v}.bucket",
+							"action": "appenddictkey",
+							"key": "mod.extralangentries.${%v}",
+							"value": "item.${mod.mcpath}.${fluid}_bucket:${mod.fluid.${fluid}.${%v}.bucket}"
+						},
+						{
+							"if": "?!mod.extralangentries #containskey ${%v}",
+							"action": "appenddictkey",
+							"key": "mod.extralangentries",
+							"value": "${%v}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"postActions": [
+		{
+			"action": "copy",
+			"source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item/${mod.iconItem}.png",
+			"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+		},
+		{
+			"iterate": "mod.registry.fluid.names",
+			"action": "execactions",
+			"actions": [
+				{
+					"action": "setdictkey",
+					"key": "texture",
+					"value": "${mod.mcpath}:item/${%v}_bucket"
+				},
+				{
+					"if": "mod.fluid.${%v}.bucketable",
+					"action": "copy",
+					"source": "${project_path}/textures/${%v}_bucket.png",
+					"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item/${%v}_bucket.png"
+				},
+				{
+					"if": "mod.fluid.${%v}.bucketable",
+					"action": "copyf",
+					"source": "${source_path}/common/item_models/BucketItem.m3ecjson",
+					"dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/models/item/${%v}_bucket.json"
+				}
+			]
+		}
+	],
+	"sources": [
+		{
+			"source": "fabric.mod.m3ecjson",
+			"dest": "src/main/resources/fabric.mod.json"
+		},
+		{
+			"source": "MainClass.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+		},
+		{
+			"source": "MainClassClient.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/${mod.class}Client.java"
+		},
+		{
+			"source": "registry/ModBlocks.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+		},
+		{
+			"source": "registry/ModItems.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+		},
+		{
+			"source": "registry/ModFluids.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/ModFluids.java"
+		},
+		{
+			"iterate": "mod.registry.toolmaterial.names",
+			"source": "../fabric_common/ToolMaterial.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.tool.names",
+			"source": "registry/ToolItem.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.armormaterial.names",
+			"source": "registry/ArmorMaterial.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/registry/${mod.armormaterial.${%v}.class}.java"
+		},
+		{
+			"iterate": "mod.registry.recipetype.names",
+			"source": "recipetype/Recipe.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Recipe.java"
+		},
+		{
+			"iterate": "mod.registry.recipetype.names",
+			"source": "recipetype/RecipeBlock.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/blocks/${mod.recipetype.${%v}.BlockClass}.java"
+		},
+		{
+			"iterate": "mod.registry.recipetype.names",
+			"source": "recipetype/RecipeSerializer.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
+		},
+		{
+			"iterate": "mod.registry.fluid.names",
+			"source": "registry/Fluid.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/fluids/${mod.fluid.${%v}.class}Fluid.java"
+		},
+		{
+			"iterate": "mod.registry.sapling.names",
+			"source": "registry/SaplingBlock.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/blocks/${mod.sapling.${%v}.class}SaplingBlock.java"
+		},
+		{
+			"iterate": "mod.registry.sapling.names",
+			"source": "registry/SaplingGenerator.m3ecjava",
+			"dest": "src/main/java/${mod.packagedir}/features/${mod.sapling.${%v}.class}SaplingGenerator.java"
+		}
+	]
 }

@@ -153,64 +153,67 @@ def checkConditionString(condition, d):
 			inverted = False
 		if val in d.keys():
 			val = d[val]
+			val2 = None
+			if len(condition) >= 2:
+				val2 = readf(condition[1], d)
 			# print(val, condition)
 			if condition[0] == "#contains":
-				if type(val) is str and condition[1] in val:
+				if type(val) is str and val2 in val:
 					return not inverted
 			elif condition[0] == "#containskey":
-				if type(val) is dict and condition[1] in val.keys():
+				if type(val) is dict and val2 in val.keys():
 					return not inverted
 			elif condition[0] == "#typeis":
-				if condition[1] == "int" and type(val) is int:
+				if val2 == "int" and type(val) is int:
 					return not inverted
-				elif condition[1] == "float" and type(val) is float:
+				elif val2 == "float" and type(val) is float:
 					return not inverted
-				elif condition[1] == "str" and type(val) is str:
+				elif val2 == "str" and type(val) is str:
 					return not inverted
-				elif condition[1] == "list" and type(val) is list:
+				elif val2 == "list" and type(val) is list:
 					return not inverted
-				elif condition[1] == "tuple" and type(val) is tuple:
+				elif val2 == "tuple" and type(val) is tuple:
 					return not inverted
-				elif condition[1] == "dict" and type(val) is dict:
+				elif val2 == "dict" and type(val) is dict:
 					return not inverted
-				elif condition[1] == "number" and (type(val) is int or type(val) is float):
+				elif val2 == "number" and (type(val) is int or type(val) is float):
 					return not inverted
-				elif condition[1] == "iterable" and (type(val) is list or type(val) is tuple):
+				elif val2 == "iterable" and (type(val) is list or type(val) is tuple):
 					return not inverted
-				elif condition[1] == "none" and val is None:
+				elif val2 == "none" and val is None:
 					return not inverted
 			elif condition[0] == "#startswith":
-				if type(val) is str and val.startswith(condition[1]):
+				if type(val) is str and val.startswith(val2):
 					return not inverted
 			elif condition[0] == "#equals":
-				if val == condition[1]:
+				if val == val2:
 					return not inverted
 			elif condition[0] == "#endswith":
-				if type(val) is str and val.endswith(condition[1]):
+				if type(val) is str and val.endswith(val2):
 					return not inverted
 			elif condition[0] == "#length":
 				if type(val) is str or type(val) is list or type(val) is tuple:
-					if condition[1] == "nonzero" and len(val) > 0:
+					if val2 == "nonzero" and len(val) > 0:
 						return not inverted
-					elif condition[1] == "zero" and len(val) <= 0:
+					elif val2 == "zero" and len(val) <= 0:
 						return not inverted
 			elif condition[0] == ">":
-				if toNumber(val, default=0) > toNumber(condition[1], default=0):
+				if toNumber(val, default=0) > toNumber(val2, default=0):
 					return not inverted
 			elif condition[0] == "<":
-				if toNumber(val, default=0) < toNumber(condition[1], default=0):
+				if toNumber(val, default=0) < toNumber(val2, default=0):
 					return not inverted
 			elif condition[0] == ">=":
-				if toNumber(val, default=0) >= toNumber(condition[1], default=0):
+				if toNumber(val, default=0) >= toNumber(val2, default=0):
 					return not inverted
 			elif condition[0] == "<=":
-				if toNumber(val, default=0) <= toNumber(condition[1], default=0):
+				if toNumber(val, default=0) <= toNumber(val2, default=0):
 					return not inverted
 			elif condition[0] == "==":
-				if toNumber(val, default=0) == toNumber(condition[1], default=0):
+				if toNumber(val, default=0) == toNumber(val2, default=0):
 					return not inverted
 			elif condition[0] == "!=":
-				if toNumber(val, default=0) != toNumber(condition[1], default=0):
+				if toNumber(val, default=0) != toNumber(val2, default=0):
 					return not inverted
 		return inverted
 
@@ -342,6 +345,7 @@ def readDictString(data, d=None, f=None, md=None):
 				checkverstr = line.split(" ", maxsplit=1)[1]
 				checkver = checkverstr.lstrip("<>= \t").split(".")
 				deltaver = [int(checkver[i])-int(gameversion[i]) for i in range(min(len(gameversion), len(checkver)))]
+				# print(gameversion, checkverstr, checkver, deltaver)
 				if len(deltaver) < 3:
 					deltaver += [0] * (3 - len(deltaver))
 				if checkverstr.startswith(">="):
@@ -394,8 +398,7 @@ def readDictString(data, d=None, f=None, md=None):
 					isthisapplicable = False
 
 		if hasversionselector and not isthisapplicable:
-			print(f"File {f} was not applicable to this modloader/version, skipping it")
-			return False
+			return None
 
 	if d is None:
 		d = {}

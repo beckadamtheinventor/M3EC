@@ -1,0 +1,13 @@
+package ${mod.package}.items;
+
+import ${mod.package}.${mod.class};
+import net.minecraft.item.Item;
+
+public class ItemBase extends Item {
+	public ItemBase(String name) {
+		this.setTranslationKey(name);
+		this.setRegistryName(name);
+		this.setCreativeTab(${mod.class}.Tab);
+	}
+
+}

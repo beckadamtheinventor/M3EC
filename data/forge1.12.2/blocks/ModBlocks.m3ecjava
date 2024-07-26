@@ -1,0 +1,30 @@
+package ${mod.package}.blocks;
+
+import ${mod.package}.${mod.class};
+
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+public class ModBlocks {
+
+    // Blocks
+---iter mod.registry.block.names
+	public static final Block ${mod.block.$%v.uppercased} = new ${mod.block.$%v.blockclass}(Material.${mod.block.$%v.material})
+		.setRegistryName(${mod.class}.MOD_ID, "$%v")
+---if mod.block.$%v.lightlevel
+		.setLightLevel(${mod.block.$%v.lightlevel})---fi
+		.setHardness(${mod.block.$%v.hardness})
+		.setResistance(${mod.block.$%v.resistance});
+---end
+
+	public static void register() {
+---iter mod.registry.block.names
+		${mod.block.$%v.uppercased}.setHarvestLevel("${mod.block.$%v.toolclass^lower}", ${mod.block.$%v.toollevel});
+---end
+---iter mod.registry.block.names
+		ForgeRegistries.BLOCKS.register(${mod.block.$%v.uppercased});
+---end
+	}
+
+}

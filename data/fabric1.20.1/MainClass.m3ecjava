@@ -90,7 +90,7 @@ public class ${mod.class} implements ModInitializer {
 				entries.add(ModItems.${mod.sapling.$%v^upper});---end
 ---iter mod.registry.fluid.names
 ---if1 mod.fluid.$%v.bucketable
-				entries.add(ModFluids.${mod.fluid.$%v^upper}_BUCKET);---1fi---end
+				entries.add(ModItems.${mod.fluid.$%v^upper}_BUCKET);---1fi---end
 			})
 		   .build()
 		);---fi

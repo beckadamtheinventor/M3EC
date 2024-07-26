@@ -1,0 +1,22 @@
+package ${mod.package}.items;
+
+import ${mod.package}.${mod.class};
+import net.minecraft.item.*;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+
+public class ModItems {
+
+    // Items
+---iter mod.registry.item.names
+	public static final Item ${$%v^upper} = new ItemBase("$%v");
+---end
+
+	// Food
+---iter mod.registry.food.names
+	public static final Item ${$%v^upper} = new FoodItem("$%v", ${mod.food.$%v.hunger}, ${mod.food.$%v.saturation},---if mod.food.$%v.iswolffood
+true---fi---if !mod.food.$%v.iswolffood
+false---fi---if mod.food.$%v.statuseffects
+, ${mod.food.$%v.statuseffects}---fi);
+---end
+}
