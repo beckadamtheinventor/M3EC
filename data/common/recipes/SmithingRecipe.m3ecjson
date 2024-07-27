@@ -1,3 +1,26 @@
+---if1 version_past_1.20
+{
+  "type": "minecraft:smithing_transform",
+	"template": {
+---if2 template
+---if ?template #startswith #
+		"tag": "${template^substring(1)}"---fi---if ?!template #startswith #
+        "item": "${template}"---fi---2fi
+	},
+	"base": {
+---if ?ingredient #startswith #
+		"tag": "${ingredient^substring(1)}"---fi---if ?!ingredient #startswith #
+        "item": "${ingredient}"---fi
+	},
+	"addition": {
+---if ${ingredient2} #startswith #
+		"tag": "${ingredient2^substring(1)}"---fi---if !${ingredient2} #startswith #
+        "item": "${ingredient2}"---fi
+	},
+  "result": {
+	"item": "${result}"
+  }
+}---1fi---if1 !version_past_1.20
 {
 	"type": "minecraft:smithing",
 	"base": {
@@ -13,4 +36,4 @@
 	"result": {
 		"item": "${result}"
 	}
-}
+}---1fi

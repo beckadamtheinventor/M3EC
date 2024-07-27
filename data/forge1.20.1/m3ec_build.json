@@ -17,6 +17,11 @@
 		"action": "setdictkey",
 		"key": "version_past_1.19.3",
 		"value": true
+	},
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.20",
+		"value": true
 	}
   ],
   "preActions": [
