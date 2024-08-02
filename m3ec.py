@@ -799,6 +799,8 @@ def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
 			tex, ext = os.path.splitext(manifest_dict[f"mod.{content_type}.{cid}.texture{side}"])
 			copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
 			manifest_dict[f"texture{side}"] = texture_pathify(manifest_dict, tex, content_type, cid)
+			if os.path.exists(os.path.join(project_tex_path, tex)+".png.mcmeta"):
+				copy_file(os.path.join(project_tex_path, tex)+".png.mcmeta", os.path.join(dest_dir, os.path.basename(tex))+".png.mcmeta")
 
 
 if __name__=='__main__':
