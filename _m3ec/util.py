@@ -938,6 +938,9 @@ def readf(data, d):
 							w = w.title()
 						elif fn.lower() == "class":
 							w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
+						elif fn.lower() == "camel":
+							w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
+							w = w[0].lower() + w[1:]
 						elif fn.lower() == "bool":
 							w = "true" if checkValueTrue(w) else "false"
 						elif fn.lower() == "str":

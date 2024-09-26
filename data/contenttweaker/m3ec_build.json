@@ -1,0 +1,31 @@
+{
+	"modloader": "contenttweaker",
+	"minecraftVersion": "1.12.2",
+	"javaVersion": "8.",
+	"implementedFeatures": {
+		"block": true,
+		"item": true,
+		"food": true
+	},
+	"build.custom_build_resources_step": true,
+	"firstActions": [
+		{
+			"action": "makedir",
+			"value": [
+				"scripts",
+				"resources"
+			]
+		}
+	],
+	"preActions": [],
+	"resourceActions": [
+		{
+			"action": "copyf",
+			"source": "${source_path}/${modloader}/scripts/blocks.zs",
+			"dest": "${build_path}/scripts/blocks.zs"
+		}
+	],
+	"postActions": [],
+	"finalActions": [],
+	"sources": []
+}

@@ -512,7 +512,7 @@ def build_mod(modloader, version, modenv, mdc):
 	return True
 
 def build_resources(project_path, builddir, mdc):
-	if getDictValF(mdc, "build.only_build_actions", False):
+	if getDictValF(mdc, "build.custom_build_resources_step", False):
 		return
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 	src = os.path.join(source_path, builddir, "gradle")
