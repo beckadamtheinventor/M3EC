@@ -59,6 +59,9 @@ mod:
 # mod item to be displayed on the mod's creative tab, uppercased
 .iconItem: RUBY
 
+# image to be used for the mod icon
+.icon: textures/ruby.png
+
 .+langs: fr_fr
 .fr_fr: Tester Module Ruby
 

@@ -18,7 +18,9 @@
         "item": "${ingredient2}"---fi
 	},
   "result": {
-	"item": "${result}"
+ ---if !version_past_1.21
+	"item": "${result}"---fi---if version_past_1.21
+	"id": "${result}"---fi
   }
 }---1fi---if1 !version_past_1.20
 {
@@ -34,6 +36,8 @@
         "item": "${ingredient2}"---fi
 	},
 	"result": {
-		"item": "${result}"
+ ---if !version_past_1.21
+	"item": "${result}"---fi---if version_past_1.21
+	"id": "${result}"---fi
 	}
 }---1fi

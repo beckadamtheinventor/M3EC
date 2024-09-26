@@ -3,12 +3,23 @@
 		"comment": "This file copies mining requirements from all registered blocks into the tag json files required for said mining requirements in MC versions 1.18.1 and up."
 	},
 	{
+		"if": "!version_past_1.21",
 		"action": "makedir",
 		"value": [
 			"src/main/resources/data/minecraft",
 			"src/main/resources/data/minecraft/tags",
 			"src/main/resources/data/minecraft/tags/blocks",
 			"src/main/resources/data/minecraft/tags/blocks/mineable"
+		]
+	},
+	{
+		"if": "version_past_1.21",
+		"action": "makedir",
+		"value": [
+			"src/main/resources/data/minecraft",
+			"src/main/resources/data/minecraft/tags",
+			"src/main/resources/data/minecraft/tags/block",
+			"src/main/resources/data/minecraft/tags/block/mineable"
 		]
 	},
 	{
@@ -62,15 +73,55 @@
 		]
 	},
 	{
-		"iterate": ["axe", "pickaxe", "shovel", "hoe"],
-		"action": "copyf",
-		"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
-		"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/mineable/${%v}.json"
+		"if": "!version_past_1.21",
+		"action": "execactions",
+		"actions": [
+			{
+				"iterate": ["axe", "pickaxe", "shovel", "hoe"],
+				"action": "copyf",
+				"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
+				"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/mineable/${%v}.json"
+			},
+			{
+				"if": "!version_past_1.21",
+				"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
+				"action": "copyf",
+				"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
+				"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/requires_${%v}_tool.json"
+			},
+			{
+				"if": "version_past_1.21",
+				"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
+				"action": "copyf",
+				"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
+				"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/needs_${%v}_tool.json"
+			}
+		]
 	},
 	{
-		"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
-		"action": "copyf",
-		"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
-		"dest": "${build_path}/src/main/resources/data/minecraft/tags/blocks/requires_${%v}_tool.json"
+		"if": "version_past_1.21",
+		"action": "execactions",
+		"actions": [
+			{
+				"iterate": ["axe", "pickaxe", "shovel", "hoe"],
+				"action": "copyf",
+				"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
+				"dest": "${build_path}/src/main/resources/data/minecraft/tags/block/mineable/${%v}.json"
+			},
+			{
+				"if": "!version_past_1.21",
+				"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
+				"action": "copyf",
+				"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
+				"dest": "${build_path}/src/main/resources/data/minecraft/tags/block/requires_${%v}_tool.json"
+			},
+			{
+				"if": "version_past_1.21",
+				"iterate": ["wood", "stone", "iron", "diamond", "netherite"],
+				"action": "copyf",
+				"source": "${source_path}/common/actions/requires_tool/requires_${%v}.m3ecjson",
+				"dest": "${build_path}/src/main/resources/data/minecraft/tags/block/needs_${%v}_tool.json"
+			}
+		]
 	}
 ]

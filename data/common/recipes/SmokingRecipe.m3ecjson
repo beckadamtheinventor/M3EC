@@ -5,7 +5,11 @@
 		"tag": "${ingredient^substring(1)}"---fi---if ?!ingredient #startswith #
         "item": "${ingredient}"---fi
 	},
-    "result": "${result}",
+---if !version_past_1.21
+    "result": "${result}",---fi---if version_past_1.21
+	"result": {
+		"id": "${result}"
+	},---fi
     "experience": ${experience},
     "cookingtime": ${time}
 }

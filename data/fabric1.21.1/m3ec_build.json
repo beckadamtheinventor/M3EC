@@ -1,0 +1,225 @@
+{
+  "modloader": "fabric",
+  "minecraftVersion": "1.21",
+  "javaVersion": "21.",
+  "implementedFeatures": {
+	"block": true,
+	"item": true,
+	"fuel": true,
+	"food": true,
+	"fluid": false,
+	"recipe": true,
+	"ore": true,
+	"tool": true,
+	"armor": true,
+	"toolmaterial": true,
+	"armormaterial": true
+  },
+  "asset_paths.block.model": "${build_path}/src/main/resources/assets/${mod.mcpath}/model/block",
+  "asset_paths.item.model": "${build_path}/src/main/resources/assets/${mod.mcpath}/model/item",
+  "asset_paths.block.state": "${build_path}/src/main/resources/assets/${mod.mcpath}/blockstates",
+  "asset_paths.block.texture": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/block",
+  "asset_paths.item.texture": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item",
+  "build_paths.data.loot_table": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table",
+  "build_paths.data.loot_table.block": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/block",
+  "build_paths.data.recipe": "${build_path}/src/main/resources/data/${mod.mcpath}/recipe",
+  "build_paths.data.loot_table.chest": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/chest",
+  "build_paths.data.loot_table.entity": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/entity",
+  "build_paths.data.loot_table.gameplay": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/gameplay",
+  "build_paths.data.tag.block": "${build_path}/src/main/resources/data/${mod.mcpath}/tag/block",
+  "build_paths.data.tag.item": "${build_path}/src/main/resources/data/${mod.mcpath}/tag/item",
+  "firstActions": [
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.19.3",
+		"value": true
+	},
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.20",
+		"value": true
+	},
+	{
+		"action": "setdictkey",
+		"key": "version_past_1.21",
+		"value": true
+	},
+	{
+		"_comment": "Hack to use different gradle wrapper for java 21",
+		"action": "setdictkey",
+		"key": "build.gradlewrapper",
+		"value": "${source_path}/gradle21"
+	}
+  ],
+  "preActions": [
+    {
+      "action": "makedir",
+      "value": [
+        "src/main/java/${mod.packagedir}/blocks",
+        "src/main/java/${mod.packagedir}/fluids",
+        "src/main/java/${mod.packagedir}/features",
+        "src/main/java/${mod.packagedir}/recipetype",
+        "src/main/resources/assets/${mod.mcpath}/textures",
+        "src/main/resources/assets/${mod.mcpath}/textures/models",
+        "src/main/resources/assets/${mod.mcpath}/textures/models/armor",
+		"src/main/resources/data",
+		"src/main/resources/data/${mod.mcpath}",
+		"src/main/resources/data/${mod.mcpath}/worldgen",
+		"src/main/resources/data/${mod.mcpath}/worldgen/configured_feature",
+		"src/main/resources/data/${mod.mcpath}/worldgen/placed_feature"
+      ]
+    },
+	{
+		"iterate": "mod.registry.ore.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "setdictkey",
+				"key": "ore",
+				"value": "${%v}"
+			},
+			{
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/configured_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/configured_feature/${ore}.json"
+			},
+			{
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/${ore}.json"
+			},
+			{
+				"if": "exists mod.registry.ore.${%v}.deepslateblockid",
+				"action": "copyf",
+				"source": "${source_path}/${modloader}${gameversion}/json/placed_feature.json",
+				"dest": "${build_path}/src/main/resources/data/${mod.mcpath}/worldgen/placed_feature/deepslate_${ore}.json"
+			}
+		]
+	},
+	{
+		"if": "!?mod.iconitem #contains .",
+		"action": "setdictkey",
+		"key": "mod.iconitem",
+		"value": "ModItems.${mod.iconitem}"
+	},
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/1.20_and_up_actions.json"
+    },
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/block_mining_requirements.json"
+    },
+    {
+      "iterate": "mod.registry.armormaterial.names",
+      "action": "execactions",
+      "actions": [
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_1}",
+          "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_1.png"
+        },
+        {
+          "action": "copy",
+          "source": "${project_path}/${mod.textures}/${mod.armormaterial.${%v}.texture_layer_2}",
+          "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/models/armor/${mod.armormaterial.${%v}.name}_layer_2.png"
+        }
+      ]
+    },
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/fabric_preactions.json"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/1.19.4_and_up_preactions.json"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/1.21.1_and_up_preactions.json"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/fabric_common/fluid_block_models.json"
+	},
+	{
+		"action": "execactions",
+		"file": "${source_path}/common/actions/fluid_lang_tags.json"
+	}
+  ],
+  "postActions": [
+    {
+	  "if": "!mod.icon",
+      "action": "copy",
+      "source": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item/${mod.iconItem}.png",
+      "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+    },
+    {
+	  "if": "mod.icon",
+      "action": "copy",
+      "source": "${project_path}/${mod.icon}",
+      "dest": "${build_path}/src/main/resources/assets/${mod.mcpath}/icon.png"
+    }
+  ],
+  "sources": [
+    {
+      "source": "fabric.mod.m3ecjson",
+      "dest": "src/main/resources/fabric.mod.json"
+    },
+    {
+      "source": "MainClass.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
+    },
+    {
+      "source": "registry/ModBlocks.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModBlocks.java"
+    },
+    {
+      "source": "registry/ModItems.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModItems.java"
+    },
+    {
+      "source": "registry/ModArmorMaterials.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/ModArmorMaterials.java"
+    },
+    {
+      "source": "registry/FoodItem.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/FoodItem.java"
+    },
+    {
+      "iterate": "mod.registry.toolmaterial.names",
+      "source": "registry/ToolMaterial.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.toolmaterial.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.tool.names",
+      "source": "registry/ToolItem.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/registry/${mod.tool.${%v}.class}.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/Recipe.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Recipe.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/RecipeBlock.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/blocks/${mod.recipetype.${%v}.BlockClass}.java"
+    },
+    {
+      "iterate": "mod.registry.recipetype.names",
+      "source": "recipetype/RecipeSerializer.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/recipetype/${mod.recipetype.${%v}.class}Serializer.java"
+    },
+	{
+		"iterate": "mod.registry.sapling.names",
+		"source": "registry/SaplingBlock.m3ecjava",
+		"dest": "src/main/java/${mod.packagedir}/blocks/${mod.sapling.${%v}.class}SaplingBlock.java"
+	},
+	{
+		"iterate": "mod.registry.sapling.names",
+		"source": "registry/SaplingGenerator.m3ecjava",
+		"dest": "src/main/java/${mod.packagedir}/features/${mod.sapling.${%v}.class}SaplingGenerator.java"
+	}
+  ]
+}

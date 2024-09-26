@@ -9,6 +9,9 @@ title:
 # if you want it to be animated, you will need to create a (texture)_still.png.mcmeta and (texture)_flowing.png.mcmeta
 texture:
 
+# Overlay texture for the fluid. Comment out if not applicable.
+#overlaytexture:
+
 # whether the fluid should have a bucket
 bucketable: true
 
@@ -31,5 +34,17 @@ isinfinite: false
 
 # Hex color of fluid.
 # 2 digits for each Red, Green, Blue
-# Alpha is required but ignored in practice
 color: 0x808080
+
+# Light level emitted by the fluid.
+# 0-15
+luminance: 0
+
+# Should the fluid block vision?
+blockvision: true
+
+# Should the fluid suffocate the player when inside?
+suffocates: true
+
+# Player velocity multiplier when in the fluid.
+velocitymultiplier: 0.5

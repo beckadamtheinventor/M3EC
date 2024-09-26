@@ -1,0 +1,39 @@
+
+package ${mod.package}.registry;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.component.type.ToolComponent;
+import net.minecraft.item.Items;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
+
+public class ${%v} implements ToolMaterial {
+	public static final ${%v} INSTANCE = new ${%v}();
+	@Override
+	public int getDurability() {
+		return ${mod.toolmaterial.${%v}.durability};
+	}
+	@Override
+	public float getMiningSpeedMultiplier() {
+		return ${mod.toolmaterial.${%v}.miningspeed};
+	}
+	@Override
+	public float getAttackDamage() {
+		return ${mod.toolmaterial.${%v}.attackdamage};
+	}
+	@Override
+	public int getEnchantability() {
+		return ${mod.toolmaterial.${%v}.enchantability};
+	}
+	@Override
+	public Ingredient getRepairIngredient() {
+		return Ingredient.ofItems(${mod.toolmaterial.${%v}.repairitem});
+	}
+	@Override
+	public TagKey<Block> getInverseTag() {
+		return ${mod.toolmaterial.${%v}.inversetoolleveltags};
+	}
+}

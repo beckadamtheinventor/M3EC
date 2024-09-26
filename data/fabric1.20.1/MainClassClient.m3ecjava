@@ -19,7 +19,9 @@ public class ${mod.class}Client implements ClientModInitializer {
                 new SimpleFluidRenderHandler(
                         new Identifier(${mod.class}.MOD_ID, "block/${mod.fluid.$%v.texture}_still"),
                         new Identifier(${mod.class}.MOD_ID, "block/${mod.fluid.$%v.texture}_flowing"),
-
+---if mod.fluid.$%v.overlaytexture
+                        new Identifier(${mod.class}.MOD_ID, "block/${mod.fluid.$%v.overlaytexture}"),
+---fi
 						${mod.fluid.$%v.color}));
 
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(),

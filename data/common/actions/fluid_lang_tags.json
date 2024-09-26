@@ -1,0 +1,47 @@
+{
+	"_comment": "Add extra lang keys for bucketable fluids with names for each language each fluid has listed",
+	"iterate": "mod.registry.fluid.names",
+	"action": "execactions",
+	"actions": [
+		{
+			"action": "setdictkey",
+			"key": "fluid",
+			"value": "${%v}"
+		},
+		{
+			"action": "appenddictkey",
+			"key": "mod.extralangentries.en_us",
+			"value": "item.${mod.mcpath}.${fluid}_bucket:Bucket of ${mod.fluid.${fluid}.title}"
+		},
+		{
+			"if": "?!mod.extralangentries #containskey en_us",
+			"action": "appenddictkey",
+			"key": "mod.extralangentries",
+			"value": "en_us"
+		},
+		{
+			"iterate": "mod.fluid.${fluid}.langs",
+			"action": "execactions",
+			"actions": [
+				{
+					"if": "!mod.extralangentries.${%v}",
+					"action": "setdictkey",
+					"key": "mod.extralangentries.${%v}",
+					"value": {}
+				},
+				{
+					"if": "mod.fluid.${fluid}.${%v}.bucket",
+					"action": "appenddictkey",
+					"key": "mod.extralangentries.${%v}",
+					"value": "item.${mod.mcpath}.${fluid}_bucket:${mod.fluid.${fluid}.${%v}.bucket}"
+				},
+				{
+					"if": "?!mod.extralangentries #containskey ${%v}",
+					"action": "appenddictkey",
+					"key": "mod.extralangentries",
+					"value": "${%v}"
+				}
+			]
+		}
+	]
+}

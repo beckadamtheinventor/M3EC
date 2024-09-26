@@ -90,9 +90,9 @@ def walk(path):
 
 def _walk(path):
 	for root,dirs,files in os.walk(path):
-		for dname in dirs:
-			for fname in walk(os.path.join(root, dname)):
-				yield fname
+		# for dname in dirs:
+			# for fname in walk(os.path.join(root, dname)):
+				# yield fname
 		for fname in files:
 			yield os.path.join(root, fname)
 
@@ -104,13 +104,22 @@ def listDir(path):
 			yield os.path.join(root, fname)
 		break
 
-def getDictVal(d, k, fname):
+def getDictVal(d, k, fname=None, default=None):
 	if k in d.keys():
 		return d[k]
 	elif type(k) is str and k.lower() in d.keys():
 		return d[k.lower()]
-	else:
+	elif default is None:
 		print(f"Missing \"{k}\" in file \"{fname}\"!")
+	return default
+
+def getDictValF(d, k, default=None):
+	if type(k) is str:
+		k = readf(k, d)
+	v = getDictVal(d, k, None, default)
+	if type(v) is str:
+		v = readf(v, d)
+	return v
 
 def joinDicts(a, b):
 	c = a.copy()
@@ -500,15 +509,6 @@ def readDictString(data, d=None, f=None, md=None):
 	# print('--------------------------------\n', d)
 	return d
 
-
-def getDictVal(d, k, fname=None):
-	try:
-		return d[k]
-	except KeyError:
-		if fname is not None:
-			print(f"Missing key \"{k}\" in file \"{fname}\"!")
-		else:
-			print(f"Missing key \"{k}\"")
 
 def writeDictFile(fname, d):
 	# print(fname)
@@ -940,6 +940,8 @@ def readf(data, d):
 							w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
 						elif fn.lower() == "bool":
 							w = "true" if checkValueTrue(w) else "false"
+						elif fn.lower() == "str":
+							w = str(w)
 						elif fn.lower() == "float":
 							if type(w) is str:
 								if not w.endswith("f"):

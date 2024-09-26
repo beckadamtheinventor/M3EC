@@ -284,7 +284,11 @@ def execActions(actions, d):
 					if (fname.startswith(d["project_path"]) or fname.startswith(d["source_path"])) and dname.startswith(d["project_path"]):
 						if a == "copy":
 							if os.path.isdir(fname):
-								shutil.copytree(fname, dname)
+								for fn in walk(fname):
+									dn = os.path.join(dname, os.path.relpath(fn, fname))
+									with open(fn, "rb") as f:
+										with open(dn, "wb") as f2:
+											f2.write(f.read())
 							else:
 								shutil.copy(fname, dname)
 						elif a == "move":
@@ -360,7 +364,9 @@ def execActions(actions, d):
 								with open(fn) as f:
 									d["%a"] = readf(f.read(), d)
 								if os.path.isdir(fname):
-									dn = os.path.join(dname, os.path.basename(fn))
+									dn = os.path.join(dname, os.path.relpath(fn, fname))
+									if not os.path.exists(os.path.dirname(dn)):
+										make_dirs(os.path.dirname(dn))
 								else:
 									dn = dname
 								try:
@@ -368,7 +374,7 @@ def execActions(actions, d):
 										f.write(d["%a"])
 									# WRITTEN_FILES_LIST.append(dname)
 								except:
-									pass
+									print(f"Failed to open file \"{dn}\"")
 								if a == "movef":
 									if fn.startswith(d["project_path"]):
 										os.remove(fn)
@@ -423,6 +429,28 @@ def execActions(actions, d):
 						# WRITTEN_FILES_LIST.append(fname)
 				else:
 					actionWarning("attempted to write to a file outside of the project directory", d)
+
+		elif a == "read":
+			if "src" in ak or "file" in ak:
+				if "src" in ak:
+					fname = action["src"]
+				if "file" in ak:
+					fname = action["file"]
+				fname = readf(fname, d)
+				if fname.startswith(d["project_path"]) or fname.startswith(d["source_path"]):
+					with open(fname) as f:
+						if "json" in ak and action["json"]:
+							if "var" in ak:
+								d[action["var"]] = json.load(f)
+							else:
+								d["%a"] = json.load(f)
+						else:
+							if "var" in ak:
+								d[action["var"]] = f.read()
+							else:
+								d["%a"] = f.read()
+				else:
+					actionAccessWarning(fname, d)
 
 		elif a in ("makedir", "make_dir"):
 			if type(action["value"]) is list:

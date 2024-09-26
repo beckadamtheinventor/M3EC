@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod.mcpath}",
+  "version": "${version}",
+
+  "name": "${mod.title}",
+  "description": "${mod.description}",
+  "authors": [
+    "${mod.author}"
+  ],
+  "contact": {
+    "homepage": "${mod.homepage}",
+    "sources": "${mod.sources}"
+  },
+
+  "license": "${mod.license}",
+ ---if mod.icon
+  "icon": "assets/${mod.mcpath}/icon.png",---fi
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "${mod.package}.${mod.class}"
+    ]
+  },
+"mixins": [],
+	"depends": {
+		"fabricloader": ">=0.16.2",
+		"minecraft": "~1.21.1",
+		"fabric-api": "*",
+	---iter mod.depends
+	"$%v": "${$%v.version}",---end
+	"java": ">=21"
+	},
+	"suggests": {}
+}

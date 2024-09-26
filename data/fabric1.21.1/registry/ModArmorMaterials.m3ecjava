@@ -1,0 +1,59 @@
+package ${mod.package}.registry;
+
+import ${mod.package}.${mod.class};
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+
+public class ModArmorMaterials {
+
+---iter mod.registry.armormaterial.names
+	public static final int ${mod.armormaterial.$%v^upper}_DURABILITY = ${mod.armormaterial.$%v.durability^int};
+	public static final RegistryEntry<ArmorMaterial> ${mod.armormaterial.$%v^upper} = registerMaterial("${mod.armormaterial.$%v.name}",
+		Map.of(
+			ArmorItem.Type.HELMET, ${mod.armormaterial.$%v.protection.helmet^int},
+			ArmorItem.Type.CHESTPLATE, ${mod.armormaterial.$%v.protection.chestplate^int},
+			ArmorItem.Type.LEGGINGS, ${mod.armormaterial.$%v.protection.leggings^int},
+			ArmorItem.Type.BOOTS, ${mod.armormaterial.$%v.protection.boots^int}
+		),
+		${mod.armormaterial.$%v.enchantability^int},
+		SoundEvents.${mod.armormaterial.$%v.sound},
+		() -> Ingredient.ofItems(${mod.armormaterial.$%v.repairitem}),
+		${mod.armormaterial.$%v.toughness^float},
+		${mod.armormaterial.$%v.knockbackresistance^float},
+---if mod.armormaterial.$%v.dyeable
+		${mod.armormaterial.$%v.dyeable^bool}---fi---if !mod.armormaterial.$%v.dyeable
+		false---fi
+	);---end
+
+	public static RegistryEntry<ArmorMaterial> registerMaterial(String id, Map<ArmorItem.Type, Integer> defensePoints, int enchantability, RegistryEntry<SoundEvent> equipSound, Supplier<Ingredient> repairIngredientSupplier, float toughness, float knockbackResistance, boolean dyeable) {
+		// Get the supported layers for the armor material
+		List<ArmorMaterial.Layer> layers = List.of(
+			// The ID of the texture layer, the suffix, and whether the layer is dyeable.
+			// We can just pass the armor material ID as the texture layer ID.
+			// We have no need for a suffix, so we'll pass an empty string.
+			// We'll pass the dyeable boolean we received as the dyeable parameter.
+			new ArmorMaterial.Layer(Identifier.of(${mod.class}.MOD_ID, id), "", dyeable)
+		);
+
+		ArmorMaterial material = new ArmorMaterial(defensePoints, enchantability, equipSound, repairIngredientSupplier, layers, toughness, knockbackResistance);
+		// Register the material within the ArmorMaterials registry.
+		material = Registry.register(Registries.ARMOR_MATERIAL, Identifier.of(${mod.class}.MOD_ID, id), material);
+
+		// The majority of the time, you'll want the RegistryEntry of the material - especially for the ArmorItem constructor.
+		return RegistryEntry.of(material);
+	}
+	
+	public static void Register() {
+	}
+}

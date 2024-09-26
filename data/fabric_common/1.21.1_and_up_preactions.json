@@ -1,0 +1,37 @@
+[
+	{
+		"iterate": "mod.registry.block.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"if": "?mod.block.${%v}.blockclass #equals ModStairBlock",
+				"action": "setdictkey",
+				"key": "mod.block.${%v}.blockclass",
+				"value": "StairsBlock"
+			}
+		]
+	},
+	{
+		"iterate": "mod.registry.toolmaterial.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "getdictkey",
+				"key": "${mod.toolmaterial.${%v}.mininglevel^str}",
+				"dict": {
+					"0": "BlockTags.INCORRECT_FOR_STONE_TOOL",
+					"WOOD": "BlockTags.INCORRECT_FOR_STONE_TOOL",
+					"1": "BlockTags.INCORRECT_FOR_IRON_TOOL",
+					"STONE": "BlockTags.INCORRECT_FOR_IRON_TOOL",
+					"2": "BlockTags.INCORRECT_FOR_DIAMOND_TOOL",
+					"IRON": "BlockTags.INCORRECT_FOR_DIAMOND_TOOL",
+					"3": "BlockTags.INCORRECT_FOR_NETHERITE_TOOL",
+					"DIAMOND": "BlockTags.INCORRECT_FOR_NETHERITE_TOOL",
+					"4": "null",
+					"NETHERITE": "null"
+				},
+				"var": "mod.toolmaterial.${%v}.inversetoolleveltags"
+			}
+		]
+	}
+]

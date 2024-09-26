@@ -1,0 +1,19 @@
+modLoader="javafml"
+loaderVersion="[49,)"
+license="${mod.license}"
+[[mods]]
+modId="${mod.mcpath}"
+version="${file.jarVersion}"
+displayName="${mod.title}"
+# A URL for the "homepage" for this mod, displayed in the mod UI
+displayURL="${mod.homepage}"
+logoFile="icon.png"
+credits="${mod.credits}"
+authors="${mod.author}"
+description='''${mod.description}'''
+[[dependencies.${mod.mcpath}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.4,1.20.5)"
+    ordering="NONE"
+    side="BOTH"

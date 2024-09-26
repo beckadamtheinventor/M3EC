@@ -2,7 +2,9 @@
 fluid: SimpleFluid
 contentid: molten_ruby
 title: Molten Ruby
-texture: molten_ruby.png
+texture: molten
+
+
 
 # whether the fluid can be picked up with a bucket
 # and has a corresponding bucket item
@@ -26,5 +28,18 @@ flowspeed: 4
 isinfinite: false
 
 # Hex color of fluid.
-# 2 digits for each Red, Green, Blue, Alpha
-color: 0xE02020D0
+# 2 digits for each Red, Green, Blue
+color: 0xE02020
+
+# Light level emitted by the fluid.
+# 0-15
+luminance: 12
+
+# Should the fluid block vision?
+blockvision: true
+
+# Should the fluid suffocate the player when inside?
+suffocates: true
+
+# Player velocity multiplier when in the fluid.
+velocitymultiplier: 0.5

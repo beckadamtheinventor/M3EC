@@ -64,9 +64,9 @@ def build(project_path, modenv):
 	if not os.path.isdir(project_path):
 		project_path = os.path.dirname(project_path)
 
-	manifest_dict = readDictFile(manifest_file)
-	manifest_dict["manifest_file"] = manifest_file
-	manifest_dict["project_path"] = os.path.abspath(project_path)
+	mdc = readDictFile(manifest_file)
+	mdc["manifest_file"] = manifest_file
+	mdc["project_path"] = os.path.abspath(project_path)
 
 	try:
 		fname = os.path.join(source_path, "mc", "blocks.json")
@@ -76,45 +76,45 @@ def build(project_path, modenv):
 			blockid = block["name"]
 			for key in block.keys():
 				if key != blockid:
-					manifest_dict[f"mc.{blockid}.{key}"] = block[key]
+					mdc[f"mc.{blockid}.{key}"] = block[key]
 	except FileNotFoundError:
 		print(f"Warning: data file \"{fname}\" not found!")
 
-	prefix, modauthor, modclass = (getDictVal(manifest_dict, k, manifest_file) for k in \
+	prefix, modauthor, modclass = (getDictVal(mdc, k, manifest_file) for k in \
 		["mod.prefix", "mod.author", "mod.class"])
 
-	if "mod.package" not in manifest_dict:
-		manifest_dict["mod.package"] = f"{prefix}.{modauthor}.{modclass}".lower()
-	if "mod.mcpath" not in manifest_dict:
-		manifest_dict["mod.mcpath"] = modclass.lower()
+	if "mod.package" not in mdc:
+		mdc["mod.package"] = f"{prefix}.{modauthor}.{modclass}".lower()
+	if "mod.mcpath" not in mdc:
+		mdc["mod.mcpath"] = modclass.lower()
 
-	manifest_dict["mod.maven_group"] = f"{prefix}.{modauthor}".lower()
+	mdc["mod.maven_group"] = f"{prefix}.{modauthor}".lower()
 
 
-	modpath = manifest_dict["mod.package"]
-	modmcpath = manifest_dict["mod.mcpath"]
-	modmcpathdir = 	manifest_dict["mod.packagedir"] = os.path.join(prefix, modauthor, modclass).lower()
+	modpath = mdc["mod.package"]
+	modmcpath = mdc["mod.mcpath"]
+	modmcpathdir = 	mdc["mod.packagedir"] = os.path.join(prefix, modauthor, modclass).lower()
 
 	for k in ["credits", "description"]:
-		if f"mod.{k}" not in manifest_dict.keys():
-			manifest_dict[f"mod.{k}"] = ""
+		if f"mod.{k}" not in mdc.keys():
+			mdc[f"mod.{k}"] = ""
 
-	if "mod.license" not in manifest_dict.keys():
+	if "mod.license" not in mdc.keys():
 		print("--------------------WARNING---------------------\nMod license defaulting to \"All Rights Reserved\".\n\
 Please specify your mod's license in its manifest file to avoid licensing confusion.\n\
 Check the list of common licenses from https://choosealicense.com/ and choose the one that best fits your needs.\n\
 ------------------------------------------------\n")
-		manifest_dict["mod.license"] = "All Rights Reserved"
+		mdc["mod.license"] = "All Rights Reserved"
 
-	if "mod.iconitem" not in manifest_dict.keys():
+	if "mod.iconitem" not in mdc.keys():
 		print("Warning: Icon item for custom creative tab unspecified. Defaulting to none.")
 
-	manifest_dict["default_source_path"] = source_path = os.path.join(os.path.dirname(__file__), "data")
-	if "mod.sourcepath" in manifest_dict.keys():
-		source_path = manifest_dict["mod.sourcepath"]
+	mdc["default_source_path"] = source_path = os.path.join(os.path.dirname(__file__), "data")
+	if "mod.sourcepath" in mdc.keys():
+		source_path = mdc["mod.sourcepath"]
 
-	manifest_dict["source_path"] = source_path
-	manifest_dict["texture_templates"] = os.path.join(source_path, "common", "texture_templates")
+	mdc["source_path"] = source_path
+	mdc["texture_templates"] = os.path.join(source_path, "common", "texture_templates")
 
 	reserved_modenv_words = ["build", "buildjar", "runclient", "runserver"]
 
@@ -139,7 +139,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 
 	for loader, version in mod_builds.values():
 		if os.path.isdir(os.path.join(source_path, loader+version)):
-			build_mod(loader, version, modenv, manifest_dict.copy())
+			build_mod(loader, version, modenv, mdc.copy())
 		else:
 			print(f"Failed to find build config for target \"{loader}\" version \"{version}\"")
 
@@ -147,7 +147,7 @@ Check the list of common licenses from https://choosealicense.com/ and choose th
 		print("No valid build targets specified.")
 
 
-def build_mod(modloader, version, modenv, manifest_dict):
+def build_mod(modloader, version, modenv, mdc):
 	content_types_list = ["item", "food", "fuel", "block", "fluid", "ore", "recipe", "armor", "tool",
 		"armormaterial", "toolmaterial", "enchantment", "recipetype", "sapling"]
 	print(f"\n\
@@ -155,54 +155,54 @@ def build_mod(modloader, version, modenv, manifest_dict):
 -----------------------------------------------\n\
    Building {modloader} {version} mod project\n")
 
-	manifest_dict["modloader"] = modloader
-	manifest_dict["gameversion"] = gameversion = version
+	mdc["modloader"] = modloader
+	mdc["gameversion"] = gameversion = version
 	try:
-		_, manifest_dict["gameversion.major"], manifest_dict["gameversion.minor"] = (int(v) for v in version.split(".", maxsplit=2))
+		_, mdc["gameversion.major"], mdc["gameversion.minor"] = (int(v) for v in version.split(".", maxsplit=2))
 	except ValueError:
-		_, manifest_dict["gameversion.major"] = (int(v) for v in version.split(".", maxsplit=1))
-		manifest_dict["gameversion.minor"] = 0
-	source_path = manifest_dict["source_path"]
-	project_path = manifest_dict["project_path"]
-	build_path = manifest_dict["build_path"] = os.path.join(project_path, f"build/{modloader}{version}")
+		_, mdc["gameversion.major"] = (int(v) for v in version.split(".", maxsplit=1))
+		mdc["gameversion.minor"] = 0
+	source_path = mdc["source_path"]
+	project_path = mdc["project_path"]
+	build_path = mdc["build_path"] = os.path.join(project_path, f"build/{modloader}{version}")
 	make_dirs(build_path)
 
 	# TODO: build stuff that needs to be in MainClass.java here
 
-	# if "mod.ItemGroups.java" not in manifest_dict:
-		# manifest_dict["mod.ItemGroups.java"] = ""
-	# if "mod.ExtraOnInitialize.java" not in manifest_dict:
-		# manifest_dict["mod.ExtraOnInitialize.java"] = ""
+	# if "mod.ItemGroups.java" not in mdc:
+		# mdc["mod.ItemGroups.java"] = ""
+	# if "mod.ExtraOnInitialize.java" not in mdc:
+		# mdc["mod.ExtraOnInitialize.java"] = ""
 
-	manifest_dict["mod.content_types"] = content_types_list
+	mdc["mod.content_types"] = content_types_list
 	for content_type in content_types_list:
-		manifest_dict[f"mod.registry.{content_type}.names"] = []
+		mdc[f"mod.registry.{content_type}.names"] = []
 
-	manifest_dict[f"mod.registry.blockitem.names"] = []
-	manifest_dict["mod.customclasses"] = []
-	manifest_dict["mod.registry.classes"] = []
-	manifest_dict[f"mod.files"] = {}
+	mdc[f"mod.registry.blockitem.names"] = []
+	mdc["mod.customclasses"] = []
+	mdc["mod.registry.classes"] = []
+	mdc[f"mod.files"] = {}
 
 	for a in ["first", "pre", "resource", "post", "final"]:
-		if f"{a}execactions" not in manifest_dict.keys():
-			manifest_dict[f"{a}execactions"] = []
+		if f"{a}execactions" not in mdc.keys():
+			mdc[f"{a}execactions"] = []
 
-	for file in manifest_dict["firstexecactions"]:
-		manifest_dict["curdir"] = manifest_dict["project_path"]
-		file = readf(file, manifest_dict)
+	for file in mdc["firstexecactions"]:
+		mdc["curdir"] = mdc["project_path"]
+		file = readf(file, mdc)
 		try:
-			with open(os.path.join(manifest_dict["curdir"], file)) as f:
+			with open(os.path.join(mdc["curdir"], file)) as f:
 				j = json.load(f)
-			execActions(j, manifest_dict)
+			execActions(j, mdc)
 		except FileNotFoundError as e:
 			print(f"Warning: file \"{file}\" listed in firstexecactions does not exist.")
 
-	manifest_dict["curdir"] = manifest_dict["project_path"]
+	mdc["curdir"] = mdc["project_path"]
 
-	for path in manifest_dict["mod.paths"]:
-		for fname in walk(os.path.normpath(os.path.join(manifest_dict["project_path"], path))):
+	for path in mdc["mod.paths"]:
+		for fname in walk(os.path.normpath(os.path.join(mdc["project_path"], path))):
 			if fname.endswith(".txt") or fname.endswith(".m3ec") or fname.endswith(".json"):
-				dlist = readDictFile(fname, md=manifest_dict)
+				dlist = readDictFile(fname, md=mdc)
 				if type(dlist) is not dict:
 					continue
 				if "@iterate" not in dlist.keys():
@@ -216,13 +216,13 @@ def build_mod(modloader, version, modenv, manifest_dict):
 								d2["modloaders"] = d["modloaders"]
 							if "gameversions" in d.keys():
 								d2["gameversions"] = d["gameversions"]
-							manifest_dict["mod.customclasses"].append(d2)
-							manifest_dict["mod.registry.classes"].append(d["class"])
+							mdc["mod.customclasses"].append(d2)
+							mdc["mod.registry.classes"].append(d["class"])
 							continue
 						elif content_type == "itemfactory":
 							for cid in d["items"]:
 								dictinst = {"item":d["type"], "title":" ".join([w.capitalize() for w in cid.split("_")]), "texture":cid+".png"}
-								add_content(cid, "item", dictinst, manifest_dict, fname)
+								add_content(cid, "item", dictinst, mdc, fname)
 							continue
 						if "contentid" not in d.keys():
 							if "cid" in d.keys():
@@ -235,7 +235,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 								cid = d["contentid"]
 							else:
 								cid = os.path.splitext(os.path.split(fname)[-1])[0]
-							add_content(cid, content_type, d, manifest_dict, fname)
+							add_content(cid, content_type, d, mdc, fname)
 						else:
 							if "contentid" in d.keys():
 								cid = d["contentid"]
@@ -245,50 +245,50 @@ def build_mod(modloader, version, modenv, manifest_dict):
 									if "blockclass" not in d.keys():
 										d["blockclass"] = "Block"
 								# print(f"adding {content_type} {cid}")
-								add_content(cid, content_type, d, manifest_dict, fname)
+								add_content(cid, content_type, d, mdc, fname)
 							copied_d = d.copy()
 							if content_type == "block":
-								midcid = manifest_dict["mod.mcpath"]+":"+cid
+								midcid = mdc["mod.mcpath"]+":"+cid
 
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall"):
+								if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.wall"):
 									copied_d["title"] = d["title"]+" Wall"
 									copied_d["drops"] = copied_d["contentid"] = cid+"_wall"
 									copied_d["droptype"] = "Self"
 									copied_d["blockstatetype"] = "Wall"
 									copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
 									copied_d["blockclass"] = "WallBlock"
-									add_content(cid+"_wall", content_type, copied_d, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.recipe"):
+									add_content(cid+"_wall", content_type, copied_d, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.wall.recipe"):
 										add_content(cid+"_wall", "recipe", {
 											"@": "recipe", "recipe": "ShapedRecipe",
 											"pattern": ['"###"','"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
 											"result": midcid+"_wall", "count": "6",
-										}, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.wall.stonecuttingrecipe"):
+										}, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.wall.stonecuttingrecipe"):
 										add_content(cid+"_wall_stonecutter", "recipe", {
 											"@": "recipe", "recipe": "StoneCuttingRecipe",
 											"ingredient": midcid, "result": midcid+"_wall", "count": "1",
-										}, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab"):
+										}, mdc)
+								if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.slab"):
 									copied_d["title"] = d["title"]+" Slab"
 									copied_d["drops"] = copied_d["contentid"] = cid+"_slab"
 									copied_d["droptype"] = "Slab"
 									copied_d["blockstatetype"] = "Slab"
 									copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
 									copied_d["blockclass"] = "SlabBlock"
-									add_content(cid+"_slab", content_type, copied_d, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
+									add_content(cid+"_slab", content_type, copied_d, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.slab.recipe"):
 										add_content(cid+"_slab", "recipe", {
 											"@": "recipe", "recipe": "ShapedRecipe",
 											"pattern": ['"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
 											"result": midcid+"_slab", "count": "6",
-										}, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.slab.stonecuttingrecipe"):
+										}, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.slab.stonecuttingrecipe"):
 										add_content(cid+"_slab_stonecutter", "recipe", {
 											"@": "recipe", "recipe": "StoneCuttingRecipe",
 											"ingredient": midcid, "result": midcid+"_slab", "count": "2",
-										}, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs"):
+										}, mdc)
+								if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.stairs"):
 									copied_d["title"] = d["title"]+" Stairs"
 									copied_d["drops"] = copied_d["contentid"] = cid+"_stairs"
 									copied_d["droptype"] = "Self"
@@ -297,58 +297,58 @@ def build_mod(modloader, version, modenv, manifest_dict):
 									copied_d["blockclass"] = "ModStairBlock"
 									copied_d["blockmaterialblock"] = cid
 									copied_d["blockclass.isstair"] = "true"
-									add_content(cid+"_stairs", content_type, copied_d, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
+									add_content(cid+"_stairs", content_type, copied_d, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.stairs.recipe"):
 										add_content(cid+"_stairs", "recipe", {
 											"@": "recipe", "recipe": "ShapedRecipe",
 											"pattern": ['"#  "', '"## "', '"###"'], "items": [midcid], "itemkeys": ["#"],"itemkeys.list.0": "#",
 											"result": midcid+"_stairs", "count": "4",
-										}, manifest_dict)
+										}, mdc)
 										add_content(cid+"_stairs_reversed", "recipe", {
 											"@": "recipe", "recipe": "ShapedRecipe",
 											"pattern": ['"  #"', '" ##"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
 											"result": midcid+"_stairs", "count": "4",
-										}, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.stairs.stonecuttingrecipe"):
+										}, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.stairs.stonecuttingrecipe"):
 										add_content(cid+"_stairs_stonecutter", "recipe", {
 											"@": "recipe", "recipe": "StoneCuttingRecipe",
 											"ingredient": midcid, "result": midcid+"_stairs", "count": "1",
-										}, manifest_dict)
-								if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
+										}, mdc)
+								if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.trapdoor"):
 									copied_d["title"] = d["title"]+" Trapdoor"
 									copied_d["drops"] = copied_d["contentid"] = cid+"_trapdoor"
 									copied_d["droptype"] = "Self"
 									copied_d["blockstatetype"] = "Trapdoor"
 									copied_d["texture_bottom"] = copied_d["texture_top"] = copied_d["texture_side"] = d["texture"]
 									copied_d["blockclass"] = "ModTrapdoorBlock"
-									add_content(cid+"_trapdoor", content_type, copied_d, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
+									add_content(cid+"_trapdoor", content_type, copied_d, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.trapdoor.recipe"):
 										add_content(cid+"_trapdoor", "recipe", {
 											"@": "recipe", "recipe": "ShapedRecipe",
 											"pattern": ['"###"', '"###"'], "items": [midcid], "itemkeys": ["#"], "itemkeys.list.0": "#",
 											"result": midcid+"_trapdoor", "count": "2",
-										}, manifest_dict)
-									if checkDictKeyTrue(manifest_dict, f"mod.{content_type}.{cid}.autogenerate.trapdoor.stonecuttingrecipe"):
+										}, mdc)
+									if checkDictKeyTrue(mdc, f"mod.{content_type}.{cid}.autogenerate.trapdoor.stonecuttingrecipe"):
 										add_content(cid+"_slab_stonecutter", "recipe", {
 											"@": "recipe", "recipe": "StoneCuttingRecipe",
 											"ingredient": midcid, "result": midcid+"_trapdoor", "count": "1",
-										}, manifest_dict)
+										}, mdc)
 					else:
 						print(f"Warning: Skipping file \"{fname}\" due to missing content type.")
 
-		# print(f"{key}: {manifest_dict[key]}")
+		# print(f"{key}: {mdc[key]}")
 
-	if modloader in manifest_dict.keys():
-		for f in manifest_dict[modloader]:
-			readDictFile(f, manifest_dict, manifest_dict)
+	if modloader in mdc.keys():
+		for f in mdc[modloader]:
+			readDictFile(f, mdc, mdc)
 
-	if version in manifest_dict.keys():
-		for f in manifest_dict[version]:
-			readDictFile(f, manifest_dict, manifest_dict)
+	if version in mdc.keys():
+		for f in mdc[version]:
+			readDictFile(f, mdc, mdc)
 
-	if modloader+version in manifest_dict.keys():
-		for f in manifest_dict[modloader+version]:
-			readDictFile(f, manifest_dict, manifest_dict)
+	if modloader+version in mdc.keys():
+		for f in mdc[modloader+version]:
+			readDictFile(f, mdc, mdc)
 
 	# clean up old built files if they exist
 	# if os.path.exists(os.path.join(build_path, "src")):
@@ -384,7 +384,7 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		impl = versionbuilder["implementedFeatures"]
 		missing_features = False
 		for content_type in content_types_list:
-			if len(manifest_dict[f"mod.registry.{content_type}.names"]):
+			if len(mdc[f"mod.registry.{content_type}.names"]):
 				if content_type not in impl:
 					if not missing_features:
 						print(f"-----------------------------------------------\n   [!] Content Type Build Warnings [!]\n-----------------------------------------------")
@@ -393,31 +393,31 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		if missing_features:
 			print(f"\n-----------------------------------------------\n   End of Content Type Build Warnings\n-----------------------------------------------\n")
 
-	for file in manifest_dict["preexecactions"]:
-		file = readf(file, manifest_dict)
+	for file in mdc["preexecactions"]:
+		file = readf(file, mdc)
 		try:
-			with open(os.path.join(manifest_dict["curdir"], file)) as f:
+			with open(os.path.join(mdc["curdir"], file)) as f:
 				j = json.load(f)
-			execActions(j, manifest_dict)
+			execActions(j, mdc)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in preexecactions does not exist.")
 
 	if "firstActions" in versionbuilder.keys():
-		execActions(versionbuilder["firstActions"], manifest_dict)
+		execActions(versionbuilder["firstActions"], mdc)
 
-	build_resources(project_path, f"{modloader}{version}", manifest_dict)
+	build_resources(project_path, f"{modloader}{version}", mdc)
 
-	for file in manifest_dict["resourceexecactions"]:
-		file = readf(file, manifest_dict)
+	for file in mdc["resourceexecactions"]:
+		file = readf(file, mdc)
 		try:
-			with open(os.path.join(manifest_dict["curdir"], file)) as f:
+			with open(os.path.join(mdc["curdir"], file)) as f:
 				j = json.load(f)
-			execActions(j, manifest_dict)
+			execActions(j, mdc)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in resourceexecactions does not exist.")
 
 	if "preActions" in versionbuilder.keys():
-		execActions(versionbuilder["preActions"], manifest_dict)
+		execActions(versionbuilder["preActions"], mdc)
 	
 	if "sources" in versionbuilder.keys():
 		for file in versionbuilder["sources"]:
@@ -427,16 +427,16 @@ def build_mod(modloader, version, modenv, manifest_dict):
 				if file["optional"]:
 					mandatory = False
 			if "iterate" in file.keys():
-				for i in range(len(manifest_dict[file["iterate"]])):
-					manifest_dict["%i"] = i
-					manifest_dict["%v"] = manifest_dict[file["iterate"]][i]
+				for i in range(len(mdc[file["iterate"]])):
+					mdc["%i"] = i
+					mdc["%v"] = mdc[file["iterate"]][i]
 					
-					rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", readf(source, manifest_dict)), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
+					rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", readf(source, mdc)), os.path.join(build_path, readf(dest, mdc)), mdc)
 					if mandatory and not rv:
 						print(f"Error: Failed to read source file \"{modloader}{version}/{source}\"")
 						return False
 			else:
-				rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", readf(source, manifest_dict)), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict)
+				rv = readf_copyfile(os.path.join(source_path, f"{modloader}{version}", readf(source, mdc)), os.path.join(build_path, readf(dest, mdc)), mdc)
 				if mandatory and not rv:
 					print(f"Error: Failed to read source file \"{modloader}{version}/{source}\"")
 					return False
@@ -445,22 +445,22 @@ def build_mod(modloader, version, modenv, manifest_dict):
 		for file in versionbuilder["copy"]:
 			shutil.copy(file["source"], file["dest"])
 
-	if "mod.customclasses" in manifest_dict.keys():
-		for customclass in manifest_dict["mod.customclasses"]:
+	if "mod.customclasses" in mdc.keys():
+		for customclass in mdc["mod.customclasses"]:
 			if "modloaders" in customclass.keys():
 				if modloader not in customclass["modloaders"]:
 					continue
 			if "gameversions" in customclass.keys():
 				if gameversion not in customclass["gameversions"]:
 					continue
-			fname = readf(customclass["file"], manifest_dict)
-			if not readf_copyfile(os.path.join(project_path, fname), os.path.join(build_path, "src", "main", "java", readf(customclass["class"], manifest_dict).replace(".", os.sep)+".java"), manifest_dict):
+			fname = readf(customclass["file"], mdc)
+			if not readf_copyfile(os.path.join(project_path, fname), os.path.join(build_path, "src", "main", "java", readf(customclass["class"], mdc).replace(".", os.sep)+".java"), mdc):
 				print(f"Error: Failed to copy custom class file \"{fname}\"")
 				return False
 
-	if "mod.customfiles" in manifest_dict.keys():
-		# print(manifest_dict["mod.customfiles"])
-		for file in manifest_dict["mod.customfiles"]:
+	if "mod.customfiles" in mdc.keys():
+		# print(mdc["mod.customfiles"])
+		for file in mdc["mod.customfiles"]:
 			# print(file)
 			source, dest = file.split(" ", maxsplit=1)
 			if " " in dest:
@@ -472,303 +472,321 @@ def build_mod(modloader, version, modenv, manifest_dict):
 				if modloader not in ml:
 					continue
 			# print(source, "-->", dest)
-			if not readf_copyfile(os.path.join(project_path, source), os.path.join(build_path, readf(dest, manifest_dict)), manifest_dict):
+			if not readf_copyfile(os.path.join(project_path, source), os.path.join(build_path, readf(dest, mdc)), mdc):
 				print(f"Error: Failed to copy custom file \"{source}\"")
 				return False
-
-	build_tags_and_lang(manifest_dict)
+	
+	if getDictValF(mdc, "build.build_tags_and_lang", True):
+		build_tags_and_lang(mdc)
 
 	if "postActions" in versionbuilder.keys():
-		execActions(versionbuilder["postActions"], manifest_dict)
+		execActions(versionbuilder["postActions"], mdc)
 
-	for file in manifest_dict["postexecactions"]:
-		file = readf(file, manifest_dict)
+	for file in mdc["postexecactions"]:
+		file = readf(file, mdc)
 		try:
-			with open(os.path.join(manifest_dict["curdir"], file)) as f:
+			with open(os.path.join(mdc["curdir"], file)) as f:
 				j = json.load(f)
-			execActions(j, manifest_dict)
+			execActions(j, mdc)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in postexecactions does not exist.")
 
 	if "javaVersion" in versionbuilder.keys():
-		maybe_run_gradle(build_path, modenv, versionbuilder["javaVersion"], manifest_dict)
+		maybe_run_gradle(build_path, modenv, versionbuilder["javaVersion"], mdc)
 
 	if "finalActions" in versionbuilder.keys():
-		execActions(versionbuilder["finalActions"], manifest_dict)
+		execActions(versionbuilder["finalActions"], mdc)
 
 	with open(os.path.join(build_path, "m3ec_cache.json"), "w") as f:
 		json.dump(WRITTEN_FILES_LIST, f)
 
-	for file in manifest_dict["finalexecactions"]:
-		file = readf(file, manifest_dict)
+	for file in mdc["finalexecactions"]:
+		file = readf(file, mdc)
 		try:
-			with open(os.path.join(manifest_dict["curdir"], file)) as f:
+			with open(os.path.join(mdc["curdir"], file)) as f:
 				j = json.load(f)
-			execActions(j, manifest_dict)
+			execActions(j, mdc)
 		except FileNotFoundError:
 			print(f"Warning: file \"{file}\" listed in finalexecactions does not exist.")
 
 	return True
 
-def build_resources(project_path, builddir, manifest_dict):
+def build_resources(project_path, builddir, mdc):
+	if getDictValF(mdc, "build.only_build_actions", False):
+		return
 	source_path = os.path.join(os.path.dirname(__file__), "data")
 	src = os.path.join(source_path, builddir, "gradle")
 	commons_path = os.path.join(source_path, "common")
-	modmcpath = manifest_dict["mod.mcpath"]
+	modmcpath = mdc["mod.mcpath"]
 	sourcesdir = os.path.join(source_path, builddir)
-	dest = builddir = manifest_dict["build_path"]
-	build_java_dir = os.path.join(builddir, "src", "main", "java", manifest_dict["mod.prefix"], manifest_dict["mod.author"], manifest_dict["mod.class"])
-	block_models_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "block")
-	blockstates_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "blockstates")
-	item_models_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "item")
+	dest = builddir = mdc["build_path"]
+	block_models_assets_dir = getDictValF(mdc, "asset_paths.block.model", os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "block"))
+	blockstates_assets_dir = getDictValF(mdc, "asset_paths.block.state", os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "blockstates"))
+	item_models_assets_dir = getDictValF(mdc, "asset_paths.item.model", os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "models", "item"))
 	# because they decided to change pluralization I guess
-	if manifest_dict["version_past_1.19.3"]:
+	if mdc["version_past_1.19.3"]:
 		block_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "block")
 		item_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "item")
 	else:
 		block_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "blocks")
 		item_textures_assets_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "textures", "items")
-	lang_dir = os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "lang")
-	build_data_dir = os.path.join(builddir, "src", "main", "resources", "data")
-	block_loot_table_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks")
-	recipes_dir = os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes")
-	gradlesrc = os.path.join(source_path, "gradle")
 
-	make_dir(dest)
-	make_dir(os.path.join(dest, "gradle"))
-	make_dir(os.path.join(dest, "gradle", "wrapper"))
-	copy_file(os.path.join(gradlesrc, "gradle", "wrapper", "gradle-wrapper.jar"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.jar"))
-	copy_file(os.path.join(gradlesrc, "gradle", "wrapper", "gradle-wrapper.properties"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.properties"))
-	copy_file(os.path.join(gradlesrc, "gradlew"), os.path.join(dest, "gradlew"))
-	copy_file(os.path.join(gradlesrc, "gradlew.bat"), os.path.join(dest, "gradlew.bat"))
-	if os.path.exists(os.path.join(src, "settings.gradle")):
-		copy_file(os.path.join(src, "settings.gradle"), os.path.join(dest, "settings.gradle"))
-	create_file(os.path.join(dest, "gradle.properties"), readf_file(os.path.join(src, "gradle.properties"), manifest_dict))
-	create_file(os.path.join(dest, "build.gradle"), readf_file(os.path.join(src, "build.gradle"), manifest_dict))
+	block_textures_assets_dir = getDictValF(mdc, "asset_paths.block.texture", block_textures_assets_dir)
+	item_textures_assets_dir = getDictValF(mdc, "asset_paths.item.texture", item_textures_assets_dir)
+	lang_dir = getDictValF(mdc, "asset_paths.lang", os.path.join(builddir, "src", "main", "resources", "assets", modmcpath, "lang"))
+	build_data_dir = getDictValF(mdc, "build_paths.data", os.path.join(builddir, "src", "main", "resources", "data"))
+	
+	loot_table_dir = getDictValF(mdc, "build_paths.data.loot_table", os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables"))
+	recipes_dir = getDictValF(mdc, "build_paths.data.recipe", os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes"))
+	block_loot_table_dir = getDictValF(mdc, "build_paths.data.loot_table.block", os.path.join(loot_table_dir, "blocks"))
 
-	make_dir(os.path.join(dest, "src"))
-	make_dir(os.path.join(dest, "src", "main"))
-	make_dir(os.path.join(dest, "src", "main", "resources"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "blockstates"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "lang"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "block"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "item"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures"))
-	if manifest_dict["version_past_1.19.3"]:
-		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "block"))
-		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "item"))
+	if "build.gradlewrapper" in mdc.keys():
+		gradlesrc = mdc["build.gradlewrapper"]
 	else:
-		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
-		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "items"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "blocks"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "chests"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "entities"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "loot_tables", "gameplay"))
-	make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath, "recipes"))
-	make_dir(os.path.join(dest, "src", "main", "java"))
-	if "mod.icon" in manifest_dict.keys():
-		copy_file(os.path.join(project_path, manifest_dict["mod.icon"]), os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "icon.png"))
+		gradlesrc = os.path.join(source_path, "gradle")
 
-	prefix = manifest_dict["mod.prefix"]
-	modauthor = manifest_dict["mod.author"]
-	modmcpathdir = os.path.join(prefix, modauthor.lower(), manifest_dict["mod.class"].lower())
-	make_dir(os.path.join(dest, "src", "main", "java", prefix))
-	make_dir(os.path.join(dest, "src", "main", "java", prefix, modauthor.lower()))
-	make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir))
-	make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir, "registry"))
+	
+	if getDictValF(mdc, "build.uses_gradle", True):
+		make_dir(dest)
+		make_dir(os.path.join(dest, "gradle"))
+		make_dir(os.path.join(dest, "gradle", "wrapper"))
+		copy_file(os.path.join(gradlesrc, "gradle", "wrapper", "gradle-wrapper.jar"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.jar"))
+		copy_file(os.path.join(gradlesrc, "gradle", "wrapper", "gradle-wrapper.properties"), os.path.join(dest, "gradle", "wrapper", "gradle-wrapper.properties"))
+		copy_file(os.path.join(gradlesrc, "gradlew"), os.path.join(dest, "gradlew"))
+		copy_file(os.path.join(gradlesrc, "gradlew.bat"), os.path.join(dest, "gradlew.bat"))
+		if os.path.exists(os.path.join(src, "settings.gradle")):
+			copy_file(os.path.join(src, "settings.gradle"), os.path.join(dest, "settings.gradle"))
+		create_file(os.path.join(dest, "gradle.properties"), readf_file(os.path.join(src, "gradle.properties"), mdc))
+		create_file(os.path.join(dest, "build.gradle"), readf_file(os.path.join(src, "build.gradle"), mdc))
+
+	if getDictValF(mdc, "build.standard_java_project", True):
+		make_dir(os.path.join(dest, "src"))
+		make_dir(os.path.join(dest, "src", "main"))
+		make_dir(os.path.join(dest, "src", "main", "resources"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "blockstates"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "lang"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "block"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "item"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures"))
+		if mdc["version_past_1.19.3"]:
+			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "block"))
+			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "item"))
+		else:
+			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
+			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "items"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "data"))
+		make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath))
+		make_dir(os.path.join(dest, "src", "main", "java"))
+		if "mod.icon" in mdc.keys():
+			copy_file(os.path.join(project_path, mdc["mod.icon"]), os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "icon.png"))
+
+		prefix = mdc["mod.prefix"]
+		modauthor = mdc["mod.author"]
+		modmcpathdir = os.path.join(prefix, modauthor.lower(), mdc["mod.class"].lower())
+		make_dir(os.path.join(dest, "src", "main", "java", prefix))
+		make_dir(os.path.join(dest, "src", "main", "java", prefix, modauthor.lower()))
+		make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir))
+		make_dir(os.path.join(dest, "src", "main", "java", modmcpathdir, "registry"))
+
+	make_dir(loot_table_dir)
+	make_dir(block_loot_table_dir)
+	make_dir(getDictValF(mdc, "build_paths.data.loot_table.chest", os.path.join(loot_table_dir, "chests")))
+	make_dir(getDictValF(mdc, "build_paths.data.loot_table.entity", os.path.join(loot_table_dir, "entities")))
+	make_dir(getDictValF(mdc, "build_paths.data.loot_table.gameplay", os.path.join(loot_table_dir, "gameplay")))
+	make_dir(recipes_dir)
+
 	langdict = {"en_us":{}}
 	tagdict = {}
 	blocktagdict = {}
-	manifest_dict[f"mod.registry.blockitem.names"].clear()
+	mdc[f"mod.registry.blockitem.names"].clear()
 
 	includedClasses = []
-	for content_type in manifest_dict["mod.content_types"]:
-		for cid in manifest_dict[f"mod.registry.{content_type}.names"]:
-			nscid = manifest_dict["mod.mcpath"]+":"+cid.lower()
-			tname = manifest_dict[f"mod.{content_type}.{cid}.{content_type}"]
+	for content_type in mdc["mod.content_types"]:
+		for cid in mdc[f"mod.registry.{content_type}.names"]:
+			nscid = mdc["mod.mcpath"]+":"+cid.lower()
+			tname = mdc[f"mod.{content_type}.{cid}.{content_type}"]
 			# print(cid, content_type, tname)
-			# print(manifest_dict[f"mod.{content_type}.{cid}.keys"])
-			manifest_dict["contentid"] = manifest_dict["cid"] = cid
-			for key in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
+			# print(mdc[f"mod.{content_type}.{cid}.keys"])
+			mdc["contentid"] = mdc["cid"] = cid
+			for key in mdc[f"mod.{content_type}.{cid}.keys"]:
 				k = f"mod.{content_type}.{cid}.{key}"
-				if k in manifest_dict.keys():
-					manifest_dict[key] = manifest_dict[k]
+				if k in mdc.keys():
+					mdc[key] = mdc[k]
 			
-			if "texture" in manifest_dict.keys():
-				if "." in manifest_dict["texture"]:
-					manifest_dict["texture"], ext = os.path.splitext(manifest_dict["texture"])
+			if "texture" in mdc.keys():
+				if "." in mdc["texture"]:
+					mdc["texture"], ext = os.path.splitext(mdc["texture"])
 
 			if content_type in ["item", "food", "armor", "tool"]:
-				copy_textures(content_type, cid, manifest_dict, project_path, item_textures_assets_dir)
-				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".m3ecjson"), manifest_dict))
+				copy_textures(content_type, cid, mdc, project_path, item_textures_assets_dir)
+				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", tname+".m3ecjson"), mdc))
 
 			if content_type == "block":
-				manifest_dict[f"mod.registry.blockitem.names"].append(cid)
-				manifest_dict[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
-				copy_textures(content_type, cid, manifest_dict, project_path, block_textures_assets_dir)
-				if "blockstatetype" in manifest_dict.keys():
-					statename = manifest_dict["blockstatetype"]
+				mdc[f"mod.registry.blockitem.names"].append(cid)
+				mdc[f"mod.blockitem.{cid}.uppercased"] = cid.upper()
+				copy_textures(content_type, cid, mdc, project_path, block_textures_assets_dir)
+				if "blockstatetype" in mdc.keys():
+					statename = mdc["blockstatetype"]
 				else:
 					statename = "Single"
-				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.m3ecjson"), manifest_dict))
-				create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".m3ecjson"), manifest_dict))
+				create_file(os.path.join(item_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "item_models", "BlockItem.m3ecjson"), mdc))
+				create_file(os.path.join(blockstates_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "blockstates", statename+".m3ecjson"), mdc))
 				if statename == "3Axis":
-					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_side.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", tname+"_side.m3ecjson"), mdc))
 				elif statename == "Slab":
-					create_file(os.path.join(block_models_assets_dir, cid+"_double.json"), readf_file(os.path.join(commons_path, "block_models", "SimpleBlock.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", statename+".m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_top.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_double.json"), readf_file(os.path.join(commons_path, "block_models", "SimpleBlock.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", statename+".m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_top.m3ecjson"), mdc))
 				elif statename == "Stair":
-					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", "Stair.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_inner.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_inner.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_outer.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_outer.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", "Stair.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_inner.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_inner.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_outer.json"), readf_file(os.path.join(commons_path, "block_models", statename+"_outer.m3ecjson"), mdc))
 				elif statename == "Trapdoor":
-					create_file(os.path.join(block_models_assets_dir, cid+"_bottom.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_bottom.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_open.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_open.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_top.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_bottom.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_bottom.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_open.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_open.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_top.json"), readf_file(os.path.join(commons_path, "block_models", "Trapdoor_top.m3ecjson"), mdc))
 				elif statename == "Wall":
-					create_file(os.path.join(block_models_assets_dir, cid+"_inventory.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_inventory.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_post.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_post.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side.m3ecjson"), manifest_dict))
-					create_file(os.path.join(block_models_assets_dir, cid+"_side_tall.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side_tall.m3ecjson"), manifest_dict))
+					create_file(os.path.join(block_models_assets_dir, cid+"_inventory.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_inventory.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_post.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_post.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_side.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side.m3ecjson"), mdc))
+					create_file(os.path.join(block_models_assets_dir, cid+"_side_tall.json"), readf_file(os.path.join(commons_path, "block_models", "Wall_side_tall.m3ecjson"), mdc))
 				else:
-					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), manifest_dict))
-				dtype = manifest_dict[f"mod.{content_type}.{cid}.droptype"]
+					create_file(os.path.join(block_models_assets_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_models", tname+".m3ecjson"), mdc))
+				dtype = mdc[f"mod.{content_type}.{cid}.droptype"]
 				if dtype.lower() != "none":
-					create_file(os.path.join(block_loot_table_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_loot_tables", dtype+".m3ecjson"), manifest_dict))
-				if "forge" in manifest_dict["modloader"]:
-					if manifest_dict[f"mod.block.{cid}.toolclass"] in ["AXES", "HOES", "PICKAXES", "SHOVELS"]:
-						manifest_dict[f"mod.block.{cid}.toolclass"] = manifest_dict[f"mod.block.{cid}.toolclass"][:-1]
-					if manifest_dict[f"mod.block.{cid}.material"] == "SOIL":
-						manifest_dict[f"mod.block.{cid}.material"] = "DIRT"
-				elif "fabric" in manifest_dict["modloader"]:
-					if manifest_dict[f"mod.block.{cid}.toolclass"] in ["AXE", "HOE", "PICKAXE", "SHOVEL"]:
-						manifest_dict[f"mod.block.{cid}.toolclass"] = manifest_dict[f"mod.block.{cid}.toolclass"]+"S"
-					if manifest_dict[f"mod.block.{cid}.material"] == "DIRT":
-						manifest_dict[f"mod.block.{cid}.material"] = "SOIL"
-				if not manifest_dict[f"mod.block.{cid}.toollevel"].isnumeric():
-					manifest_dict[f"mod.block.{cid}.toollevelstring"] = "MiningLevels." + manifest_dict[f"mod.block.{cid}.toollevel"]
-					if manifest_dict[f"mod.block.{cid}.toollevel"] in ["WOOD", "STONE", "IRON", "DIAMOND", "NETHERITE"]:
-						manifest_dict[f"mod.block.{cid}.toollevelint"] = str(["WOOD", "STONE", "IRON", "DIAMOND", "NETHERITE"].index(manifest_dict[f"mod.block.{cid}.toollevel"]))
+					create_file(os.path.join(block_loot_table_dir, cid+".json"), readf_file(os.path.join(commons_path, "block_loot_tables", dtype+".m3ecjson"), mdc))
+				if "forge" in mdc["modloader"]:
+					if mdc[f"mod.block.{cid}.toolclass"] in ["AXES", "HOES", "PICKAXES", "SHOVELS"]:
+						mdc[f"mod.block.{cid}.toolclass"] = mdc[f"mod.block.{cid}.toolclass"][:-1]
+					if mdc[f"mod.block.{cid}.material"] == "SOIL":
+						mdc[f"mod.block.{cid}.material"] = "DIRT"
+				elif "fabric" in mdc["modloader"]:
+					if mdc[f"mod.block.{cid}.toolclass"] in ["AXE", "HOE", "PICKAXE", "SHOVEL"]:
+						mdc[f"mod.block.{cid}.toolclass"] = mdc[f"mod.block.{cid}.toolclass"]+"S"
+					if mdc[f"mod.block.{cid}.material"] == "DIRT":
+						mdc[f"mod.block.{cid}.material"] = "SOIL"
+				if not mdc[f"mod.block.{cid}.toollevel"].isnumeric():
+					mdc[f"mod.block.{cid}.toollevelstring"] = "MiningLevels." + mdc[f"mod.block.{cid}.toollevel"]
+					if mdc[f"mod.block.{cid}.toollevel"] in ["WOOD", "STONE", "IRON", "DIAMOND", "NETHERITE"]:
+						mdc[f"mod.block.{cid}.toollevelint"] = str(["WOOD", "STONE", "IRON", "DIAMOND", "NETHERITE"].index(mdc[f"mod.block.{cid}.toollevel"]))
 					else:
-						manifest_dict[f"mod.block.{cid}.toollevelint"] = "0"
+						mdc[f"mod.block.{cid}.toollevelint"] = "0"
 				else:
-					manifest_dict[f"mod.block.{cid}.toollevelstring"] = manifest_dict[f"mod.block.{cid}.toollevel"]
-					manifest_dict[f"mod.block.{cid}.toollevelint"] = manifest_dict[f"mod.block.{cid}.toollevel"]
-				# print(manifest_dict[f"mod.block.{cid}.toollevelstring"], manifest_dict[f"mod.block.{cid}.toollevelint"])
+					mdc[f"mod.block.{cid}.toollevelstring"] = mdc[f"mod.block.{cid}.toollevel"]
+					mdc[f"mod.block.{cid}.toollevelint"] = mdc[f"mod.block.{cid}.toollevel"]
+				# print(mdc[f"mod.block.{cid}.toollevelstring"], mdc[f"mod.block.{cid}.toollevelint"])
 
 			if content_type == "recipe":
-				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), manifest_dict))
+				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), mdc))
 			if content_type in ["item", "block", "food", "armor", "tool"]:
-				if "langs" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
-					for lang in manifest_dict[f"mod.{content_type}.{cid}.langs"]:
+				if "langs" in mdc[f"mod.{content_type}.{cid}.keys"]:
+					for lang in mdc[f"mod.{content_type}.{cid}.langs"]:
 						if lang not in langdict.keys():
 							langdict[lang] = {}
-						langdict[lang][f"{content_type}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.{lang}"]
+						langdict[lang][f"{content_type}.{modmcpath}.{cid}"] = mdc[f"mod.{content_type}.{cid}.{lang}"]
 				if content_type in ["food", "armor", "tool"]:
 					content_type_mc = "item"
 				else:
 					content_type_mc = content_type
-				langdict["en_us"][f"{content_type_mc}.{modmcpath}.{cid}"] = manifest_dict[f"mod.{content_type}.{cid}.title"]
+				langdict["en_us"][f"{content_type_mc}.{modmcpath}.{cid}"] = mdc[f"mod.{content_type}.{cid}.title"]
 
 			if content_type in ["block", "item", "food", "armor", "tool"]:
-				if "itemtags" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
-					if type(manifest_dict[f"mod.{content_type}.{cid}.itemtags"]) is list:
-						for tag in manifest_dict[f"mod.{content_type}.{cid}.itemtags"]:
+				if "itemtags" in mdc[f"mod.{content_type}.{cid}.keys"]:
+					if type(mdc[f"mod.{content_type}.{cid}.itemtags"]) is list:
+						for tag in mdc[f"mod.{content_type}.{cid}.itemtags"]:
 							if tag in tagdict.keys():
 								tagdict[tag].append(nscid)
 							else:
 								tagdict[tag] = [nscid]
 					else:
-						for tag in manifest_dict[f"mod.{content_type}.{cid}.itemtags"].split(" "):
+						for tag in mdc[f"mod.{content_type}.{cid}.itemtags"].split(" "):
 							if tag in tagdict.keys():
 								tagdict[tag].append(nscid)
 							else:
 								tagdict[tag] = [nscid]
 
 			if content_type in ["block"]:
-				if "blocktags" in manifest_dict[f"mod.{content_type}.{cid}.keys"]:
-					if type(manifest_dict[f"mod.{content_type}.{cid}.blocktags"]) is list:
-						for tag in manifest_dict[f"mod.{content_type}.{cid}.blocktags"]:
+				if "blocktags" in mdc[f"mod.{content_type}.{cid}.keys"]:
+					if type(mdc[f"mod.{content_type}.{cid}.blocktags"]) is list:
+						for tag in mdc[f"mod.{content_type}.{cid}.blocktags"]:
 							if tag in blocktagdict.keys():
 								blocktagdict[tag].append(nscid)
 							else:
 								blocktagdict[tag] = [nscid]
 					else:
-						for tag in manifest_dict[f"mod.{content_type}.{cid}.blocktags"].split(" "):
+						for tag in mdc[f"mod.{content_type}.{cid}.blocktags"].split(" "):
 							if tag in blocktagdict.keys():
 								blocktagdict[tag].append(nscid)
 							else:
 								blocktagdict[tag] = [nscid]
 
-			if "customclass" in manifest_dict.keys():
-				manifest_dict[f"mod.{content_type}.{cid}.customclass"] = manifest_dict["customclass"]
+			if "customclass" in mdc.keys():
+				mdc[f"mod.{content_type}.{cid}.customclass"] = mdc["customclass"]
 			elif content_type in ["item", "food", "armor", "tool"]:
-				manifest_dict[f"mod.{content_type}.{cid}.customclass"] = "Item"
+				mdc[f"mod.{content_type}.{cid}.customclass"] = "Item"
 
 
-	if "mod.langs" in manifest_dict.keys():
-		for lang in manifest_dict["mod.langs"]:
+	if "mod.langs" in mdc.keys():
+		for lang in mdc["mod.langs"]:
 			if lang not in langdict.keys():
 				langdict[lang] = {}
-			langdict[lang][f"itemGroup.{modmcpath}.general"] = manifest_dict[f"mod.{lang}"]
-			langdict[lang][f"itemGroup.{modmcpath}tab"] = manifest_dict[f"mod.{lang}"]
-	langdict["en_us"][f"itemGroup.{modmcpath}.general"] = manifest_dict["mod.title"]
-	langdict["en_us"][f"itemGroup.{modmcpath}tab"] = manifest_dict["mod.title"]
+			langdict[lang][f"itemGroup.{modmcpath}.general"] = mdc[f"mod.{lang}"]
+			langdict[lang][f"itemGroup.{modmcpath}tab"] = mdc[f"mod.{lang}"]
+	langdict["en_us"][f"itemGroup.{modmcpath}.general"] = mdc["mod.title"]
+	langdict["en_us"][f"itemGroup.{modmcpath}tab"] = mdc["mod.title"]
 
-	manifest_dict["langdict"] = langdict
-	manifest_dict["tagdict"] = tagdict
-	manifest_dict["blocktagdict"] = blocktagdict
+	mdc["langdict"] = langdict
+	mdc["tagdict"] = tagdict
+	mdc["blocktagdict"] = blocktagdict
 
 
-def build_tags_and_lang(manifest_dict):
-	langdict = manifest_dict["langdict"]
-	tagdict = manifest_dict["tagdict"]
-	blocktagdict = manifest_dict["blocktagdict"]
+def build_tags_and_lang(mdc):
+	langdict = mdc["langdict"]
+	tagdict = mdc["tagdict"]
+	blocktagdict = mdc["blocktagdict"]
 
-	if "mod.extralangentries" in manifest_dict:
-		for lang in manifest_dict["mod.extralangentries"]:
+	if "mod.extralangentries" in mdc:
+		for lang in mdc["mod.extralangentries"]:
 			ldk = f"mod.extralangentries.{lang}"
-			if ldk in manifest_dict.keys():
-				for item in manifest_dict[ldk]:
+			if ldk in mdc.keys():
+				for item in mdc[ldk]:
 					key, value = [s.strip(" \t") for s in item.split(":", maxsplit=1)]
 					langdict[lang][key] = value
 
-	if "mod.itemtags" in manifest_dict:
-		for tag in manifest_dict["mod.itemtags"]:
-			if tag in manifest_dict:
+	if "mod.itemtags" in mdc:
+		for tag in mdc["mod.itemtags"]:
+			if tag in mdc:
 				fulltag = ":".join(tag.split("/", maxsplit=1))
 				if fulltag not in tagdict.keys():
 					tagdict[fulltag] = []
-				for cid in manifest_dict[tag]:
+				for cid in mdc[tag]:
 					t, cid = cid.split(":", maxsplit=1)
 					if "item" in t:
-						tagdict[fulltag].append(readf(cid, manifest_dict))
+						tagdict[fulltag].append(readf(cid, mdc))
 
-	if "mod.blocktags" in manifest_dict:
-		for tag in manifest_dict["mod.blocktags"]:
-			if tag in manifest_dict:
+	if "mod.blocktags" in mdc:
+		for tag in mdc["mod.blocktags"]:
+			if tag in mdc:
 				fulltag = ":".join(tag.split("/", maxsplit=1))
 				if fulltag not in blocktagdict.keys():
 					blocktagdict[fulltag] = []
-				for cid in manifest_dict[tag]:
+				for cid in mdc[tag]:
 					t, cid = cid.split(":", maxsplit=1)
 					if "block" in t:
-						blocktagdict[fulltag].append(readf(cid, manifest_dict))
+						blocktagdict[fulltag].append(readf(cid, mdc))
 
-	lang_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "assets", manifest_dict["mod.mcpath"], "lang")
-	build_data_dir = os.path.join(manifest_dict["build_path"], "src", "main", "resources", "data")
+	lang_dir = os.path.join(mdc["build_path"], "src", "main", "resources", "assets", mdc["mod.mcpath"], "lang")
+	build_data_dir = os.path.join(mdc["build_path"], "src", "main", "resources", "data")
 
 	for lang in langdict.keys():
 		with open(os.path.join(lang_dir, lang+".json"),"w") as f:
 			json.dump(langdict[lang], f)
+
+	plural = not ("version_past_1.21" in mdc and mdc["version_past_1.21"])
 
 	for tag in tagdict.keys():
 		if ":" in tag:
@@ -776,8 +794,9 @@ def build_tags_and_lang(manifest_dict):
 		else:
 			print(f"Error: tags should always be namespaced. Example: \"c:ingots\"\nBad tag: \"{tag}\"")
 			exit(1)
-		make_dir(os.path.join(build_data_dir, ns, "tags", "items"))
-		with open(os.path.join(build_data_dir, ns, "tags", "items", t+".json"), "w") as f:
+		tag_item_dir = getDictValF(mdc, "build_paths.data.tag.item", os.path.join(build_data_dir, ns, "tags", "items"))
+		make_dir(tag_item_dir)
+		with open(os.path.join(tag_item_dir, t+".json"), "w") as f:
 			json.dump({"replace": False, "values": tagdict[tag]}, f)
 
 	for tag in blocktagdict.keys():
@@ -786,19 +805,20 @@ def build_tags_and_lang(manifest_dict):
 		else:
 			print(f"Error: tags should always be namespaced. Example: \"c:ingots\"\nBad tag: \"{tag}\"")
 			exit(1)
-		make_dir(os.path.join(build_data_dir, ns, "tags", "blocks"))
-		with open(os.path.join(build_data_dir, ns, "tags", "blocks", t+".json"), "w") as f:
+		tag_block_dir = getDictValF(mdc, "build_paths.data.tag.block", os.path.join(build_data_dir, ns, "tags", "blocks"))
+		make_dir(tag_block_dir)
+		with open(os.path.join(tag_block_dir, t+".json"), "w") as f:
 			json.dump({"replace": False, "values": blocktagdict[tag]}, f)
 
 
-def copy_textures(content_type, cid, manifest_dict, project_path, dest_dir):
-	project_tex_path = os.path.join(project_path, manifest_dict["mod.textures"])
+def copy_textures(content_type, cid, mdc, project_path, dest_dir):
+	project_tex_path = os.path.join(project_path, mdc["mod.textures"])
 	# print(project_tex_path)
 	for side in ["", "_top", "_bottom", "_side", "_front", "_back"]:
-		if f"mod.{content_type}.{cid}.texture{side}" in manifest_dict.keys():
-			tex, ext = os.path.splitext(manifest_dict[f"mod.{content_type}.{cid}.texture{side}"])
+		if f"mod.{content_type}.{cid}.texture{side}" in mdc.keys():
+			tex, ext = os.path.splitext(mdc[f"mod.{content_type}.{cid}.texture{side}"])
 			copy_file(os.path.join(project_tex_path, tex)+".png", os.path.join(dest_dir, os.path.basename(tex))+".png")
-			manifest_dict[f"texture{side}"] = texture_pathify(manifest_dict, tex, content_type, cid)
+			mdc[f"texture{side}"] = texture_pathify(mdc, tex, content_type, cid)
 			if os.path.exists(os.path.join(project_tex_path, tex)+".png.mcmeta"):
 				copy_file(os.path.join(project_tex_path, tex)+".png.mcmeta", os.path.join(dest_dir, os.path.basename(tex))+".png.mcmeta")
 

@@ -4,19 +4,17 @@ import ${mod.package}.${mod.class};
 ---if mod.registry.fluid.names
 import ${mod.package}.fluids.*;---fi
 
-import net.fabricmc.fabric.api.block.v1.FabricBlock;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+
 
 public class ModFluids {
 ---iter mod.registry.fluid.names
@@ -29,8 +27,18 @@ public class ModFluids {
     public static final Block ${mod.fluid.$%v^upper}_FLUID_BLOCK = Registry.register(Registries.BLOCK,
             new Identifier(${mod.class}.MOD_ID, "${mod.fluid.$%v}"),
             new FluidBlock(ModFluids.STILL_${mod.fluid.$%v^upper}, FabricBlockSettings.copyOf(${mod.fluid.$%v.copyblock})
-			.replaceable().liquid()));
+			.replaceable().liquid().collidable(true)---if mod.fluid.$%v.luminance
+.luminance(${mod.fluid.$%v.luminance})---fi---if mod.fluid.$%v.blockvision
+.blockVision((state, world, pos) -> true)---fi---if mod.fluid.$%v.suffocates
+.suffocates((state, world, pos) -> true)---fi---if mod.fluid.$%v.velocitymultiplier
+.velocityMultiplier(${mod.fluid.$%v.velocitymultiplier^float})---fi));
+    public static final FluidVariantRenderHandler ${mod.fluid.$%v^upper}_FLUID_VARIANT_RENDERER = new ${mod.fluid.$%v^class}Fluid.Variant();
 ---end
 
-    public static void RegisterFluids() {}
+    public static void RegisterFluids() {
+---iter mod.registry.fluid.names
+        FluidVariantRendering.register(ModFluids.STILL_${mod.fluid.$%v^upper}, ${mod.fluid.$%v^upper}_FLUID_VARIANT_RENDERER);
+        FluidVariantRendering.register(ModFluids.FLOWING_${mod.fluid.$%v^upper}, ${mod.fluid.$%v^upper}_FLUID_VARIANT_RENDERER);
+---end
+	}
 }

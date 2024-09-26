@@ -1,0 +1,41 @@
+package ${mod.package}.registry;
+
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
+
+public class FoodItem extends Item {
+    private final Item returnItem;
+
+    public FoodItem(Settings settings) {
+        super(settings);
+        this.returnItem = null;
+    }
+    public FoodItem(Settings settings, Item returnItem) {
+        super(settings);
+        this.returnItem = returnItem;
+    }
+
+    @Override
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        ItemStack rval = super.finishUsing(stack, world, user);
+        if (this.getComponents().contains(DataComponentTypes.FOOD) && returnItem != null) {
+            if (user.isPlayer()) {
+                PlayerEntity player = world.getPlayerByUuid(user.getUuid());
+                if (player != null) {
+                    player.giveItemStack(new ItemStack(returnItem, 1));
+                }
+            }
+        }
+        return rval;
+    }
+}

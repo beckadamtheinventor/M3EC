@@ -64,9 +64,8 @@ ${mod.food.$%v.statusEffects}---fi
 
 	//Bucket Items
 ---iter mod.registry.fluid.names
----if mod.fluid.$%v.bucketable
     public static final Item ${mod.fluid.$%v^upper}_BUCKET = new BucketItem(ModFluids.STILL_${mod.fluid.$%v^upper}, new FabricItemSettings().recipeRemainder(Items.BUCKET).maxCount(1));
----fi---end
+---end
 
 ---iter moditems.extra
 	$%v---end
@@ -91,9 +90,8 @@ ${mod.food.$%v.statusEffects}---fi
 ---iter mod.registry.sapling.names
 		RegisterItem("$%v", ${mod.sapling.$%v.uppercased});---end
 ---iter mod.registry.fluid.names
----if mod.fluid.$%v.bucketable
 		RegisterItem("$%v_bucket", ${mod.fluid.$%v^upper}_BUCKET);
----fi---end
+---end
 
 
 ---iter moditems.registeritems.extra
