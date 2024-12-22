@@ -1,0 +1,6 @@
+{
+	"values": [
+---list mod.registry.tool_shovels
+		"${mod.mcpath}:$%v"---end
+	]
+}

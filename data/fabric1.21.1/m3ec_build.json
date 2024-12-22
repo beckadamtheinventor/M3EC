@@ -15,40 +15,27 @@
 	"toolmaterial": true,
 	"armormaterial": true
   },
-  "asset_paths.block.model": "${build_path}/src/main/resources/assets/${mod.mcpath}/model/block",
-  "asset_paths.item.model": "${build_path}/src/main/resources/assets/${mod.mcpath}/model/item",
-  "asset_paths.block.state": "${build_path}/src/main/resources/assets/${mod.mcpath}/blockstates",
-  "asset_paths.block.texture": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/block",
-  "asset_paths.item.texture": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item",
-  "build_paths.data.loot_table": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table",
-  "build_paths.data.loot_table.block": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/block",
-  "build_paths.data.recipe": "${build_path}/src/main/resources/data/${mod.mcpath}/recipe",
-  "build_paths.data.loot_table.chest": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/chest",
-  "build_paths.data.loot_table.entity": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/entity",
-  "build_paths.data.loot_table.gameplay": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/gameplay",
-  "build_paths.data.tag.block": "${build_path}/src/main/resources/data/${mod.mcpath}/tag/block",
-  "build_paths.data.tag.item": "${build_path}/src/main/resources/data/${mod.mcpath}/tag/item",
   "firstActions": [
 	{
 		"action": "setdictkey",
-		"key": "version_past_1.19.3",
-		"value": true
-	},
-	{
-		"action": "setdictkey",
-		"key": "version_past_1.20",
-		"value": true
-	},
-	{
-		"action": "setdictkey",
-		"key": "version_past_1.21",
-		"value": true
-	},
-	{
-		"_comment": "Hack to use different gradle wrapper for java 21",
-		"action": "setdictkey",
-		"key": "build.gradlewrapper",
-		"value": "${source_path}/gradle21"
+		"keys": {
+		  "version_past_1.19.3": true,
+		  "version_past_1.21": true,
+		  "build.gradlewrapper": "${source_path}/gradle21",
+		  "asset_paths.block.model": "${build_path}/src/main/resources/assets/${mod.mcpath}/models/block",
+		  "asset_paths.item.model": "${build_path}/src/main/resources/assets/${mod.mcpath}/models/item",
+		  "asset_paths.block.state": "${build_path}/src/main/resources/assets/${mod.mcpath}/blockstates",
+		  "asset_paths.block.texture": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/block",
+		  "asset_paths.item.texture": "${build_path}/src/main/resources/assets/${mod.mcpath}/textures/item",
+		  "build_paths.data.loot_table": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table",
+		  "build_paths.data.loot_table.block": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/blocks",
+		  "build_paths.data.recipe": "${build_path}/src/main/resources/data/${mod.mcpath}/recipe",
+		  "build_paths.data.loot_table.chest": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/chests",
+		  "build_paths.data.loot_table.entity": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/entities",
+		  "build_paths.data.loot_table.gameplay": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/gameplay",
+		  "build_paths.data.tag.block": "${build_path}/src/main/resources/data/${mod.mcpath}/tags/block",
+		  "build_paths.data.tag.item": "${build_path}/src/main/resources/data/${mod.mcpath}/tags/item"
+		}
 	}
   ],
   "preActions": [
@@ -66,7 +53,8 @@
 		"src/main/resources/data/${mod.mcpath}",
 		"src/main/resources/data/${mod.mcpath}/worldgen",
 		"src/main/resources/data/${mod.mcpath}/worldgen/configured_feature",
-		"src/main/resources/data/${mod.mcpath}/worldgen/placed_feature"
+		"src/main/resources/data/${mod.mcpath}/worldgen/placed_feature",
+		"src/main/resources/data/minecraft/tags/item"
       ]
     },
 	{
@@ -105,6 +93,10 @@
     {
       "action": "execactions",
       "file": "${source_path}/common/actions/1.20_and_up_actions.json"
+    },
+    {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/1.21_and_up_actions.json"
     },
     {
       "action": "execactions",

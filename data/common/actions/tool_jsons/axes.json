@@ -1,0 +1,6 @@
+{
+	"values": [
+---list mod.registry.tool_axes
+		"${mod.mcpath}:$%v"---end
+	]
+}

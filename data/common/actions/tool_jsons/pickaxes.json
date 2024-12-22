@@ -1,0 +1,6 @@
+{
+	"values": [
+---list mod.registry.tool_pickaxes
+		"${mod.mcpath}:$%v"---end
+	]
+}

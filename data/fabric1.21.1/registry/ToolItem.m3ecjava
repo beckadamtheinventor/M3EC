@@ -1,11 +1,20 @@
-
+	
 package ${mod.package}.registry;
 
 import net.minecraft.item.${mod.tool.${%v}.tooltype};
+import net.fabricmc.fabric.api.item.v1.EnchantingContext;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.Items;
 import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class ${mod.tool.${%v}.class} extends ${mod.tool.${%v}.tooltype} {
 	public ${mod.tool.${%v}.class}(ToolMaterial material, Settings settings) {
 		super(material, settings);
+	}
+	@Override
+	public boolean isEnchantable(ItemStack stack) {
+		return true;
 	}
 }

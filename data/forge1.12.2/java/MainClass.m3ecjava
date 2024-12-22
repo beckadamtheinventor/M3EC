@@ -1,0 +1,52 @@
+package ${mod.package};
+
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.creativetab.CreativeModeTab;
+
+@Mod(
+		modid = "${mod.mcpath}",
+		name = "${mod.title}",
+		version = "${mod.version}",
+		acceptedMinecraftVersions = "[1.12,1.13)"
+)
+public class ${mod.class} {
+    public static final Logger LOGGER = LogManager.getLogger();
+    public static final String MODID = "${mod.mcpath}";
+	
+	public static final CreativeModeTab TAB = new ${mod.class}Tab();
+
+    // Says where the client and server 'proxy' code is loaded.
+    @SidedProxy(clientSide="${mod.package}.ClientOnlyProxy", serverSide="minecraftbyexample.ServerOnlyProxy")
+    public static CommonProxy proxy;
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event)
+    {
+      proxy.preInit();
+    }
+
+    @EventHandler
+    public void init(FMLInitializationEvent event)
+    {
+      proxy.init();
+    }
+
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event)
+    {
+      proxy.postInit();
+    }
+
+    /**
+     * Prepend the name with the mod ID, suitable for ResourceLocations such as textures.
+     * @param name
+     * @return eg "${mod.mcpath}:blockname"
+     */
+    public static String identifier(String name) {return MODID + ":" + name;}
+
+}

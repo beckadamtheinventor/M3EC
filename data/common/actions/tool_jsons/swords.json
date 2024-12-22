@@ -1,0 +1,6 @@
+{
+	"values": [
+---list mod.registry.tool_swords
+		"${mod.mcpath}:$%v"---end
+	]
+}

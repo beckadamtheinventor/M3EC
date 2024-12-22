@@ -1,0 +1,20 @@
+package ${mod.package};
+
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+public class ${mod.class}Tab extends CreativeTabs {
+
+	public ${mod.class}Tab() {
+		super(${mod.class}.MODID);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public ItemStack createIcon() {
+		return new ItemStack(ModItems.${mod.iconitem^upper});
+	}
+	
+}

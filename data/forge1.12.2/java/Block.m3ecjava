@@ -1,0 +1,41 @@
+package ${mod.package}.block;
+
+import ${mod.package}.${mod.class};
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+public class ${${%v}^class}Block extends Block {
+	public ${${%v}^class}Block() {
+		super(Material.${mod.block.${%v}.material});
+		this.setCreativeTab(${mod.class}.TAB);
+	}
+
+  @SideOnly(Side.CLIENT)
+  public BlockRenderLayer getBlockLayer()
+  {
+---if !mod.block.${%v}.renderlayer
+    return BlockRenderLayer.SOLID;---fi---if mod.block.${%v}.renderlayer
+	return BlockRenderLayer.${mod.block.${%v}.renderlayer^upper};---fi
+  }
+  
+  @Override
+  public boolean isOpaqueCube(IBlockState iBlockState) {
+---if !?keyexists mod.block.${%v}.opaque
+	return true;---fi---if ?keyexists mod.block.${%v}.opaque
+	return ${mod.block.${%v}.opaque^bool};---fi
+  }
+
+  @Override
+  public boolean isFullCube(IBlockState iBlockState) {
+---if !?keyexists mod.block.${%v}.fullcube
+	return true;---fi---if ?keyexists mod.block.${%v}.fullcube
+	return ${mod.block.${%v}.fullcube^bool};---fi
+  }
+
+
+}

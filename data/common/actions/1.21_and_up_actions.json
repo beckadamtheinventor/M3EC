@@ -1,0 +1,30 @@
+[
+	{
+		"action": "execactions",
+		"iterate": "mod.registry.tool.names",
+		"actions": [
+			{
+				"action": "getkey",
+				"key": "${mod.tool.${%v}.tooltype^lower}",
+				"var": "%tmp",
+				"dict": {
+					"sworditem": "swords",
+					"axeitem": "axes",
+					"hoeitem": "hoes",
+					"pickaxeitem": "pickaxes",
+					"shovelsitem": "shovels"
+				}
+			},
+			{
+				"action": "appendkey",
+				"key": "mod.registry.tool_${%tmp}",
+				"value": "${%v}"
+			}
+		]
+	},
+	{
+		"action": "copyf",
+		"source": "${source_path}/common/actions/tool_jsons/",
+		"dest": "${build_path}/src/main/resources/data/minecraft/tags/item/"
+	}
+]

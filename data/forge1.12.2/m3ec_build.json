@@ -4,22 +4,20 @@
   "javaVersion": "8.",
   "implementedFeatures": {
 	"block": true,
-	"item": true,
-	"fuel": true,
-	"food": true,
-	"recipe": true
+	"item": true
   },
+  "build.build_recipe_json": false,
   "firstActions": [
-	{
-		"action": "setdictkey",
-		"key": "version_past_1.19.3",
-		"value": false
-	},
-	{
-		"action": "setdictkey",
-		"key": "version_pre_1.13",
-		"value": true
-	}
+	  {
+		  "action": "setdictkey",
+		  "key": "version_past_1.19.3",
+		  "value": false
+	  },
+	  {
+		  "action": "setdictkey",
+		  "key": "version_pre_1.13",
+		  "value": true
+	  }
   ],
   "preActions": [
     {
@@ -29,9 +27,8 @@
 	{
 		"action": "makedir",
 		"value": [
-			"${build_path}/src/main/java/${mod.packagedir}/blocks/custom",
-			"${build_path}/src/main/java/${mod.packagedir}/items/tools",
-			"${build_path}/src/main/java/${mod.packagedir}/items/armor"
+			"${build_path}/src/main/java/${mod.packagedir}/block",
+			"${build_path}/src/main/java/${mod.packagedir}/item"
 		]
 		
 	},
@@ -51,55 +48,50 @@
   ],
   "sources": [
     {
-      "source": "MainClass.m3ecjava",
+      "source": "java/MainClass.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/${mod.class}.java"
     },
     {
-      "source": "ModCreativeModeTab.m3ecjava",
+      "source": "java/CommonProxy.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/CommonProxy.java"
+    },
+    {
+      "source": "java/ClientOnlyProxy.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/ClientOnlyProxy.java"
+    },
+    {
+      "source": "java/ServerOnlyProxy.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/ServerOnlyProxy.java"
+    },
+    {
+      "source": "java/ModCreativeModeTab.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/ModCreativeModeTab.java"
     },
     {
-      "source": "blocks/ModBlocks.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/blocks/ModBlocks.java"
+      "source": "java/ModBlocks.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/ModBlocks.java"
     },
     {
-      "source": "blocks/SlabBlock.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/blocks/custom/SlabBlock.java"
+      "source": "java/ModItems.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/ModItems.java"
     },
     {
-      "source": "blocks/StairBlock.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/blocks/custom/StairBlock.java"
+      "source": "java/ModFluids.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/ModFluids.java"
     },
     {
-      "source": "blocks/RotatedPillarBlock.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/blocks/custom/RotatedPillarBlock.java"
+      "source": "java/ModRecipes.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/ModRecipes.java"
     },
     {
-      "source": "items/ModItems.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/items/ModItems.java"
+	  "iterate": "mod.registry.block.names",
+      "source": "java/Block.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/block/${${%v}^class}.java"
     },
     {
-      "source": "items/ItemBase.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/items/ItemBase.java"
-    },
-    {
-      "source": "items/FoodItem.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/items/FoodItem.java"
-    },
-    {
-      "iterate": "mod.registry.toolmaterial.names",
-      "source": "items/ToolMaterial.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/items/tools/${mod.toolmaterial.${%v}.class}.java"
-    },
-    {
-      "iterate": "mod.registry.tool.names",
-      "source": "items/ToolItem.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/items/tools/${mod.tool.${%v}.class}.java"
-    },
-    {
-      "iterate": "mod.registry.armormaterial.names",
-      "source": "items/ArmorMaterial.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/items/armor/${mod.armormaterial.${%v}.class}.java"
+	  "iterate": "mod.registry.item.names",
+      "source": "java/Item.m3ecjava",
+      "dest": "src/main/java/${mod.packagedir}/item/${${%v}^class}.java"
     }
   ]
 }

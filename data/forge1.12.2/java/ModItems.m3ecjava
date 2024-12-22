@@ -1,0 +1,16 @@
+package ${mod.package};
+
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+public static class ModItems {
+---iter mod.registry.item.names
+	public static ${$%v^class} ${$%v^upper};---end
+
+	public static void init() {
+---iter mod.registry.item.names
+		${$%v^upper} = (${$%v^class})(new ${$%v^class}().setUnlocalizedName("$%v"));
+		${$%v^upper}.setRegistryName("$%v");
+		ForgeRegistries.ITEMS.register(${$%v^upper});---end
+	}
+};

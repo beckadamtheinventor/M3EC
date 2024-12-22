@@ -39,7 +39,9 @@ ${mod.item.$%v.extraItemSettings}---fi);---end
 ${mod.food.$%v.statusEffects}---fi
 .build())
 ---if mod.food.$%v.returnitem
-, ${mod.food.$%v.returnItem}---fi);---end
+, ${mod.food.$%v.returnItem}---fi
+---if mod.food.$%v.eattime
+, ${mod.food.$%v.eattime}---fi);---end
 
     //Block Items
 ---iter mod.registry.blockitem.names

@@ -1,0 +1,7 @@
+package ${mod.package};
+
+public static class ModFluids {
+	public static void init() {
+		
+	}
+};

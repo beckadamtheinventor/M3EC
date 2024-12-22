@@ -53,7 +53,7 @@ ${mod.food.$%v.statusEffects}---fi
 	//Tool items
 ---iter mod.registry.tool.names
 	public static final ToolItem ${mod.tool.$%v.uppercased} = new ${mod.tool.$%v.class}(${mod.tool.$%v.material}.INSTANCE,
-		new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(RubyToolMaterial.INSTANCE, ${mod.tool.$%v.attackdamage^int}, ${mod.tool.$%v.attackspeed^float})));---end
+		new Item.Settings().attributeModifiers(${mod.tool.$%v.tooltype}.createAttributeModifiers(${mod.tool.$%v.material}.INSTANCE, ${mod.tool.$%v.attackdamage^int}, ${mod.tool.$%v.attackspeed^float})));---end
 
 	//Sapling Items
 ---iter mod.registry.sapling.names

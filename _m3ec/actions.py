@@ -115,6 +115,16 @@ def execActions(actions, d):
 					else:
 						d["%a"][k] = v
 
+			elif "keys" in ak:
+				if type(action["keys"]) is list:
+					if "values" in ak:
+						if type(action["values"]) is list:
+							for i in range(min(len(action["keys"]), len(action["values"]))):
+								d[readf(action["keys"][i], d)] = readf(action["values"][i], d)
+				elif type(action["keys"]) is dict:
+					for k in action["keys"].keys():
+						d[readf(k, d)] = readf(action["keys"][k], d)
+
 		elif a in ("getdictkey", "getkey"):
 			if "key" in ak:
 				key = action["key"]

@@ -12,25 +12,65 @@
 		]
 	},
 	{
-		"iterate": "mod.registry.toolmaterial.names",
+		"_comment": "disabling this for now",
+		"_iterate": "mod.registry.toolmaterial.names",
+		"_action": "execactions",
+		"_actions": [
+			{
+				"action": "getdictkey",
+				"key": "${mod.toolmaterial.${%v}.mininglevel^upper}",
+				"var": "mod.toolmaterial.${%v}.inversetoolleveltags",
+				"dict": {
+					"1": "BlockTags.INCORRECT_FOR_STONE_TOOL",
+					"WOOD": "BlockTags.INCORRECT_FOR_STONE_TOOL",
+					"2": "BlockTags.INCORRECT_FOR_IRON_TOOL",
+					"STONE": "BlockTags.INCORRECT_FOR_IRON_TOOL",
+					"3": "BlockTags.INCORRECT_FOR_DIAMOND_TOOL",
+					"IRON": "BlockTags.INCORRECT_FOR_DIAMOND_TOOL",
+					"4": "BlockTags.INCORRECT_FOR_NETHERITE_TOOL",
+					"DIAMOND": "BlockTags.INCORRECT_FOR_NETHERITE_TOOL",
+					"5": "null",
+					"NETHERITE": "null"
+				}
+			}
+		]
+	},
+	{
+		"iterate": "mod.registry.tool.names",
 		"action": "execactions",
 		"actions": [
 			{
 				"action": "getdictkey",
-				"key": "${mod.toolmaterial.${%v}.mininglevel^str}",
+				"key": "${mod.tool.${%v}.tooltype}",
+				"var": "mod.tool.${%v}.tooltypetag",
 				"dict": {
-					"0": "BlockTags.INCORRECT_FOR_STONE_TOOL",
-					"WOOD": "BlockTags.INCORRECT_FOR_STONE_TOOL",
-					"1": "BlockTags.INCORRECT_FOR_IRON_TOOL",
-					"STONE": "BlockTags.INCORRECT_FOR_IRON_TOOL",
-					"2": "BlockTags.INCORRECT_FOR_DIAMOND_TOOL",
-					"IRON": "BlockTags.INCORRECT_FOR_DIAMOND_TOOL",
-					"3": "BlockTags.INCORRECT_FOR_NETHERITE_TOOL",
-					"DIAMOND": "BlockTags.INCORRECT_FOR_NETHERITE_TOOL",
-					"4": "null",
-					"NETHERITE": "null"
-				},
-				"var": "mod.toolmaterial.${%v}.inversetoolleveltags"
+					"SwordItem": "SWORDS",
+					"AxeItem": "AXES",
+					"ShovelItem": "SHOVELS",
+					"PickaxeItem": "PICKAXES",
+					"HoeItem": "HOES"
+				}
+			}
+		]
+	},
+	{
+		"iterate": "mod.registry.armor.names",
+		"action": "execactions",
+		"actions": [
+			{
+				"action": "getdictkey",
+				"key": "${mod.tool.${%v}.slot^upper}",
+				"var": "mod.tool.${%v}.armorslottag",
+				"dict": {
+					"FEET": "FOOT_ARMOR",
+					"BOOTS": "FOOT_ARMOR",
+					"LEGS": "LEG_ARMOR",
+					"LEGGINGS": "LEG_ARMOR",
+					"CHEST": "CHEST_ARMOR",
+					"CHESTPLATE": "CHEST_ARMOR",
+					"HEAD": "HEAD_ARMOR",
+					"HELMET": "HEAD_ARMOR"
+				}
 			}
 		]
 	}

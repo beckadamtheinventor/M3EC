@@ -1,8 +1,8 @@
 package ${mod.package};
 
-import com.beckati.testrubymod.registry.ModArmorMaterials;
-import com.beckati.testrubymod.registry.ModBlocks;
-import com.beckati.testrubymod.registry.ModItems;
+import ${mod.package}.registry.ModArmorMaterials;
+import ${mod.package}.registry.ModBlocks;
+import ${mod.package}.registry.ModItems;
 ---iter mod.registry.recipetype.names
 import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Serializer;
 import ${mod.package}.recipetype.${mod.recipetype.$%v.class}Recipe;---end

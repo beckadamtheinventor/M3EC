@@ -1,0 +1,28 @@
+package ${mod.package};
+
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+public static class ModBlocks {
+---iter mod.registry.block.names
+	public static ${$%v^class} ${$%v^upper};---end
+---iter mod.registry.block.names
+	public static ItemBlock ITEM_${$%v^upper};---end
+
+	public static void init() {
+---iter mod.registry.block.names
+		${$%v^upper} = (${$%v^class})(new ${$%v^class}().setUnlocalizedName("$%v"));
+		${$%v^upper}.setRegistryName("$%v");
+		ForgeRegistries.BLOCKS.register(${$%v^upper});
+		ITEM_${$%v^upper} = new ItemBlock(${$%v^upper});
+		ITEM_${$%v^upper}.setRegistryName(${$%v^upper}.getRegistryName());
+		ForgeRegistries.ITEMS.register(ITEM_${$%v^upper});
+---end
+	}
+};

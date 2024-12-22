@@ -537,7 +537,6 @@ def build_resources(project_path, builddir, mdc):
 	build_data_dir = getDictValF(mdc, "build_paths.data", os.path.join(builddir, "src", "main", "resources", "data"))
 	
 	loot_table_dir = getDictValF(mdc, "build_paths.data.loot_table", os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "loot_tables"))
-	recipes_dir = getDictValF(mdc, "build_paths.data.recipe", os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes"))
 	block_loot_table_dir = getDictValF(mdc, "build_paths.data.loot_table.block", os.path.join(loot_table_dir, "blocks"))
 
 	if "build.gradlewrapper" in mdc.keys():
@@ -567,16 +566,12 @@ def build_resources(project_path, builddir, mdc):
 		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath))
 		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "blockstates"))
 		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "lang"))
-		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models"))
-		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "block"))
-		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "models", "item"))
+		make_dir(os.path.dirname(block_models_assets_dir))
+		make_dir(block_models_assets_dir)
+		make_dir(item_models_assets_dir)
 		make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures"))
-		if mdc["version_past_1.19.3"]:
-			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "block"))
-			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "item"))
-		else:
-			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "blocks"))
-			make_dir(os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "textures", "items"))
+		make_dir(block_textures_assets_dir)
+		make_dir(item_textures_assets_dir)
 		make_dir(os.path.join(dest, "src", "main", "resources", "data"))
 		make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath))
 		make_dir(os.path.join(dest, "src", "main", "java"))
@@ -596,7 +591,12 @@ def build_resources(project_path, builddir, mdc):
 	make_dir(getDictValF(mdc, "build_paths.data.loot_table.chest", os.path.join(loot_table_dir, "chests")))
 	make_dir(getDictValF(mdc, "build_paths.data.loot_table.entity", os.path.join(loot_table_dir, "entities")))
 	make_dir(getDictValF(mdc, "build_paths.data.loot_table.gameplay", os.path.join(loot_table_dir, "gameplay")))
-	make_dir(recipes_dir)
+
+	if getDictValF(mdc, "build.build_recipe_json", True):
+		recipes_dir = getDictValF(mdc, "build_paths.data.recipe", os.path.join(builddir, "src", "main", "resources", "data", modmcpath, "recipes"))
+		make_dir(recipes_dir)
+	else:
+		recipes_dir = None
 
 	langdict = {"en_us":{}}
 	tagdict = {}
@@ -611,10 +611,12 @@ def build_resources(project_path, builddir, mdc):
 			# print(cid, content_type, tname)
 			# print(mdc[f"mod.{content_type}.{cid}.keys"])
 			mdc["contentid"] = mdc["cid"] = cid
+			keys_to_remove_later = []
 			for key in mdc[f"mod.{content_type}.{cid}.keys"]:
 				k = f"mod.{content_type}.{cid}.{key}"
 				if k in mdc.keys():
 					mdc[key] = mdc[k]
+					keys_to_remove_later.append(key)
 			
 			if "texture" in mdc.keys():
 				if "." in mdc["texture"]:
@@ -680,7 +682,7 @@ def build_resources(project_path, builddir, mdc):
 					mdc[f"mod.block.{cid}.toollevelint"] = mdc[f"mod.block.{cid}.toollevel"]
 				# print(mdc[f"mod.block.{cid}.toollevelstring"], mdc[f"mod.block.{cid}.toollevelint"])
 
-			if content_type == "recipe":
+			if recipes_dir is not None and content_type == "recipe":
 				create_file(os.path.join(recipes_dir, cid+".json"), readf_file(os.path.join(commons_path, "recipes", tname+".m3ecjson"), mdc))
 			if content_type in ["item", "block", "food", "armor", "tool"]:
 				if "langs" in mdc[f"mod.{content_type}.{cid}.keys"]:
@@ -726,8 +728,12 @@ def build_resources(project_path, builddir, mdc):
 
 			if "customclass" in mdc.keys():
 				mdc[f"mod.{content_type}.{cid}.customclass"] = mdc["customclass"]
+				# print(f"Custom class {mdc['customclass']} for {content_type} {cid}")
 			elif content_type in ["item", "food", "armor", "tool"]:
 				mdc[f"mod.{content_type}.{cid}.customclass"] = "Item"
+			
+			for k in keys_to_remove_later:
+				del mdc[k]
 
 
 	if "mod.langs" in mdc.keys():

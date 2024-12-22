@@ -1,0 +1,16 @@
+package ${mod.package};
+
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
+
+public class StartupClientOnly {
+	public static void preInitClientOnly() {
+		final int DEFAULT_ITEM_SUBTYPE = 0;
+---iter mod.registry.block.names
+		ModelLoader.setCustomModelResourceLocation(ModBlocks.ITEM_${$%v^upper}, DEFAULT_ITEM_SUBTYPE, new ModelResourceLocation("${mod.mcpath}:$%v", "inventory"));---end
+---iter mod.registry.item.names
+		ModelLoader.setCustomModelResourceLocation(ModItems.${$%v^upper}, DEFAULT_ITEM_SUBTYPE, new ModelResourceLocation("${mod.mcpath}:$%v", "inventory"));---fi
+	}
+	public static void initClientOnly() {}
+	public static void postInitClientOnly() {}
+};

@@ -1,0 +1,15 @@
+package ${mod.package}.item;
+
+import ${mod.package}.${mod.class};
+import net.minecraft.item.Item;
+
+public class ${${%v}^class} extends Item
+{
+  public ${${%v}^class}()
+  {
+---if ?keyexists mod.item.${%v}.stacksize
+    this.setMaxStackSize(${mod.item.${%v}.stacksize});---fi
+    this.setCreativeTab(${mod.class}.TAB);
+  }
+
+}

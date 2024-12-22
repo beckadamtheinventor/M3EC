@@ -996,8 +996,8 @@ def readf(data, d):
 							if type(w) is not str:
 								w = str(w)
 							args = fn.lower()[8:-1].split(",")
-							if len(args) == 1:
-								w = w.replace(args[0], "")
+							if "," not in fn[8:-1]:
+								w = w.replace(fn[8:-1], "")
 							elif len(args) == 2:
 								w = w.replace(args[0], args[1])
 							else:

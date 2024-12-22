@@ -17,6 +17,18 @@ ${dropchances}---fi---if !dropchances
                 {
                   "condition": "minecraft:match_tool",
                   "predicate": {
+---if version_past_1.21
+				    "predicates": {
+						"minecraft:enchantments": [
+							{
+								"enchantments": "minecraft:silk_touch",
+								"levels": {
+									"min": 1
+								}
+							}
+						]
+					}
+---fi---if !version_past_1.21
                     "enchantments": [
                       {
                         "enchantment": "minecraft:silk_touch",
@@ -25,7 +37,8 @@ ${dropchances}---fi---if !dropchances
                         }
                       }
                     ]
-                  }
+---fi
+				  }
                 }
               ]
             },
