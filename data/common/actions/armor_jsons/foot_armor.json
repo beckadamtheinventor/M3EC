@@ -1,0 +1,6 @@
+{
+	"values": [
+---list mod.registry.foot_armor
+		"${mod.mcpath}:$%v"---end
+	]
+}

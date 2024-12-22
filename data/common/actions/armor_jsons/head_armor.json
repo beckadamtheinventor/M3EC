@@ -1,0 +1,6 @@
+{
+	"values": [
+---list mod.registry.head_armor
+		"${mod.mcpath}:$%v"---end
+	]
+}

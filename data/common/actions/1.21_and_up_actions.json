@@ -26,5 +26,37 @@
 		"action": "copyf",
 		"source": "${source_path}/common/actions/tool_jsons/",
 		"dest": "${build_path}/src/main/resources/data/minecraft/tags/item/"
+	},
+	{
+		"action": "execactions",
+		"iterate": "mod.registry.armor.names",
+		"actions": [
+			{
+				"action": "getkey",
+				"key": "${mod.armor.${%v}.slot^lower}",
+				"var": "%tmp",
+				"dict": {
+					"feet": "foot_armor",
+					"boots": "foot_armor",
+					"foot": "foot_armor",
+					"legs": "leg_armor",
+					"leggings": "leg_armor",
+					"head": "head_armor",
+					"helmet": "head_armor",
+					"chest": "chest_armor",
+					"chestplate": "chest_armor"
+				}
+			},
+			{
+				"action": "appendkey",
+				"key": "mod.registry.${%tmp}",
+				"value": "${%v}"
+			}
+		]
+	},
+	{
+		"action": "copyf",
+		"source": "${source_path}/common/actions/armor_jsons/",
+		"dest": "${build_path}/src/main/resources/data/minecraft/tags/item/"
 	}
 ]
