@@ -15,8 +15,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class FoodItem extends Item {
-    private static Item returnItem;
-    private static int useTime;
+    private final Item returnItem;
+    private final int useTime;
 
     public FoodItem(Settings settings) {
         super(settings);
