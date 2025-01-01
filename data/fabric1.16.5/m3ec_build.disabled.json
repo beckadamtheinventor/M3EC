@@ -32,6 +32,10 @@
   ],
   "sources": [
     {
+      "action": "execactions",
+      "file": "${source_path}/common/actions/all.json"
+    },
+    {
       "source": "fabric.mod.m3ecjson",
       "dest": "src/main/resources/fabric.mod.json"
     },

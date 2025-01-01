@@ -36,6 +36,10 @@
     },
     {
       "action": "execactions",
+      "file": "${source_path}/common/actions/all.json"
+    },
+    {
+      "action": "execactions",
       "file": "${source_path}/forge_common/forge_preactions.json"
     },
     {

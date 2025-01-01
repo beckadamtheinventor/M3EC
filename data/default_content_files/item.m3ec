@@ -4,5 +4,6 @@ contentid:
 title:
 texture:
 # customclass:
+# reciperemainder: self # currently only recipe remainders of the same item are implemented
 # +langs: fr_ca
 # fr_ca:

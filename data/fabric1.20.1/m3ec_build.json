@@ -80,6 +80,10 @@
 			"value": "ModItems.${mod.iconitem}"
 		},
 		{
+		  "action": "execactions",
+		  "file": "${source_path}/common/actions/all.json"
+		},
+		{
 			"action": "execactions",
 			"file": "${source_path}/common/actions/1.20_and_up_actions.json"
 		},

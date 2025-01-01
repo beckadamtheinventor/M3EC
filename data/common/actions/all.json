@@ -1,0 +1,50 @@
+[
+	{
+		"action": "execactions",
+		"iterate": "mod.registry.item.names",
+		"actions": [
+			{
+				"if": "keyexists mod.item.reciperemainder",
+				"action": "execactions",
+				"actions": [
+					{
+						"action": "getkey",
+						"key": "${mod.item.${%v}.reciperemainder^lower}",
+						"var": "%tmp",
+						"dict": {
+							"self": "SelfRecipeRemainderItem"
+						}
+					},
+					{
+						"if": "?!%tmp #typeis none",
+						"action": "setkey",
+						"key": "mod.item.${%v}.customclass",
+						"value": "${%tmp}"
+					},
+					{
+						"if": "?modloader #equals fabric",
+						"action": "execactions",
+						"actions": [
+							{
+								"action": "copyf",
+								"source": "${source_path}/fabric_common/classes/SelfRecipeRemainderItem.m3ecjava",
+								"dest": "${build_path}/src/main/java/${mod.packagedir}/registry/SelfRecipeRemainderItem.java"
+							}
+						]
+					},
+					{
+						"if": "?modloader #equals forge",
+						"action": "execactions",
+						"actions": [
+							{
+								"action": "copyf",
+								"source": "${source_path}/forge_common/classes/SelfRecipeRemainderItem.m3ecjava",
+								"dest": "${build_path}/src/main/java/${mod.packagedir}/registry/SelfRecipeRemainderItem.java"
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

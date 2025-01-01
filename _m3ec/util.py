@@ -918,91 +918,219 @@ def readf(data, d):
 					w = d[w]
 				elif w.lower() in d.keys():
 					w = d[w.lower()]
-				if type(w) is str:
-					for fn in fns:
-						# if fn.startswith("("):
-							# if fn.endswith(")"):
-								# try:
-									# w = w(args)
-								# except:
-									# print(f"Attempted to call non-function key: \"{w}\"")
-							# else:
-								# print(f"Malformed function key call: \"{fn}\"")
-						if fn.lower() == "upper":
-							w = w.upper()
-						elif fn.lower() == "lower":
-							w = w.lower()
-						elif fn.lower() == "capital":
-							w = w.capitalize()
-						elif fn.lower() == "title":
-							w = w.title()
-						elif fn.lower() == "class":
-							w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
-						elif fn.lower() == "camel":
-							w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
-							w = w[0].lower() + w[1:]
-						elif fn.lower() == "bool":
-							w = "true" if checkValueTrue(w) else "false"
-						elif fn.lower() == "str":
+				for fn in fns:
+					# if fn.startswith("("):
+						# if fn.endswith(")"):
+							# try:
+								# w = w(args)
+							# except:
+								# print(f"Attempted to call non-function key: \"{w}\"")
+						# else:
+							# print(f"Malformed function key call: \"{fn}\"")
+					if fn.lower() == "upper":
+						w = w.upper()
+					elif fn.lower() == "lower":
+						w = w.lower()
+					elif fn.lower() == "capital":
+						w = w.capitalize()
+					elif fn.lower() == "title":
+						w = w.title()
+					elif fn.lower() == "class":
+						w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
+					elif fn.lower() == "camel":
+						w = "".join([s.capitalize() for s in w.replace("_", " ").split(" ")])
+						w = w[0].lower() + w[1:]
+					elif fn.lower() == "bool":
+						w = "true" if checkValueTrue(w) else "false"
+					elif fn.lower() == "str":
+						w = str(w)
+					elif fn.lower() == "float":
+						if type(w) is str:
+							if not w.endswith("f"):
+								w = w+"f"
+						else:
+							w = str(float(w))+"f"
+					elif fn.lower() == "int":
+						if type(w) is str:
+							if w.endswith("f"):
+								w = w[:-1]
+							w = int(float(w))
+						else:
+							w = int(w)
+					elif fn.lower().startswith("split(") and fn.endswith(")"):
+						if type(w) is not str:
 							w = str(w)
-						elif fn.lower() == "float":
-							if type(w) is str:
-								if not w.endswith("f"):
-									w = w+"f"
+						try:
+							args = [int(a) for a in fn.lower()[10:-1].split(",")]
+						except:
+							print("Error parsing integer argument in key function arguments ${"+word+"}")
+							exit(1)
+						if len(args) < 1 or len(args) > 2:
+							print("Wrong number of arguments to key function ^split in ${"+word+"} (minimum 1, maximum 2 arguments)")
+							exit(1)
+						w = w.split(fn[6:9].strip("'\""), args[0])
+						if len(args) == 2:
+							if args[1] < len(w):
+								w = w[args[1]]
 							else:
-								w = str(float(w))+"f"
-						elif fn.lower() == "int":
-							if type(w) is str:
-								if w.endswith("f"):
-									w = w[:-1]
-								w = int(float(w))
-							else:
+								w = None
+					elif fn.lower().startswith("substring(") and fn.endswith(")"):
+						if type(w) is not str:
+							w = str(w)
+						try:
+							args = [int(a) for a in fn.lower()[10:-1].split(",")]
+						except:
+							print("Error parsing integer argument in key function arguments ${"+word+"}")
+							exit(1)
+						if len(args) == 1:
+							w = w[args[0]:]
+						elif len(args) == 2:
+							w = w[args[0]:args[1]]
+						elif len(args) == 3:
+							w = w[args[0]:args[1]:args[2]]
+						else:
+							print("Wrong number of arguments to key function ^substring in ${"+word+"} (minimum 1, maximum 3 arguments)")
+							exit(1)
+					elif fn.lower().startswith("replace(") and fn.endswith(")"):
+						if type(w) is not str:
+							w = str(w)
+						args = fn.lower()[8:-1].split(",")
+						if "," not in fn[8:-1]:
+							w = w.replace(fn[8:-1], "")
+						elif len(args) == 2:
+							w = w.replace(args[0], args[1])
+						else:
+							print("Wrong number of arguments to key function ^replace in ${"+word+"} (minimum 1, maximum 2 arguments)")
+							exit(1)
+					elif fn.lower() == "hash":
+						if type(w) is list or type(w) is tuple:
+							w = sum([hash(v) for v in w])
+						else:
+							try:
+								w = hash(w)
+							except:
+								w = hash(str(w))
+					elif fn.lower() == "tohex":
+						if type(w) is not int:
+							try:
 								w = int(w)
-						elif fn.lower().startswith("split(") and fn.endswith(")"):
-							if type(w) is not str:
-								w = str(w)
+							except Exception as e:
+								print(f"Failed to convert value (type {type(w)}) to binary due to an exception: {str(e)}")
+								exit(1)
+						w = hex(w)
+					elif fn.lower() == "tobin":
+						if type(w) is not int:
 							try:
-								args = [int(a) for a in fn.lower()[10:-1].split(",")]
-							except:
-								print("Error parsing integer argument in key function arguments ${"+word+"}")
+								w = int(w)
+							except Exception as e:
+								print(f"Failed to convert value (type {type(w)}) to binary due to an exception: {str(e)}")
 								exit(1)
-							if len(args) < 1 or len(args) > 2:
-								print("Wrong number of arguments to key function ^split in ${"+word+"} (minimum 1, maximum 2 arguments)")
-								exit(1)
-							w = w.split(fn[6:9].strip("'\""), args[0])
-							if len(args) == 2:
-								if args[1] < len(w):
-									w = w[args[1]]
-								else:
-									w = None
-						elif fn.lower().startswith("substring(") and fn.endswith(")"):
-							if type(w) is not str:
-								w = str(w)
+						w = bin(w)
+					elif fn.lower() == "abs":
+						if type(w) is not int and type(w) is not float:
 							try:
-								args = [int(a) for a in fn.lower()[10:-1].split(",")]
-							except:
-								print("Error parsing integer argument in key function arguments ${"+word+"}")
+								w = float(w)
+							except Exception as e:
+								print(f"Failed to get absolute value (type {type(w)}) due to an exception: {str(e)}")
 								exit(1)
-							if len(args) == 1:
-								w = w[args[0]:]
-							elif len(args) == 2:
-								w = w[args[0]:args[1]]
-							elif len(args) == 3:
-								w = w[args[0]:args[1]:args[2]]
+						w = abs(w)
+					elif fn.lower().startswith("clamp(") and fn.endswith(")"):
+						if type(w) is not float and type(w) is not int:
+							try:
+								w = float(w)
+							except Exception as e:
+								print(f"Failed to convert value (type {type(w)}) to number due to an exception: {str(e)}")
+								exit(1)
+						args = fn.lower()[6:-1].split(",")
+						try:
+							wasint = type(w) is int
+							w = min(float(args[1]), max(float(args[0]), w))
+							if wasint:
+								w = int(w)
+						except Exception as e:
+							print(f"Failed to clamp value {w} to ({','.join(args)}) due to an exception: {str(e)}")
+							exit(1)
+					elif fn.lower().startswith("min(") and fn.endswith(")"):
+						if type(w) is not float and type(w) is not int:
+							try:
+								w = float(w)
+							except Exception as e:
+								print(f"Failed to convert value (type {type(w)}) to number due to an exception: {str(e)}")
+								exit(1)
+						args = fn.lower()[4:-1]
+						try:
+							wasint = type(w) is int
+							w = min(w, float(args))
+							if wasint:
+								w = int(w)
+						except Exception as e:
+							print(f"Failed to get minimum of {w} and {args} due to an exception: {str(e)}")
+							exit(1)
+					elif fn.lower().startswith("max(") and fn.endswith(")"):
+						if type(w) is not float and type(w) is not int:
+							try:
+								w = float(w)
+							except Exception as e:
+								print(f"Failed to convert value (type {type(w)}) to number due to an exception: {str(e)}")
+								exit(1)
+						args = fn.lower()[4:-1]
+						try:
+							wasint = type(w) is int
+							w = max(w, float(args))
+							if wasint:
+								w = int(w)
+						except Exception as e:
+							print(f"Failed to get minimum of {w} and {args} due to an exception: {str(e)}")
+							exit(1)
+					elif fn.lower().startswith("trunc(") and fn.endswith(")"):
+						if type(w) is not float and type(w) is not int:
+							try:
+								w = float(w)
+							except Exception as e:
+								print(f"Failed to convert value (type {type(w)}) to number due to an exception: {str(e)}")
+								exit(1)
+						if "," in fn:
+							args = fn.lower()[6:-1].split(",")
+						else:
+							args = [fn.lower()[6:-1]]
+						try:
+							wasint = type(w) is int
+							if len(args) > 1:
+								w = (w % (float(args[1]) - float(args[0]))) + float(args[0])
 							else:
-								print("Wrong number of arguments to key function ^substring in ${"+word+"} (minimum 1, maximum 3 arguments)")
+								w = w % float(args[0])
+							if wasint:
+								w = int(w)
+						except Exception as e:
+							print(f"Failed to truncate {w} to ({','.join(args)}) due to an exception: {str(e)}")
+							exit(1)
+					elif fn.lower().startswith("truncbits(") and fn.endswith(")"):
+						if type(w) is not float and type(w) is not int:
+							try:
+								w = float(w)
+							except Exception as e:
+								print(f"Failed to convert value (type {type(w)}) to number due to an exception: {str(e)}")
 								exit(1)
-						elif fn.lower().startswith("replace(") and fn.endswith(")"):
-							if type(w) is not str:
-								w = str(w)
-							args = fn.lower()[8:-1].split(",")
-							if "," not in fn[8:-1]:
-								w = w.replace(fn[8:-1], "")
-							elif len(args) == 2:
-								w = w.replace(args[0], args[1])
-							else:
-								print("Wrong number of arguments to key function ^replace in ${"+word+"} (minimum 1, maximum 2 arguments)")
-								exit(1)
+						args = fn.lower()[10:-1]
+						try:
+							wasint = type(w) is int
+							w = w % (2 ** float(args))
+							if wasint:
+								w = int(w)
+						except Exception as e:
+							print(f"Failed to truncate {w} to {args} bits due to an exception: {str(e)}")
+							exit(1)
+					elif fn.startswith("[") and fn.endswith("]"):
+						if type(w) is not list and type(w) is not str:
+							w = str(w)
+						args = fn.lower()[1:-1]
+						try:
+							w = w[int(args)]
+						except Exception as e:
+							print(f"Failed to index array/string due to an exception: {str(e)}")
+							exit(1)
+					else:
+						print(f"Warning: unknown key function: {fn}")
 			elif word in d.keys():
 				w = d[word]
 			elif word.lower() in d.keys():

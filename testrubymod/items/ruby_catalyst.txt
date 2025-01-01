@@ -1,0 +1,7 @@
+@:            item
+item:         SimpleItem
+contentid:    ruby_catalyst
+title:        Ruby Catalyst
+texture:      perfect_ruby
+
+reciperemainder: self
