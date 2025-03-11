@@ -576,7 +576,11 @@ def build_resources(project_path, builddir, mdc):
 		make_dir(os.path.join(dest, "src", "main", "resources", "data", modmcpath))
 		make_dir(os.path.join(dest, "src", "main", "java"))
 		if "mod.icon" in mdc.keys():
-			copy_file(os.path.join(project_path, mdc["mod.icon"]), os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "icon.png"))
+			if "forge" in mdc["modloader"]:
+				copy_file(os.path.join(project_path, mdc["mod.icon"]), os.path.join(dest, "src", "main", "resources", "assets", modmcpath, "icon.png"))
+			else:
+				copy_file(os.path.join(project_path, mdc["mod.icon"]), os.path.join(dest, "src", "main", "resources", "icon.png"))
+			
 
 		prefix = mdc["mod.prefix"]
 		modauthor = mdc["mod.author"]
@@ -800,8 +804,9 @@ def build_tags_and_lang(mdc):
 		else:
 			print(f"Error: tags should always be namespaced. Example: \"c:ingots\"\nBad tag: \"{tag}\"")
 			exit(1)
+		mdc["%namespace"] = ns
 		tag_item_dir = getDictValF(mdc, "build_paths.data.tag.item", os.path.join(build_data_dir, ns, "tags", "items"))
-		make_dir(tag_item_dir)
+		make_dir(os.path.dirname(os.path.join(tag_item_dir, t)))
 		with open(os.path.join(tag_item_dir, t+".json"), "w") as f:
 			json.dump({"replace": False, "values": tagdict[tag]}, f)
 
@@ -811,8 +816,9 @@ def build_tags_and_lang(mdc):
 		else:
 			print(f"Error: tags should always be namespaced. Example: \"c:ingots\"\nBad tag: \"{tag}\"")
 			exit(1)
+		mdc["%namespace"] = ns
 		tag_block_dir = getDictValF(mdc, "build_paths.data.tag.block", os.path.join(build_data_dir, ns, "tags", "blocks"))
-		make_dir(tag_block_dir)
+		make_dir(os.path.dirname(os.path.join(tag_block_dir, t)))
 		with open(os.path.join(tag_block_dir, t+".json"), "w") as f:
 			json.dump({"replace": False, "values": blocktagdict[tag]}, f)
 

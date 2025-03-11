@@ -7,7 +7,7 @@ version="${file.jarVersion}"
 displayName="${mod.title}"
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="${mod.homepage}"
-logoFile="icon.png"
+logoFile="assets/${mod.mcpath}/icon.png" #optional
 credits="${mod.credits}"
 authors="${mod.author}"
 description='''${mod.description}'''

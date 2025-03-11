@@ -33,8 +33,8 @@
 		  "build_paths.data.loot_table.chest": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/chests",
 		  "build_paths.data.loot_table.entity": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/entities",
 		  "build_paths.data.loot_table.gameplay": "${build_path}/src/main/resources/data/${mod.mcpath}/loot_table/gameplay",
-		  "build_paths.data.tag.block": "${build_path}/src/main/resources/data/${mod.mcpath}/tags/block",
-		  "build_paths.data.tag.item": "${build_path}/src/main/resources/data/${mod.mcpath}/tags/item"
+		  "build_paths.data.tag.block": "${build_path}/src/main/resources/data/${%namespace}/tags/block",
+		  "build_paths.data.tag.item": "${build_path}/src/main/resources/data/${%namespace}/tags/item"
 		}
 	}
   ],

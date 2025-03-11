@@ -162,68 +162,72 @@ def checkConditionString(condition, d):
 			inverted = False
 		if val in d.keys():
 			val = d[val]
-			val2 = None
-			if len(condition) >= 2:
-				val2 = readf(condition[1], d)
-			# print(val, condition)
-			if condition[0] == "#contains":
-				if type(val) is str and val2 in val:
+		val2 = None
+		if len(condition) >= 2:
+			val2 = readf(condition[1], d)
+		# print(val, condition)
+		if condition[0] == "#contains":
+			if type(val) is str and val2 in val:
+				return not inverted
+		elif condition[0] == "#containskey":
+			if type(val) is dict and val2 in val.keys():
+				return not inverted
+		elif condition[0] == "#typeis":
+			if val2 == "int" and type(val) is int:
+				return not inverted
+			elif val2 == "float" and type(val) is float:
+				return not inverted
+			elif val2 == "str" and type(val) is str:
+				return not inverted
+			elif val2 == "list" and type(val) is list:
+				return not inverted
+			elif val2 == "tuple" and type(val) is tuple:
+				return not inverted
+			elif val2 == "dict" and type(val) is dict:
+				return not inverted
+			elif val2 == "number" and (type(val) is int or type(val) is float):
+				return not inverted
+			elif val2 == "iterable" and (type(val) is list or type(val) is tuple):
+				return not inverted
+			elif val2 == "none" and val is None:
+				return not inverted
+		elif condition[0] == "#startswith":
+			if type(val) is not str:
+				val = str(val)
+			if val.startswith(val2):
+				return not inverted
+		elif condition[0] == "#equals":
+			if val == val2:
+				return not inverted
+		elif condition[0] == "#endswith":
+			if type(val) is not str:
+				val = str(val)
+			if val.endswith(val2):
+				return not inverted
+		elif condition[0] == "#length":
+			if type(val) is str or type(val) is list or type(val) is tuple:
+				if val2 == "nonzero" and len(val) > 0:
 					return not inverted
-			elif condition[0] == "#containskey":
-				if type(val) is dict and val2 in val.keys():
+				elif val2 == "zero" and len(val) <= 0:
 					return not inverted
-			elif condition[0] == "#typeis":
-				if val2 == "int" and type(val) is int:
-					return not inverted
-				elif val2 == "float" and type(val) is float:
-					return not inverted
-				elif val2 == "str" and type(val) is str:
-					return not inverted
-				elif val2 == "list" and type(val) is list:
-					return not inverted
-				elif val2 == "tuple" and type(val) is tuple:
-					return not inverted
-				elif val2 == "dict" and type(val) is dict:
-					return not inverted
-				elif val2 == "number" and (type(val) is int or type(val) is float):
-					return not inverted
-				elif val2 == "iterable" and (type(val) is list or type(val) is tuple):
-					return not inverted
-				elif val2 == "none" and val is None:
-					return not inverted
-			elif condition[0] == "#startswith":
-				if type(val) is str and val.startswith(val2):
-					return not inverted
-			elif condition[0] == "#equals":
-				if val == val2:
-					return not inverted
-			elif condition[0] == "#endswith":
-				if type(val) is str and val.endswith(val2):
-					return not inverted
-			elif condition[0] == "#length":
-				if type(val) is str or type(val) is list or type(val) is tuple:
-					if val2 == "nonzero" and len(val) > 0:
-						return not inverted
-					elif val2 == "zero" and len(val) <= 0:
-						return not inverted
-			elif condition[0] == ">":
-				if toNumber(val, default=0) > toNumber(val2, default=0):
-					return not inverted
-			elif condition[0] == "<":
-				if toNumber(val, default=0) < toNumber(val2, default=0):
-					return not inverted
-			elif condition[0] == ">=":
-				if toNumber(val, default=0) >= toNumber(val2, default=0):
-					return not inverted
-			elif condition[0] == "<=":
-				if toNumber(val, default=0) <= toNumber(val2, default=0):
-					return not inverted
-			elif condition[0] == "==":
-				if toNumber(val, default=0) == toNumber(val2, default=0):
-					return not inverted
-			elif condition[0] == "!=":
-				if toNumber(val, default=0) != toNumber(val2, default=0):
-					return not inverted
+		elif condition[0] == ">":
+			if toNumber(val, default=0) > toNumber(val2, default=0):
+				return not inverted
+		elif condition[0] == "<":
+			if toNumber(val, default=0) < toNumber(val2, default=0):
+				return not inverted
+		elif condition[0] == ">=":
+			if toNumber(val, default=0) >= toNumber(val2, default=0):
+				return not inverted
+		elif condition[0] == "<=":
+			if toNumber(val, default=0) <= toNumber(val2, default=0):
+				return not inverted
+		elif condition[0] == "==":
+			if toNumber(val, default=0) == toNumber(val2, default=0):
+				return not inverted
+		elif condition[0] == "!=":
+			if toNumber(val, default=0) != toNumber(val2, default=0):
+				return not inverted
 		return inverted
 
 	if condition in d.keys():
