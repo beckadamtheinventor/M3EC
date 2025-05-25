@@ -46,7 +46,11 @@
 		"file": "${source_path}/forge_common/food_status_effects.json"
 	},
     {
-	  "if": "!version_pre_1.13",
+	  "if": [
+		"^AND",
+		"!version_pre_1.13",
+		"implementedFeatures.food"
+	  ],
       "action": "copyf",
       "source": "${source_path}/forge_common/classes/FoodItem.m3ecjava",
       "dest": "${build_path}/src/main/java/${mod.packagedir}/item/FoodItem.java"

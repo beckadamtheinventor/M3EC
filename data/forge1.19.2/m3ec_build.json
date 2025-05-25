@@ -6,7 +6,7 @@
 	"block": true,
 	"item": true,
 	"fuel": true,
-	"food": true,
+	"food": false,
 	"recipe": true,
 	"ore": true,
 	"tool": true,
@@ -60,10 +60,6 @@
     {
       "source": "java/item/ModItems.m3ecjava",
       "dest": "src/main/java/${mod.packagedir}/item/ModItems.java"
-    },
-    {
-      "source": "java/item/ModFoods.m3ecjava",
-      "dest": "src/main/java/${mod.packagedir}/item/ModFoods.java"
     },
     {
       "source": "java/item/ModTiers.m3ecjava",
