@@ -228,8 +228,9 @@ def build_mod(modloader, version, modenv, mdc):
 							if "cid" in d.keys():
 								d["contentid"] = d["cid"]
 							else:
-								print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
-								continue
+								d["contentid"] = MCNameify(os.path.basename(fname).rsplit(".", maxsplit=1)[0])
+								# print(f"Warning: Skipping file \"{fname}\" due to missing contentid.")
+								# continue
 						if content_type == "recipe":
 							if "contentid" in d.keys():
 								cid = d["contentid"]
