@@ -58,7 +58,7 @@ def _lexScript(data, d, i=0, ld=[], depth=0, lno=1):
 			continue
 		elif word == "}":
 			if depth <= 0:
-				print(f"Warning: Unmatched \"}\" on line {lno}")
+				print("Warning: Unmatched \"}\" on line "+lno)
 			break
 		elif word == "{":
 			value, i = _lexScript(data, d, i, ld, depth+1, lno)
