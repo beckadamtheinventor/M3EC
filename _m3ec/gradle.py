@@ -10,14 +10,18 @@ def maybe_run_gradle(path, modenv, javaver, md):
 		javapath = find_java_version(javaver)
 		if javapath is not None:
 			javapath = "-Dorg.gradle.java.home="+javapath
-		if sys.platform.startswith("win32"):
-			fname = "gradlew.bat"
 		else:
-			fname = "gradlew"
+			javapath = "java"
+		if sys.platform.startswith("win32"):
+			fname = os.path.join(path, "gradlew.bat")
+			extra = ""
+		else:
+			fname = "bash"
+			extra = os.path.join(path, "gradlew")
 
 	if "buildjar" in modenvlow or "build" in modenvlow:
 		print("\n-----------------------------------------------\n\tbuilding JAR\n")
-		subprocess.Popen([os.path.join(path, fname), "build", "jar", javapath], cwd=path).wait()
+		subprocess.Popen([fname, extra, "build", "jar", javapath], cwd=path).wait()
 		jd = os.path.join(os.path.dirname(path), "built_mod_jars")
 		make_dir(jd)
 		for f in walk(os.path.join(path, "build", "libs")):
@@ -41,6 +45,13 @@ def find_java_version(javaver):
 
 	if javapath is None:
 		try:
+			subprocess.Popen(["java", "--version"])
+			return None
+		except:
+			pass
+
+	if javapath is None:
+		try:
 			return input(f"Input path to Java jdk {javaver} by pasting or typing it here and pressing enter.\n\
 	Or type \"default\" to use system default java path.\n")
 		except:
@@ -54,10 +65,13 @@ def find_java_version(javaver):
 
 	return javapath
 
+# TODO: make this more reliable for the future (currently only searches for substring "jdk" and "-" + major version)
 def find_jdk(path, javaver):
+	javaver = javaver.strip(".")
+	print(f"Searching for Java {javaver}")
 	if os.path.exists(path):
 		for root, dirs, files in os.walk(path):
 			for d in dirs:
-				if d.startswith("jdk") and (f"-{javaver}" in d or f"1.{javaver}" in d):
+				if "jdk" in d and (f"-{javaver}" in d or f"1.{javaver}" in d):
 					return os.path.join(root, d)
 	return None
